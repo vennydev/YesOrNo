@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import ThemeClient from '../components/ThemeClient';
 import Script from 'next/script'
 import ProvidersWrapper from './ProvidersWrapper';
-import Header from '@/components/ Header';
+import Header from '@/components/Header';
 
 export const metadata: Metadata = {
   title: '질문있어욘',

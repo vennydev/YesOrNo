@@ -28,9 +28,11 @@ const GlobalStyles = createGlobalStyle`
         line-height: 1;
         font-family: 'MaruBuri';
     }
+    
     ol, ul{
         list-style: none;
     }
+
     button {
         border: 0;
         background: transparent;
