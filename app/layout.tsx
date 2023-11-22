@@ -3,6 +3,7 @@ import ThemeClient from '../components/ThemeClient';
 import Script from 'next/script'
 import ProvidersWrapper from './ProvidersWrapper';
 import Header from '@/components/Header';
+import Navigation from '../components/Navigation';
 
 export const metadata: Metadata = {
   title: '질문있어욘',
@@ -21,6 +22,7 @@ export default function RootLayout({
             <ProvidersWrapper>
               <Header/>
               {children}
+              <Navigation/>
             </ProvidersWrapper>
           </ThemeClient>
       </body>
