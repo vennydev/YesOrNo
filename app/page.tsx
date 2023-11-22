@@ -11,7 +11,7 @@ interface PostProps {
 }
 
 type IsSelected = {
-  isSelected : string | null;
+  isselected : string | null;
 }
 
 const arr: StringDatas = ['진행중', '진행중2', '진행중3'];
@@ -40,8 +40,8 @@ const Tab = () => {
     <HomeContainer>
       <TabContainer>
         <TabWrapper>
-          <TabButton isSelected={selectedTab === 1 ? "selected" : null} onClick={() => handleClick(1)}>진행 중</TabButton>
-          <TabButton isSelected={selectedTab === 2 ? "selected" : null} onClick={() => handleClick(2)}>마감</TabButton>
+          <TabButton isselected={selectedTab === 1 ? "selected" : null} onClick={() => handleClick(1)}>진행 중</TabButton>
+          <TabButton isselected={selectedTab === 2 ? "selected" : null} onClick={() => handleClick(2)}>마감</TabButton>
           {/* <button className={cn("tabButton", selectedTab === 2 ? "bold" : null)} onClick={() => handleClick(2)}>마감</button> */}
         </TabWrapper>
       </TabContainer>
@@ -92,7 +92,7 @@ const TabButton = styled.div<IsSelected>`
   text-decoration: none;
   font-weight: 400;
   cursor: pointer;
-  color:${(props) => props.isSelected === "selected" ? "black" : props.theme.color.dimFontColor}
+  color:${(props) => props.isselected === "selected" ? "black" : props.theme.color.dimFontColor}
 `;
   
 

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react';
-import { Profile, DimmedProfile } from '../public/images';
+import { Profile, DimmedProfile, DrawingOnPost } from '../public/images';
 import Image from 'next/image';
 import styled from 'styled-components';
 import ColorCircle from './ColorCircle';
@@ -30,11 +30,20 @@ const Post = ({text, username, time, votingBtn}:postPropsType) => {
     setHoveredIndex(null);
   };
 
+  const divideText = () => {
+    const topText = text.substring(0,10)
+    const bottomText = text.substring(10);
+    return (
+      <DividedText>
+        <div>{topText}</div>
+        <div>{bottomText}</div>
+      </DividedText>
+    )
+  }
 
   return (
       <PostContainer>
-        {/* <div className={cn("post-wrapper", votingBtn ? null : "post-wrapper2" )}> */}
-          <PostWrapper>
+          <PostWrapper $votingBtn={votingBtn}>
             <PostMetadata>
             <PostMetadataLeft>
               {votingBtn 
@@ -43,46 +52,34 @@ const Post = ({text, username, time, votingBtn}:postPropsType) => {
               }
             </PostMetadataLeft>
               <PostMetadataRight>
-              <UserName>{username}</UserName>
-              <DeadLine>{time}</DeadLine>
-              {/* <div className={cn("user-name", applyDim(votingBtn))}>{username}</div>
-              <div className={cn("deadLine", applyDim(votingBtn))}>{time}</div> */}
+              <UserName $votingBtn={votingBtn}>{username}</UserName>
+              <DeadLine $votingBtn={votingBtn}>{time}</DeadLine>
             </PostMetadataRight>  
             </PostMetadata>
-            <PostQuestion>{text}</PostQuestion>
-            <PostVoteWrapper>
-                <VoteBtn>YES</VoteBtn>
-                  <Divider/>
-                <VoteBtn>NO</VoteBtn>
-              </PostVoteWrapper>
-          {/* {votingBtn 
-            ? <div className={cn("post_question", applyDim(votingBtn))}>{text}</div> 
-            : <div className={cn("post_question", "post_question-dim", "text-center", "dim-font")} dangerouslySetInnerHTML={{__html: text}}></div>
-          } */}
-          {/* {votingBtn 
+            <PostQuestion $votingBtn={votingBtn}>{votingBtn ? text : divideText()}</PostQuestion>
+          {votingBtn 
             ?  (
-              <div className={cn("post_vote-wrapper")}>
-                <button className={cn("vote-btn")}>YES</button>
-                  <div className={cn("divider")}></div>
-                <button className={cn("vote-btn")}>NO</button>
-              </div>
+                <PostVoteWrapper $votingBtn={votingBtn}>
+                  <VoteBtn>YES</VoteBtn>
+                    <Divider/>
+                  <VoteBtn>NO</VoteBtn>
+                </PostVoteWrapper>
             )
             : (
-              <ul className={cn("bg-selector-wrapper")}>
+              <BgSelectorWrapper>
                   {colorArr.map((color, index) => {
                     return (
                       <ColorCircle color={color} index={index} hoveredIndex={hoveredIndex} handleMouseEnter={handleMouseEnter} handleMouseLeave={handleMouseLeave} key={index}/>
                     )
                   })}
-              </ul>
+              </BgSelectorWrapper>
             )
-          } */}
-        {/* </div> */}
+          }
         </PostWrapper>
+        <Image src={DrawingOnPost} alt="DrawingOnPost" width={0} height={0} style={{ width: '100%', height: 'auto', position: 'absolute', bottom: '0', left: '0'}}></Image>
       </PostContainer>
   )
 }
-
 
 const PostContainer = styled.div`
   width: 335px;
@@ -95,59 +92,61 @@ const PostContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   position: relative;
-`
+`;
 
-const PostWrapper = styled.div`
+const PostWrapper = styled.div<{$votingBtn? : boolean}>`
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items:center;
-  justify-content: space-between;
-`
+  justify-content: ${props => props.$votingBtn ? "space-between" : "flex-start"} ;
+`; 
 
 const PostMetadata = styled.div`
     align-self: flex-start;
   display: flex;
   align-items: center;
   gap:6px;
-`
+`;
 
 const PostMetadataLeft = styled.div`
   display: flex;
   align-items: center;
-`
+`;
 
 const PostMetadataRight = styled.div`
   font-size: 11px;
-`
+`;
 
-const UserName = styled.div`
+const UserName = styled.div<{$votingBtn? : boolean}>`
   margin-bottom: 3px;
+  color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.disabledfontColor}}`};
+`;
 
-`
+const DeadLine = styled.div<{$votingBtn? : boolean}>`
+  color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.disabledfontColor}}`};
+`;
 
-const DeadLine = styled.div`
+const PostQuestion = styled.div<{$votingBtn? : boolean}>`
+  color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.disabledfontColor}}`};
+  /* text-align:  ${props => props.$votingBtn ? null : "center"}; */
+  /* margin-top:  ${props => props.$votingBtn ? null : "104px"}; */
+`;
 
-`
-
-const PostQuestion = styled.div`
-
-`
-
-const PostVoteWrapper = styled.div`
+const PostVoteWrapper = styled.div<{$votingBtn? : boolean}>`
   display: flex;
   width: 100%;
   height: 66px;
   border-radius: 14px;
   border: ${(props) => `1px solid ${props.theme.color.mainBorderColor}`};
   position: relative;
-`
+`;
 
 const VoteBtn = styled.button`
   width: 50%;
   text-align: center;
-`
+`;
 
 const Divider = styled.div`
   height: 45px;
@@ -157,6 +156,26 @@ const Divider = styled.div`
   left:50%;
   top:50%;
   transform: translateY(-50%);
-`
+`;
+
+const BgSelectorWrapper = styled.ul`
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 14px;
+  border-top: ${(props) => `2px solid ${props.theme.color.mainFontColor}`};
+  position: absolute;
+  bottom:0;
+  padding:16px;
+  margin:0;
+  width: 100%;
+`;
+
+const DividedText = styled.div`
+  text-align: center;
+  margin-top: 104px;
+  font-size: 16px;
+  line-height: 28px; 
+`;
 
 export default Post

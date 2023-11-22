@@ -18,8 +18,8 @@ const Navigation = () => {
       <Link href='/' onClick={() => handleClick("home")}>
         <NaviLink>
           {activeTab === 'home' 
-            ? <Image src={homeB} alt={'home'} data-icon="home" width={24} height={24} ></Image> 
-            : <Image src={homeW} alt={'home'} data-icon="home" width={24} height={24} ></Image> 
+            ? <Image src={homeB} alt={'home'} width={24} height={24} ></Image> 
+            : <Image src={homeW} alt={'home'} width={24} height={24} ></Image> 
           }
           <NaviText>홈</NaviText>
         </NaviLink>
@@ -28,7 +28,7 @@ const Navigation = () => {
         <NaviLink>
           {activeTab === 'post' 
             ? <Image src={addPostB} alt={'post'} width={24} height={24} ></Image> 
-            : <Image src={addPostW} alt={'post'} data-icon="post" width={24} height={24} ></Image> 
+            : <Image src={addPostW} alt={'post'} width={24} height={24} ></Image> 
           }
         <NaviText>질문하기</NaviText>
         </NaviLink>
@@ -37,7 +37,7 @@ const Navigation = () => {
         <NaviLink>
           {activeTab === 'mypage' 
             ? <Image src={myPageB} alt={'mypage'} width={24} height={24} ></Image> 
-            : <Image src={myPageW} alt={'mypage'} data-icon="mypage" width={24} height={24} ></Image> 
+            : <Image src={myPageW} alt={'mypage'} width={24} height={24} ></Image> 
           }
           <NaviText>마이페이지</NaviText>
         </NaviLink>

@@ -12,6 +12,7 @@ import DimmedProfile from './Profile-2.png';
 import MainLogoTitle from './mainLogo-title.png';
 import MainLogoHand from './mainLogo-hand.png';
 import Check from './ic_check.png';
+import DrawingOnPost from './drawingOnPost.png';
 
 
 
@@ -27,7 +28,8 @@ export {
   homeB,
   Profile,
   DimmedProfile,
-  Check,
   MainLogoTitle,
   MainLogoHand,
+  Check,
+  DrawingOnPost
 }
