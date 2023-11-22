@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { MainLogoTitle, MainLogoHand } from '@/public/images';
 import Link from 'next/link';
 import styled from "styled-components";
-
+import { getProviders, signIn } from "next-auth/react";
 
 export default function Login() {
   return (
@@ -46,7 +46,6 @@ const LogoWrapper = styled.div`
   justify-content: center;
   align-items: center;
   `;
-
 
 const Logo = styled.div`
   margin-top: 305.36px;
