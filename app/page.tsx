@@ -1,8 +1,7 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import styled from "styled-components";
-import Link from 'next/link';
 import Post from '../components/Post';
 
 type StringDatas = (string)[];
@@ -19,7 +18,6 @@ const arr2: StringDatas = ['마감', '마감2', '마감3'];
 
 const Tab = () => {
   const [selectedTab, setSelectedTab] = useState(1);
-  const firstBtnRef =useRef<any>(null);
   
   const handleClick = (index: number) => {
     setSelectedTab(index);
@@ -31,10 +29,6 @@ const Tab = () => {
   const getClosedPost = () => {
     console.log('get closed post successfully');
   };
-
-  useEffect(() => {
-    firstBtnRef.current?.focus();
-  }, []);
   
   return (
     <HomeContainer>
@@ -68,16 +62,12 @@ const Tab = () => {
   )
 }
 
-const PostContainer = styled.div`
-  padding-bottom: 99px;
-`;
-
 const HomeContainer = styled.div`
   padding:0 20px;
 `;
 
 const TabContainer = styled.div`
-  margin-top:42px;
+  margin-top:54px;
 `;
 
 const TabWrapper = styled.div`
@@ -93,6 +83,10 @@ const TabButton = styled.div<IsSelected>`
   font-weight: 400;
   cursor: pointer;
   color:${(props) => props.isselected === "selected" ? "black" : props.theme.color.dimFontColor}
+`;
+
+const PostContainer = styled.div`
+  padding-bottom: 99px;
 `;
   
 

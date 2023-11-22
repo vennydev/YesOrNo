@@ -5,17 +5,32 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styled from "styled-components";
 import { addPostW, addPostB, myPageW, myPageB, homeW, homeB } from '../public/images/index';
+import { useSession } from 'next-auth/react';
+import LoginModal from './LoginModal';
 
 const Navigation = () => {
   const [activeTab, setActiveTab] = useState("home");
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  
+  const {data: session, status } = useSession();
 
-  const handleClick = (text: string) => {
+  const handleClick = (e: any, text: string) => {
       setActiveTab(text);
-    }
+      if (status !== "authenticated") {
+          if(text === "post" || text === "mypage"){
+          setIsModalVisible(true)
+          e.preventDefault()
+          }
+        }
+    };
 
+    const closeModal = () => {
+      setIsModalVisible(false)
+    };
+    
   return (
     <NaviContainer>
-      <Link href='/' onClick={() => handleClick("home")}>
+      <Link href='/' onClick={(e) => handleClick(e, "home")}>
         <NaviLink>
           {activeTab === 'home' 
             ? <Image src={homeB} alt={'home'} width={24} height={24} ></Image> 
@@ -24,7 +39,7 @@ const Navigation = () => {
           <NaviText>홈</NaviText>
         </NaviLink>
       </Link>
-      <Link href='/post' onClick={() => handleClick("post")}>
+      <Link href='/post' onClick={(e) => handleClick(e, "post")}>
         <NaviLink>
           {activeTab === 'post' 
             ? <Image src={addPostB} alt={'post'} width={24} height={24} ></Image> 
@@ -33,7 +48,7 @@ const Navigation = () => {
         <NaviText>질문하기</NaviText>
         </NaviLink>
       </Link>
-      <Link href='/' onClick={() => handleClick("mypage")}>
+      <Link href='/' onClick={(e) => handleClick(e, "mypage")}>
         <NaviLink>
           {activeTab === 'mypage' 
             ? <Image src={myPageB} alt={'mypage'} width={24} height={24} ></Image> 
@@ -42,6 +57,7 @@ const Navigation = () => {
           <NaviText>마이페이지</NaviText>
         </NaviLink>
       </Link>
+      {isModalVisible && <LoginModal closeModal={closeModal}/>}
     </NaviContainer>
   )
 }

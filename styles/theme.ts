@@ -16,6 +16,7 @@ const color = {
   disabledfontColor: "#BFBFBF",
   mainFontColor: "#262626",
   mainBorderColor: "#262626",
+  pointColor: "#796EFF",
 }
 
 const theme = {
