@@ -77,7 +77,7 @@ const HomeContainer = styled.div`
 `;
 
 const TabContainer = styled.div`
-  margin-top:106px;
+  margin-top:96px;
 `;
 
 const TabWrapper = styled.div`

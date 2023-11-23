@@ -41,7 +41,7 @@ const PostSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top:75px;
+  margin-top:65px;
   padding:0 20px;
 `;
 

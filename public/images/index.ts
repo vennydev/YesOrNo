@@ -7,14 +7,13 @@ import myPageW from './bottomnav_my_nor-white.png';
 import myPageB from './bottomnav_my_sel.png';
 import homeW from './bottomnav_store-white.png';
 import homeB from './bottomnav_store_sel.png';
-import Profile from './Profile.png';
+import DefaultProfile from './Profile.png';
 import DimmedProfile from './Profile-2.png';
 import MainLogoTitle from './mainLogo-title.png';
 import MainLogoHand from './mainLogo-hand.png';
 import Check from './ic_check.png';
 import DrawingOnPost from './drawingOnPost.png';
-
-
+import Pencil from './Union.png';
 
 export { 
   cellular, 
@@ -26,10 +25,11 @@ export {
   myPageB,
   homeW,
   homeB,
-  Profile,
+  DefaultProfile,
   DimmedProfile,
   MainLogoTitle,
   MainLogoHand,
   Check,
-  DrawingOnPost
+  DrawingOnPost,
+  Pencil,
 }

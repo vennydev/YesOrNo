@@ -13,6 +13,7 @@ const device = {
 const color = {
   whiteColor: "#fff",
   dimFontColor: "#ABA7A7",
+  dimBorderColor: "#BFBFBF",
   disabledfontColor: "#BFBFBF",
   mainFontColor: "#262626",
   mainBorderColor: "#262626",
