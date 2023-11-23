@@ -41,7 +41,7 @@ const PostSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top:31px;
+  margin-top:75px;
   padding:0 20px;
 `;
 
@@ -50,7 +50,6 @@ const ActionBtnWrapper = styled.div`
   width: 100%;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
 `;
 
 const PageTitle = styled.div`

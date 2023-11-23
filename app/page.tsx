@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import styled from "styled-components";
 import Post from '../components/Post';
+import { getCsrfToken, signOut, useSession } from 'next-auth/react';
 
 type StringDatas = (string)[];
 interface PostProps {
@@ -10,14 +11,24 @@ interface PostProps {
 }
 
 type IsSelected = {
-  isselected : string | null;
+  isSelected : string | null;
 }
 
 const arr: StringDatas = ['진행중', '진행중2', '진행중3'];
 const arr2: StringDatas = ['마감', '마감2', '마감3'];
 
+
+
 const Tab = () => {
   const [selectedTab, setSelectedTab] = useState(1);
+  const {data} = useSession();
+  console.log('session:',data);
+  async function myFunction() {
+    const csrfToken = await getCsrfToken();
+    console.log('token:', csrfToken);
+  }
+  
+  myFunction();
   
   const handleClick = (index: number) => {
     setSelectedTab(index);
@@ -34,9 +45,8 @@ const Tab = () => {
     <HomeContainer>
       <TabContainer>
         <TabWrapper>
-          <TabButton isselected={selectedTab === 1 ? "selected" : null} onClick={() => handleClick(1)}>진행 중</TabButton>
-          <TabButton isselected={selectedTab === 2 ? "selected" : null} onClick={() => handleClick(2)}>마감</TabButton>
-          {/* <button className={cn("tabButton", selectedTab === 2 ? "bold" : null)} onClick={() => handleClick(2)}>마감</button> */}
+          <TabButton $isSelected={selectedTab === 1 ? "selected" : null} onClick={() => handleClick(1)}>진행 중</TabButton>
+          <TabButton $isSelected={selectedTab === 2 ? "selected" : null} onClick={() => handleClick(2)}>마감</TabButton>
         </TabWrapper>
       </TabContainer>
       <PostContainer>
@@ -67,7 +77,7 @@ const HomeContainer = styled.div`
 `;
 
 const TabContainer = styled.div`
-  margin-top:54px;
+  margin-top:106px;
 `;
 
 const TabWrapper = styled.div`
@@ -78,11 +88,11 @@ const TabWrapper = styled.div`
   margin-top:42px;
 `;
 
-const TabButton = styled.div<IsSelected>`
+const TabButton = styled.div<{$isSelected?: any}>`
   text-decoration: none;
   font-weight: 400;
   cursor: pointer;
-  color:${(props) => props.isselected === "selected" ? "black" : props.theme.color.dimFontColor}
+  color:${(props) => props.$isSelected === "selected" ? "black" : props.theme.color.dimFontColor}
 `;
 
 const PostContainer = styled.div`

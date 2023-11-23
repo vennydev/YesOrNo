@@ -13,13 +13,14 @@ const Navigation = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   
   const {data: session, status } = useSession();
-
+  
   const handleClick = (e: any, text: string) => {
       setActiveTab(text);
+      console.log('status', status, session);
       if (status !== "authenticated") {
           if(text === "post" || text === "mypage"){
-          setIsModalVisible(true)
-          e.preventDefault()
+          setIsModalVisible(true);
+          e.preventDefault();
           }
         }
     };
@@ -48,7 +49,7 @@ const Navigation = () => {
         <NaviText>질문하기</NaviText>
         </NaviLink>
       </Link>
-      <Link href='/' onClick={(e) => handleClick(e, "mypage")}>
+      <Link href='/mypage' onClick={(e) => handleClick(e, "mypage")}>
         <NaviLink>
           {activeTab === 'mypage' 
             ? <Image src={myPageB} alt={'mypage'} width={24} height={24} ></Image> 
@@ -57,7 +58,7 @@ const Navigation = () => {
           <NaviText>마이페이지</NaviText>
         </NaviLink>
       </Link>
-      {isModalVisible && <LoginModal closeModal={closeModal}/>}
+      {isModalVisible && <LoginModal closeModal={closeModal} setActiveTab={setActiveTab}/>}
     </NaviContainer>
   )
 }

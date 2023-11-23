@@ -37,9 +37,12 @@ const Header = () => {
 }
 
 const HaederContainer = styled.div`
+  position: absolute;
+  top:0;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
   height: 54px;
   padding:0px 14px 0px  21px;
 `;

@@ -4,15 +4,16 @@ import Link from "next/link";
 import styled from "styled-components";
 
 interface ModalProps {
-  closeModal: () => void
+  closeModal: () => void,
+  setActiveTab: () => void,
 }
 
-export default function LoginModal({closeModal}: any ) {
+export default function LoginModal({closeModal, setActiveTab}: any ) {
   return (
-    <LoginModalContainer>
-      <ModalWrapper>
+    <LoginModalContainer onClick={() => {closeModal(); setActiveTab("home")}}>
+      <ModalWrapper onClick={(e) => e.stopPropagation()}>
         <ModalMsg>로그인을 해야<br />이용가능한 서비스 입니다.</ModalMsg>
-        <Link href={'login'} onClick={closeModal}>
+        <Link href={'/login'} onClick={closeModal}>
           <NaviToLoginPageBtn>확인</NaviToLoginPageBtn>
         </Link>
       </ModalWrapper>

@@ -10,7 +10,6 @@ export default function ProvidersWrapper({
   children: React.ReactNode
 }) {
   const pathname = usePathname();
-  console.log('pathname', pathname);
   return (
     <SessionProvider>
       {children}

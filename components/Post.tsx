@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react';
-import { Profile, DimmedProfile, DrawingOnPost } from '../public/images';
+import { DefaultProfile, DimmedProfile, DrawingOnPost } from '../public/images';
 import Image from 'next/image';
 import styled from 'styled-components';
 import ColorCircle from './ColorCircle';
@@ -47,7 +47,7 @@ const Post = ({text, username, time, votingBtn}:postPropsType) => {
             <PostMetadata>
             <PostMetadataLeft>
               {votingBtn 
-                ? (<Image src={Profile} alt='profile-example' width={40} height={40}/>)
+                ? (<Image src={DefaultProfile} alt='profile-example' width={40} height={40}/>)
                 : (<Image src={DimmedProfile} alt='profile-example' width={40} height={40}/>) 
               }
             </PostMetadataLeft>

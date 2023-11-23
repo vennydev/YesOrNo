@@ -1,13 +1,16 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
 import { MainLogoTitle, MainLogoHand } from '@/public/images';
 import Link from 'next/link';
 import styled from "styled-components";
-import { getProviders, signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 export default function Login() {
+  const { data } = useSession();
+  console.log('data: ', data);
+  // session 정보 있으면 "/"로 이동
+
   return (
       <LoginContainer>
         <LogoWrapper>
@@ -18,7 +21,7 @@ export default function Login() {
         </LogoWrapper>
     
         <LoginBtnWrapper>
-          <LoginBtn>카카오톡으로 로그인</LoginBtn>
+          <LoginBtn onClick={() => signIn('kakao', { callbackUrl: '/' })}>카카오톡으로 로그인</LoginBtn>
           <Link href={'/'}>
             <PublicBtn>로그인없이 둘러볼게요.</PublicBtn>
           </Link>
