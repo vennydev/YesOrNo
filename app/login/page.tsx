@@ -8,7 +8,6 @@ import { signIn, useSession } from "next-auth/react";
 
 export default function Login() {
   const { data } = useSession();
-  console.log('data: ', data);
   // session 정보 있으면 "/"로 이동
 
   return (

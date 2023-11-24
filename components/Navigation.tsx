@@ -16,7 +16,6 @@ const Navigation = () => {
   
   const handleClick = (e: any, text: string) => {
       setActiveTab(text);
-      console.log('status', status, session);
       if (status !== "authenticated") {
           if(text === "post" || text === "mypage"){
           setIsModalVisible(true);

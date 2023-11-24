@@ -9,29 +9,29 @@ import styled from 'styled-components';
 const page = () => {
   const lineBreaker = `YES OR NO로 대답 할 수 있는 질문을 작성해주세요`;
   return (
-    <>
     <PostSection>
-      <ActionBtnWrapper>
-        <ClearIcon/>
-        <PageTitle>질문하기</PageTitle>
-        <PostBtn>완료</PostBtn>
-      </ActionBtnWrapper>
+      <PostContainer>
+        <ActionBtnWrapper>
+          <ClearIcon/>
+          <PageTitle>질문하기</PageTitle>
+          <PostBtn>완료</PostBtn>
+        </ActionBtnWrapper>
 
-      <div>
-        <Post text={lineBreaker} username='마일로앞발' time='23년 11월 9일 투표 완료' votingBtn={false}/>
-      </div>
+        <div>
+          <Post text={lineBreaker} username='마일로앞발' time='23년 11월 9일 투표 완료' votingBtn={false}/>
+        </div>
 
-      <ImageUploadBtn>
-          <AddIcon/>
-        <p>사진 추가</p>
-      </ImageUploadBtn>
+        <ImageUploadBtn>
+            <AddIcon/>
+          <p>사진 추가</p>
+        </ImageUploadBtn>
 
-      <ParticipantsWrapper>
-        <input type="checkbox" />
-        <ParticipantsText>참여자 수 공개</ParticipantsText>
-      </ParticipantsWrapper>
+        <ParticipantsWrapper>
+          <input type="checkbox" />
+          <ParticipantsText>참여자 수 공개</ParticipantsText>
+        </ParticipantsWrapper>
+      </PostContainer>
     </PostSection>
-    </>
   )
 }
 
@@ -39,11 +39,15 @@ export default page
 
 const PostSection = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
   margin-top:65px;
   padding:0 20px;
 `;
+
+const PostContainer = styled.div`
+display: flex;
+flex-direction: column;
+`
 
 const ActionBtnWrapper = styled.div`
   display: flex;
@@ -67,7 +71,7 @@ const PostBtn = styled.div`
 
 const ImageUploadBtn = styled.button`
   display: flex;
-  width: 100%;
+  width: 335px;
   height: 52px;
   justify-content: center;
   align-items: center;

@@ -21,14 +21,6 @@ const arr2: StringDatas = ['마감', '마감2', '마감3'];
 
 const Tab = () => {
   const [selectedTab, setSelectedTab] = useState(1);
-  const {data} = useSession();
-  console.log('session:',data);
-  async function myFunction() {
-    const csrfToken = await getCsrfToken();
-    console.log('token:', csrfToken);
-  }
-  
-  myFunction();
   
   const handleClick = (index: number) => {
     setSelectedTab(index);
@@ -42,42 +34,53 @@ const Tab = () => {
   };
   
   return (
-    <HomeContainer>
-      <TabContainer>
-        <TabWrapper>
-          <TabButton $isSelected={selectedTab === 1 ? "selected" : null} onClick={() => handleClick(1)}>진행 중</TabButton>
-          <TabButton $isSelected={selectedTab === 2 ? "selected" : null} onClick={() => handleClick(2)}>마감</TabButton>
-        </TabWrapper>
-      </TabContainer>
-      <PostContainer>
-        {selectedTab === 1 
-        ?  
-        <>
-          {arr.map((a, index) => {
-            return (
-              <Post text={a} username="마일로앞발" time="종료 시간 : 12:40:00" votingBtn={true} key={index}/>
-              )})} 
-        </>
-        : 
-        <>
-          {arr2.map((a, index) => {
-            return (
-              <Post text={a} username="마일로앞발" time="종료 시간 : 12:40:00" votingBtn={true} key={index}/>
-              )})}
-        </>
-        }
-        </PostContainer>
-    </HomeContainer>
+    <HomeSection>
+      <HomeContainer>
+        <TabContainer>
+          <TabWrapper>
+            <TabButton $isSelected={selectedTab === 1 ? "selected" : null} onClick={() => handleClick(1)}>진행 중</TabButton>
+            <TabButton $isSelected={selectedTab === 2 ? "selected" : null} onClick={() => handleClick(2)}>마감</TabButton>
+          </TabWrapper>
+        </TabContainer>
+        <PostContainer>
+          {selectedTab === 1 
+          ?  
+          <>
+            {arr.map((a, index) => {
+              return (
+                <Post text={a} username="마일로앞발" time="종료 시간 : 12:40:00" votingBtn={true} key={index}/>
+                )})} 
+          </>
+          : 
+          <>
+            {arr2.map((a, index) => {
+              return (
+                <Post text={a} username="마일로앞발" time="종료 시간 : 12:40:00" votingBtn={true} key={index}/>
+                )})}
+          </>
+          }
+          </PostContainer>
+      </HomeContainer>
+    </HomeSection>
 
   )
 }
 
-const HomeContainer = styled.div`
+const HomeSection = styled.div`
+  display: flex;
+  justify-content: center;
   padding:0 20px;
+  
+`
+
+const HomeContainer = styled.div`
+  margin-top:75px;
 `;
 
 const TabContainer = styled.div`
-  margin-top:96px;
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
 `;
 
 const TabWrapper = styled.div`
@@ -85,7 +88,8 @@ const TabWrapper = styled.div`
   font-size: 20px;
   display: flex;
   gap:10px;
-  margin-top:42px;
+  position:static;
+  left:0;
 `;
 
 const TabButton = styled.div<{$isSelected?: any}>`
