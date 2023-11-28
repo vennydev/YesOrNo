@@ -1,44 +1,49 @@
 "use client"
 
 import React, { useState } from 'react'
-import styles from './colorCircle.module.css';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { Check } from '../public/images';
 
 type ColorProps = {
-  color:string;
+  image:{};
   index:number;
   hoveredIndex:number | null;
   handleMouseEnter: (index: number) => void;
   handleMouseLeave: () => void;
+  selectBgImage: (e: any, img: any) => void;
 }
 
-const ColorCircle = ({color, index, hoveredIndex, handleMouseEnter, handleMouseLeave}: ColorProps) => {
-  const [isHovering, setIsHovering] = useState(false);
-  
+export default function ColorCircle ({image, index, hoveredIndex, handleMouseEnter, handleMouseLeave, selectBgImage}: ColorProps) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    selectBgImage(e, image);
+  };
+
   return (
-    <Button onMouseOver={() => handleMouseEnter(index)} onMouseLeave={handleMouseLeave} $color={color}>
-      {hoveredIndex === index ? (
-        <Image src={Check} alt='check' width={18}/>
-      ) : null}
+    <Button 
+      onMouseOver={() => handleMouseEnter(index)} 
+      onMouseLeave={handleMouseLeave} 
+      onClick={(e) => {
+        handleClick(e);
+      }}
+    > 
+      {hoveredIndex === index &&
+        <Image src={Check} alt='check' width={18}/>}
     </Button>
   )
-}
+};
 
-export default ColorCircle
-
-const Button = styled.button<{ $color?: string; }>`
+const Button = styled.button`
   width: 34px;
   height: 34px;
-  border: 1px solid var(--main-border-color);
+  border: ${(props) => `1px solid ${props.theme.color.mainBorderColor}`};
   border-radius:  50%;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: ${props => props.$color ? props.$color : null};
-
+  
   &:hover{
     background-color: black;
   }

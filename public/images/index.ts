@@ -12,7 +12,8 @@ import DimmedProfile from './Profile-2.png';
 import MainLogoTitle from './mainLogo-title.png';
 import MainLogoHand from './mainLogo-hand.png';
 import Check from './ic_check.png';
-import DrawingOnPost from './drawingOnPost.png';
+import PostBg1 from './post-bg1.png';
+import PostBg2 from './post-bg2.png';
 import Pencil from './Union.png';
 
 export { 
@@ -30,6 +31,7 @@ export {
   MainLogoTitle,
   MainLogoHand,
   Check,
-  DrawingOnPost,
+  PostBg1,
+  PostBg2,
   Pencil,
 }

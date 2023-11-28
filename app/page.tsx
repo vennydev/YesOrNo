@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import styled from "styled-components";
-import Post from '../components/Post';
-import { getCsrfToken, signOut, useSession } from 'next-auth/react';
+import PostCard from '../components/PostCard';
 
 type StringDatas = (string)[];
 interface PostProps {
@@ -17,8 +16,6 @@ type IsSelected = {
 const arr: StringDatas = ['진행중', '진행중2', '진행중3'];
 const arr2: StringDatas = ['마감', '마감2', '마감3'];
 
-
-
 const Tab = () => {
   const [selectedTab, setSelectedTab] = useState(1);
   
@@ -26,13 +23,6 @@ const Tab = () => {
     setSelectedTab(index);
   };
 
-  const getOpenPost = () => {
-    console.log('get opened post successfully');
-  };
-  const getClosedPost = () => {
-    console.log('get closed post successfully');
-  };
-  
   return (
     <HomeSection>
       <HomeContainer>
@@ -48,14 +38,14 @@ const Tab = () => {
           <>
             {arr.map((a, index) => {
               return (
-                <Post text={a} username="마일로앞발" time="종료 시간 : 12:40:00" votingBtn={true} key={index}/>
-                )})} 
+                <PostCard text={a} username="마일로앞발" time="종료 시간 : 12:40:00" votingBtn={true} key={index}/>
+                )})}
           </>
           : 
           <>
             {arr2.map((a, index) => {
               return (
-                <Post text={a} username="마일로앞발" time="종료 시간 : 12:40:00" votingBtn={true} key={index}/>
+                <PostCard text={a} username="마일로앞발" time="종료 시간 : 12:40:00" votingBtn={true} key={index}/>
                 )})}
           </>
           }

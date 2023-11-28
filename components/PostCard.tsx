@@ -1,45 +1,82 @@
 "use client"
 
-import React, { useState } from 'react';
-import { DefaultProfile, DimmedProfile, DrawingOnPost } from '../public/images';
+import React, { useRef, useState } from 'react';
+import { DefaultProfile, DimmedProfile, PostBg1, PostBg2 } from '../public/images';
 import Image from 'next/image';
 import styled from 'styled-components';
 import ColorCircle from './ColorCircle';
 
-const colorArr = ["red", "orange", "green"];
+const imageArr = [PostBg1, PostBg2];
 
 interface postPropsType {
   text:string;
   username:string;
+  imageUrl?: any;
   time:string;
   votingBtn: boolean;
+  editing?: boolean;
+  selectedImage?: any; 
+  setImageUrl?: React.Dispatch<React.SetStateAction<any>>;
+  handleEditing?: () => void;
+  handleText?: (value: string) => void;
 }
 
-const Post = ({text, username, time, votingBtn}:postPropsType) => {
+export default function PostCard ({
+  text, 
+  username, 
+  imageUrl, 
+  time, 
+  votingBtn, 
+  editing, 
+  selectedImage, 
+  setImageUrl, 
+  handleEditing, 
+  handleText
+  }:postPropsType) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  function applyDim(votingBtn: boolean) {
-    return votingBtn ? null : "dim-font"
-  };
-
+  
   const handleMouseEnter = (index: number) => {
     setHoveredIndex(index);
-  }
+  };
 
   const handleMouseLeave = () => {
     setHoveredIndex(null);
+  };
+
+  const selectBgImage = (e: any, img: any) => {
+    e.stopPropagation();
+    setImageUrl?.(img);
   };
 
   const divideText = () => {
     const topText = text.substring(0,10)
     const bottomText = text.substring(10);
     return (
-      <DividedText>
-        <div>{topText}</div>
-        <div>{bottomText}</div>
+      <DividedText onClick={handleEditing}>
+        {editing ? (
+            <PostQuestionInput autoFocus name="textarea" onChange={(e) => handleText?.(e.target.value)}/>
+        ) : (
+          <>
+            <div>{topText}</div>
+            <div>{bottomText}</div>
+          </>
+        )}
       </DividedText>
     )
-  }
+  };
+
+  const shouldDisplayImage = () => {
+    if(imageUrl !== ""){
+      return (
+        <StyledDefaultImage src={imageUrl}  alt={imageUrl} width={0} height={0}/>
+      )
+    } else if (selectedImage !== "") {
+      return (
+        <StyledImage src={selectedImage} alt="DrawingOnPost" width={0} height={0}/>
+      )
+    }
+  };
 
   return (
       <PostContainer>
@@ -56,27 +93,39 @@ const Post = ({text, username, time, votingBtn}:postPropsType) => {
               <DeadLine $votingBtn={votingBtn}>{time}</DeadLine>
             </PostMetadataRight>  
             </PostMetadata>
-            <PostQuestion $votingBtn={votingBtn}>{votingBtn ? text : divideText()}</PostQuestion>
+            <>
+            </>
+            {shouldDisplayImage()}
+          {votingBtn ? <PostQuestion>{text}</PostQuestion> : divideText()              
+          }
           {votingBtn 
             ?  (
-                <PostVoteWrapper $votingBtn={votingBtn}>
+              <PostVoteWrapper>
                   <VoteBtn>YES</VoteBtn>
                     <Divider/>
                   <VoteBtn>NO</VoteBtn>
                 </PostVoteWrapper>
             )
             : (
-              <BgSelectorWrapper>
-                  {colorArr.map((color, index) => {
+              <>
+                <BgSelectorWrapper>
+                  {imageArr.map((image, index) => {
                     return (
-                      <ColorCircle color={color} index={index} hoveredIndex={hoveredIndex} handleMouseEnter={handleMouseEnter} handleMouseLeave={handleMouseLeave} key={index}/>
+                      <ColorCircle 
+                        image={image} 
+                        index={index} 
+                        hoveredIndex={hoveredIndex} 
+                        handleMouseEnter={handleMouseEnter} 
+                        handleMouseLeave={handleMouseLeave} 
+                        selectBgImage={selectBgImage} 
+                        key={index}/>
                     )
                   })}
-              </BgSelectorWrapper>
+                </BgSelectorWrapper>
+              </>
             )
           }
         </PostWrapper>
-        <Image src={DrawingOnPost} alt="DrawingOnPost" width={0} height={0} style={{ width: '100%', height: 'auto', position: 'absolute', bottom: '0', left: '0'}}></Image>
       </PostContainer>
   )
 }
@@ -128,13 +177,29 @@ const DeadLine = styled.div<{$votingBtn? : boolean}>`
   color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.disabledfontColor}}`};
 `;
 
-const PostQuestion = styled.div<{$votingBtn? : boolean}>`
-  color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.disabledfontColor}}`};
-  /* text-align:  ${props => props.$votingBtn ? null : "center"}; */
-  /* margin-top:  ${props => props.$votingBtn ? null : "104px"}; */
+const PostQuestion = styled.div`
+  
 `;
 
-const PostVoteWrapper = styled.div<{$votingBtn? : boolean}>`
+const PostQuestionInput = styled.textarea`
+  height: 100%;
+  width:295px;
+  padding:10px 40px;
+  resize: none;
+  text-align: center;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 28px; 
+  border: none;
+  overflow: hidden;
+
+  &:focus {
+  outline: none;
+  }
+`;
+
+const PostVoteWrapper = styled.div`
   display: flex;
   width: 100%;
   height: 66px;
@@ -158,6 +223,24 @@ const Divider = styled.div`
   transform: translateY(-50%);
 `;
 
+const StyledImage = styled(Image)`
+  width: 100%;
+  height: 313px;
+  position: absolute;
+  left:0;
+  top:0;
+  z-index: -1000;
+`;
+
+const StyledDefaultImage = styled(Image)`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left:0;
+  top:0;
+  z-index: -1000;
+`;
+
 const BgSelectorWrapper = styled.ul`
   display: flex;
   justify-content: flex-start;
@@ -176,6 +259,5 @@ const DividedText = styled.div`
   margin-top: 104px;
   font-size: 16px;
   line-height: 28px; 
+  color: ${props => `${props.theme.color.disabledfontColor}}`};
 `;
-
-export default Post

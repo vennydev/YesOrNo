@@ -1,10 +1,9 @@
 "use client"
 
-import Post from "@/components/Post";
 import styled from "styled-components";
 import Profile from '../../components/Profile';
 import { DefaultProfile, Pencil } from "@/public/images";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -49,6 +48,11 @@ export default function Mypage() {
             </>
           )
         }
+        <SignOutBtnWrapper>
+          <button onClick={() => signOut()}>로그아웃</button>
+          <Divider/>
+          <button>탈퇴</button>
+        </SignOutBtnWrapper>
       </MyPostsContainer>
     </MyPageSection>
   )
@@ -95,4 +99,16 @@ const MyPostsContainer = styled.div`
   padding: 25px 20px;
   height: 100%;
   width: 100%;
+`;
+
+const SignOutBtnWrapper = styled.div`
+  font-size: 11px;
+  color: ${props => props.theme.color.main}
+button {
+
+}
+`;
+
+const Divider = styled.div`
+  
 `;
