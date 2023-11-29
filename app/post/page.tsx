@@ -98,8 +98,9 @@ export default function PostPage() {
           docData = { 
             author: session?.user?.name,
             text:text,
-            createAt: new Date(),
-            imageUrl: url, 
+            createAt: new Date().toString(),
+            imageUrl: url,
+            isOver: false, 
             isParticipantCountPublic: isChecked,
             yesCount: 0,
             noCount: 0,
@@ -115,8 +116,9 @@ export default function PostPage() {
           docData = { 
             author: session?.user?.name,
             text:text,
-            createAt: new Date(),
+            createAt: new Date().toString(),
             imageUrl: url,
+            isOver: false,
             isParticipantCountPublic: isChecked,
             yesCount: 0,
             noCount: 0,

@@ -1,21 +1,50 @@
 'use client'
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 import PostCard from '../components/PostCard';
+import firebasedb from '@/firebase/firebasedb';
+import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import firebase from 'firebase/compat/app';
+import storage from '@/firebase/firestore';
 
 type StringDatas = (string)[];
+
+interface PostsProps {
+    author: string,
+    text: string,
+    createAt: string,
+    id: string,
+    imageUrl: string, 
+    isOver: boolean,
+    isParticipantCountPublic: boolean,
+    yesCount: number,
+    noCount: number,
+}
 
 const arr: StringDatas = ['진행중', '진행중2', '진행중3'];
 const arr2: StringDatas = ['마감', '마감2', '마감3'];
 
 const Tab = () => {
   const [selectedTab, setSelectedTab] = useState(1);
+  const [posts, setPosts] = useState<any>([]);
   
   const handleClick = (index: number) => {
     setSelectedTab(index);
   };
 
+  useEffect(() => {
+    async function getData() {
+      const db = getFirestore(firebasedb);
+      const querySnapshot = await getDocs(collection(db, "posts"));
+      const data = querySnapshot.docs.map((doc) => ({
+        ...doc.data(), id: doc.id
+      })); 
+      setPosts(data);
+    }
+    getData();
+  }, []);
+console.log('posts', posts);
   return (
     <HomeSection>
       <HomeContainer>
@@ -29,16 +58,16 @@ const Tab = () => {
           {selectedTab === 1 
           ?  
           <>
-            {arr.map((a, index) => {
+            {posts.map((post: PostsProps) => {
               return (
-                <PostCard text={a} username="마일로앞발" time="종료 시간 : 12:40:00" votingBtn={true} key={index}/>
+                <PostCard text={post.text} username={post.author} time="종료 시간 : 12:40:00" votingBtn={true} key={post.id}/>
                 )})}
           </>
           : 
           <>
-            {arr2.map((a, index) => {
+            {posts.map((post: PostsProps) => {
               return (
-                <PostCard text={a} username="마일로앞발" time="종료 시간 : 12:40:00" votingBtn={true} key={index}/>
+                <PostCard text={post.text} username={post.author} time="종료 시간 : 12:40:00" votingBtn={true} key={post.id}/>
                 )})}
           </>
           }
