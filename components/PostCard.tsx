@@ -15,8 +15,8 @@ interface postPropsType {
   time:string;
   votingBtn: boolean;
   editing?: boolean;
-  selectedImage?: any; 
   setImageUrl?: React.Dispatch<React.SetStateAction<any>>;
+  setFile?: (value: any) => void;
   handleEditing?: () => void;
   handleText?: (value: string) => void;
 }
@@ -28,8 +28,8 @@ export default function PostCard ({
   time, 
   votingBtn, 
   editing, 
-  selectedImage, 
   setImageUrl, 
+  setFile,
   handleEditing, 
   handleText
   }:postPropsType) {
@@ -44,16 +44,17 @@ export default function PostCard ({
     setHoveredIndex(null);
   };
 
-  const selectBgImage = (e: any, img: any) => {
+  const selectBgImage = async (e: any, img: any) => {
     e.stopPropagation();
     setImageUrl?.(img);
+    setFile?.(img);
   };
 
   const divideText = () => {
     const topText = text.substring(0,10)
     const bottomText = text.substring(10);
     return (
-      <DividedText onClick={handleEditing}>
+      <DividedText onClick={handleEditing} $image={imageUrl.src}>
         {editing ? (
             <PostQuestionInput autoFocus name="textarea" onChange={(e) => handleText?.(e.target.value)}/>
         ) : (
@@ -65,22 +66,23 @@ export default function PostCard ({
       </DividedText>
     )
   };
-
+  console.log('imageUrl in postcard', imageUrl);
   const shouldDisplayImage = () => {
-    if(imageUrl !== ""){
+    if(imageUrl === undefined) return;
+    if(imageUrl.src){
       return (
         <StyledDefaultImage src={imageUrl}  alt={imageUrl} width={0} height={0}/>
       )
-    } else if (selectedImage !== "") {
+    } else {
       return (
-        <StyledImage src={selectedImage} alt="DrawingOnPost" width={0} height={0}/>
+        <StyledImage src={imageUrl} alt="DrawingOnPost" width={0} height={0}/>
       )
     }
   };
 
   return (
       <PostContainer>
-          <PostWrapper $votingBtn={votingBtn}>
+        <PostWrapper $votingBtn={votingBtn}>
             <PostMetadata>
             <PostMetadataLeft>
               {votingBtn 
@@ -141,9 +143,10 @@ const PostContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   position: relative;
+  overflow: hidden
 `;
 
-const PostWrapper = styled.div<{$votingBtn? : boolean}>`
+const PostWrapper = styled.div<{$votingBtn? : boolean;}>`
   height: 100%;
   width: 100%;
   display: flex;
@@ -223,15 +226,6 @@ const Divider = styled.div`
   transform: translateY(-50%);
 `;
 
-const StyledImage = styled(Image)`
-  width: 100%;
-  height: 313px;
-  position: absolute;
-  left:0;
-  top:0;
-  z-index: -1000;
-`;
-
 const StyledDefaultImage = styled(Image)`
   width: 100%;
   height: 100%;
@@ -239,6 +233,17 @@ const StyledDefaultImage = styled(Image)`
   left:0;
   top:0;
   z-index: -1000;
+`;
+
+const StyledImage = styled(Image)`
+  width: 100%;
+  height: 184px;
+  z-index: -1000;
+  border-radius: 14px;
+  border: 1px solid #000;
+  margin-top: 20px;
+  object-fit: contain;
+  background-color: black;
 `;
 
 const BgSelectorWrapper = styled.ul`
@@ -254,9 +259,9 @@ const BgSelectorWrapper = styled.ul`
   width: 100%;
 `;
 
-const DividedText = styled.div`
+const DividedText = styled.div<{$image? : string}>`
   text-align: center;
-  margin-top: 104px;
+  margin-top: ${props => props.$image ? "104px" : "14px"};
   font-size: 16px;
   line-height: 28px; 
   color: ${props => `${props.theme.color.disabledfontColor}}`};

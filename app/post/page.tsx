@@ -1,35 +1,145 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ClearIcon, AddIcon } from '../../public/icons/index';
 import PostCard from '../../components/PostCard';
 import styled from 'styled-components';
 import { DefaultProfile, DimmedProfile, PostBg1, PostBg2 } from '@/public/images';
+import ImageUploader from '../../components/ImageUploader';
+import imageCompression from 'browser-image-compression';
+import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import firebasedb from '@/firebase/firebasedb';
+import { addDoc, collection, getFirestore } from 'firebase/firestore';
+import { doc, setDoc } from "firebase/firestore"; 
+import { useSession } from 'next-auth/react';
+import storage from '@/firebase/firestore';
 
 export default function PostPage() {
   const [text, setText] = useState("");
   const [imageUrl, setImageUrl] = useState<any>(PostBg1);
+  const [file, setFile] = useState<any>(PostBg1);
   const [editing, setEditing] = useState(false);
-
-  const fileInput = useRef<HTMLInputElement>(null);
+  const [isChecked, setIsChecked] = useState(false);
 
   const handleEditing = () => {
     setEditing(true);
   };
-
   const handleText = (value: string) => {
     setText(value);
   };
+  console.log('imageurl in post', imageUrl);
 
-  const handleImage = (e: any) => {};
+  const handleImage = async (file: any) => {
+    if(!file) {return};
 
-  return (
+  const imageFile = file[0];
+  const options = {
+    maxSizeMB: 1.0,
+    maxWidthOrHeight: 1000,
+  };
+
+  try{
+    const compressedFile = await imageCompression(imageFile, options);
+    const convert = new File([compressedFile], imageFile.name, {
+      type: `${imageFile.type}`
+    });
+    setFile(convert);
+    const reader = new FileReader();
+    reader.readAsDataURL(convert);
+    reader.onloadend = () => setImageUrl(reader.result);
+  }catch(error) {
+    console.log(error);
+  }
+};
+
+
+  const handleIsChecked = (e: any) => {
+    setIsChecked(e.target.checked);
+  };
+
+  const {data: session} = useSession();
+
+  const handleUpload = async () => {
+    if(!text || !imageUrl) return;
+    let docData;;
+
+    const toDataURL = (url: string) => (
+        fetch(url)
+        .then(response => response.blob())
+        .then(blob => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+       }))
+    );
+     
+    const dataURLtoFile = (dataurl :any, filename: any) => {
+      const arr = dataurl.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length, u8arr = new Uint8Array(n);
+      while(n--){
+      u8arr[n] = bstr.charCodeAt(n);
+      }
+    return new File([u8arr], filename, {type:mime});
+    };  
+    
+    if(file.name === undefined){
+      const url = imageUrl.src;
+      const splitUrl = url.split("/");
+      const length = splitUrl.length;
+      const fileName = splitUrl[length-1];
+      toDataURL(url).then(dataUrl => {
+        const imageFile = dataURLtoFile(dataUrl, fileName);
+        const postsRef = ref(storage, `posts/${fileName}`);
+        uploadBytes(postsRef, imageFile).then((snapshot) => {
+          getDownloadURL(snapshot.ref).then((url) => {
+          docData = { 
+            author: session?.user?.name,
+            text:text,
+            createAt: new Date(),
+            imageUrl: url, 
+            isParticipantCountPublic: isChecked,
+            yesCount: 0,
+            noCount: 0,
+          };
+          uploadToFireStore(docData);
+        })
+      });
+     }).catch(error => console.log(error));
+    } else {
+      const postsRef = ref(storage, `posts/${file.name}`);
+      uploadBytes(postsRef, file).then((snapshot) => {
+        getDownloadURL(snapshot.ref).then((url) => {
+          docData = { 
+            author: session?.user?.name,
+            text:text,
+            createAt: new Date(),
+            imageUrl: url,
+            isParticipantCountPublic: isChecked,
+            yesCount: 0,
+            noCount: 0,
+          };
+          uploadToFireStore(docData);
+          })
+        console.log('Uploaded a blob or file!');
+      });
+    }
+  };
+
+  const uploadToFireStore = async (data: object) => {
+    const db = getFirestore(firebasedb);
+    const docRef = await addDoc(collection(db, 'posts'), data);
+  };
+
+return (
     <PostSection>
       <PostContainer>
         <ActionBtnWrapper>
           <ClearIcon/>
           <PageTitle>질문하기</PageTitle>
-          <PostBtn>완료</PostBtn>
+          <PostBtn onClick={handleUpload}>완료</PostBtn>
         </ActionBtnWrapper>
 
         <div>
@@ -46,21 +156,10 @@ export default function PostPage() {
             />
         </div>
 
-        <ImageUploadBtn htmlFor="input-file">
-            <AddIcon/>
-          <p>사진 추가</p>
-        </ImageUploadBtn>
-          <input 
-            type="file" 
-            id="input-file" 
-            name='image_URL' 
-            accept='image/*' 
-            ref={fileInput} 
-            onChange={(e: React.ChangeEvent<{ files: FileList | null }>) => handleImage(e)} 
-            style={{display: "none"}} />
+        <ImageUploader handleImage={handleImage}/>
 
         <ParticipantsWrapper>
-          <input type="checkbox" />
+          <input type="checkbox" name='isParticipantCountPublic' onClick={handleIsChecked}/>
           <ParticipantsText>참여자 수 공개</ParticipantsText>
         </ParticipantsWrapper>
       </PostContainer>
@@ -100,23 +199,6 @@ const PostBtn = styled.div`
   letter-spacing: -0.3px;
   font-size: 18px;
   `;
-
-const ImageUploadBtn = styled.label`
-  display: flex;
-  width: 335px;
-  height: 52px;
-  justify-content: center;
-  align-items: center;
-  gap:8px;
-  border-radius: 12px;
-  border: ${(props) => `1px solid ${props.theme.color.mainBorderColor}`};
-  margin-top:12px;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 30px;
-  letter-spacing: -0.3px;
-  cursor: pointer;
-`;
 
 const ParticipantsWrapper = styled.div`
   display: flex;

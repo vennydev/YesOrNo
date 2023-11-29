@@ -5,13 +5,6 @@ import styled from "styled-components";
 import PostCard from '../components/PostCard';
 
 type StringDatas = (string)[];
-interface PostProps {
-  string: string[]
-}
-
-type IsSelected = {
-  isSelected : string | null;
-}
 
 const arr: StringDatas = ['진행중', '진행중2', '진행중3'];
 const arr2: StringDatas = ['마감', '마감2', '마감3'];
@@ -52,7 +45,6 @@ const Tab = () => {
           </PostContainer>
       </HomeContainer>
     </HomeSection>
-
   )
 }
 

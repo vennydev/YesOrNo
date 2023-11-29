@@ -8,7 +8,6 @@ import { signIn, useSession } from "next-auth/react";
 
 export default function Login() {
   const { data } = useSession();
-  // session 정보 있으면 "/"로 이동
 
   return (
       <LoginContainer>
@@ -35,7 +34,6 @@ const LoginContainer = styled.div`
   }
 
   position: relative;
-  /* height: calc(100vh - 137px); */
   height: 100%;
   padding:0 20px;
   display: flex;
