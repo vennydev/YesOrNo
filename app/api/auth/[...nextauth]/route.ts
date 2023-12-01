@@ -1,5 +1,3 @@
-// initialize NextAuth
-
 import NextAuth from "next-auth/next";
 import KakaoProvider from "next-auth/providers/kakao";
 

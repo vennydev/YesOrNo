@@ -34,14 +34,13 @@ export default function PostPage() {
 
   const imageFile = file[0];
 
-// import imageCompression from 'browser-image-compression'; 이거 써서 압축
-  // const options = {
-  //   maxSizeMB: 10.0,
-  //   maxWidthOrHeight: 1000,
-  // };
+  const options = {
+    maxSizeMB: 2.0,
+    maxWidthOrHeight: 500,
+  };
 
   try{
-    // const compressedFile = await imageCompression(imageFile, options); // 이거
+    const compressedFile = await imageCompression(imageFile, options);
     const convert = new File([imageFile], imageFile.name, {
       type: `${imageFile.type}`
     });
