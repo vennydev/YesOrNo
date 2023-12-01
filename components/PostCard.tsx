@@ -1,10 +1,13 @@
 "use client"
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DefaultProfile, DimmedProfile, PostBg1, PostBg2 } from '../public/images';
 import Image from 'next/image';
 import styled from 'styled-components';
 import ColorCircle from './ColorCircle';
+import PostCardforHome from './PostCardforHome';
+import { getDownloadURL, ref } from 'firebase/storage';
+import storage from '@/firebase/firestore';
 
 const imageArr = [PostBg1, PostBg2];
 
@@ -34,22 +37,22 @@ export default function PostCard ({
   handleText
   }:postPropsType) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-
+  const [imgurl, setImgurl] = useState("");
   
   const handleMouseEnter = (index: number) => {
     setHoveredIndex(index);
   };
-
+  
   const handleMouseLeave = () => {
     setHoveredIndex(null);
   };
-
+  
   const selectBgImage = async (e: any, img: any) => {
     e.stopPropagation();
     setImageUrl?.(img);
     setFile?.(img);
   };
-
+  
   const divideText = () => {
     const topText = text.substring(0,10)
     const bottomText = text.substring(10);
@@ -66,19 +69,33 @@ export default function PostCard ({
       </DividedText>
     )
   };
-  console.log('imageUrl in postcard', imageUrl);
   const shouldDisplayImage = () => {
     if(imageUrl === undefined) return;
     if(imageUrl.src){
       return (
-        <StyledDefaultImage src={imageUrl}  alt={imageUrl} width={0} height={0}/>
+        <StyledDefaultImage src={imageUrl}  alt="default-image" width={0} height={0}/>
       )
     } else {
       return (
-        <StyledImage src={imageUrl} alt="DrawingOnPost" width={0} height={0}/>
+        <StyledImage src={imageUrl} alt="uploaded-image" width={0} height={0}/>
       )
     }
   };
+
+  useEffect(() => {
+    const getDownloadUrlfromImageName = async () => {
+      if(imageUrl !== undefined){
+          const reference = ref(storage, `posts/${imageUrl}`);
+          await getDownloadURL(reference).then((url) => {
+            setImgurl(url);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      }
+    };
+    getDownloadUrlfromImageName();
+  }, [imageUrl])
 
   return (
       <PostContainer>
@@ -86,8 +103,8 @@ export default function PostCard ({
             <PostMetadata>
             <PostMetadataLeft>
               {votingBtn 
-                ? (<Image src={DefaultProfile} alt='profile-example' width={40} height={40}/>)
-                : (<Image src={DimmedProfile} alt='profile-example' width={40} height={40}/>) 
+                ? (<Image src={DefaultProfile} alt='profile-example' width={40} height={40} priority />)
+                : (<Image src={DimmedProfile} alt='profile-example' width={40} height={40} priority />) 
               }
             </PostMetadataLeft>
               <PostMetadataRight>
@@ -96,8 +113,11 @@ export default function PostCard ({
             </PostMetadataRight>  
             </PostMetadata>
             <>
+            {votingBtn 
+            ? ( imgurl !== "" && <PostCardforHome imgurl={imgurl}/>)
+             : shouldDisplayImage()
+             }
             </>
-            {shouldDisplayImage()}
           {votingBtn ? <PostQuestion>{text}</PostQuestion> : divideText()              
           }
           {votingBtn 

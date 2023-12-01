@@ -22,7 +22,7 @@ export default function Mypage() {
   return (
     <MyPageSection>
       <UserInfoWrapper>
-        <Profile image={DefaultProfile.src} alt={"default profile"} width={90} height={90}/>
+        <Profile image={DefaultProfile.src} alt={"default profile"} width={90} height={90} />
         <UserIDWrapper>
           <span>{username}</span>
           <div>

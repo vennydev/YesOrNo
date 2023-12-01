@@ -44,7 +44,6 @@ const Tab = () => {
     }
     getData();
   }, []);
-console.log('posts', posts);
   return (
     <HomeSection>
       <HomeContainer>
@@ -60,14 +59,14 @@ console.log('posts', posts);
           <>
             {posts.map((post: PostsProps) => {
               return (
-                <PostCard text={post.text} username={post.author} time="종료 시간 : 12:40:00" votingBtn={true} key={post.id}/>
+                <PostCard text={post.text} username={post.author} imageUrl={post.imageUrl} time="종료 시간 : 12:40:00" votingBtn={true} key={post.id}/>
                 )})}
           </>
           : 
           <>
             {posts.map((post: PostsProps) => {
               return (
-                <PostCard text={post.text} username={post.author} time="종료 시간 : 12:40:00" votingBtn={true} key={post.id}/>
+                <PostCard text={post.text} username={post.author} imageUrl={post.imageUrl} time="종료 시간 : 12:40:00" votingBtn={true} key={post.id}/>
                 )})}
           </>
           }

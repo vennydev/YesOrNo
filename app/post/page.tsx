@@ -33,14 +33,16 @@ export default function PostPage() {
     if(!file) {return};
 
   const imageFile = file[0];
-  const options = {
-    maxSizeMB: 1.0,
-    maxWidthOrHeight: 1000,
-  };
+
+// import imageCompression from 'browser-image-compression'; 이거 써서 압축
+  // const options = {
+  //   maxSizeMB: 10.0,
+  //   maxWidthOrHeight: 1000,
+  // };
 
   try{
-    const compressedFile = await imageCompression(imageFile, options);
-    const convert = new File([compressedFile], imageFile.name, {
+    // const compressedFile = await imageCompression(imageFile, options); // 이거
+    const convert = new File([imageFile], imageFile.name, {
       type: `${imageFile.type}`
     });
     setFile(convert);
@@ -94,37 +96,34 @@ export default function PostPage() {
         const imageFile = dataURLtoFile(dataUrl, fileName);
         const postsRef = ref(storage, `posts/${fileName}`);
         uploadBytes(postsRef, imageFile).then((snapshot) => {
-          getDownloadURL(snapshot.ref).then((url) => {
           docData = { 
             author: session?.user?.name,
             text:text,
             createAt: new Date().toString(),
-            imageUrl: url,
+            imageUrl: snapshot.ref.name,
             isOver: false, 
             isParticipantCountPublic: isChecked,
             yesCount: 0,
             noCount: 0,
           };
-          uploadToFireStore(docData);
-        })
+        uploadToFireStore(docData);
+        console.log('Uploaded a blob or file!');
       });
      }).catch(error => console.log(error));
     } else {
       const postsRef = ref(storage, `posts/${file.name}`);
       uploadBytes(postsRef, file).then((snapshot) => {
-        getDownloadURL(snapshot.ref).then((url) => {
           docData = { 
             author: session?.user?.name,
             text:text,
             createAt: new Date().toString(),
-            imageUrl: url,
+            imageUrl: snapshot.ref.name,
             isOver: false,
             isParticipantCountPublic: isChecked,
             yesCount: 0,
             noCount: 0,
           };
           uploadToFireStore(docData);
-          })
         console.log('Uploaded a blob or file!');
       });
     }

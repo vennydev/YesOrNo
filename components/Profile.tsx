@@ -11,6 +11,6 @@ type ProfileProps = {
 
 export default function Profile({ image, alt, width, height } : ProfileProps) {
   return (
-    <Image src={image} alt={alt} width={width} height={height}/>
+    <Image src={image} alt={alt} width={width} height={height} priority/>
   )
 }
