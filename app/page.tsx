@@ -22,9 +22,6 @@ interface PostsProps {
     noCount: number,
 }
 
-const arr: StringDatas = ['진행중', '진행중2', '진행중3'];
-const arr2: StringDatas = ['마감', '마감2', '마감3'];
-
 const Tab = () => {
   const [selectedTab, setSelectedTab] = useState(1);
   const [posts, setPosts] = useState<any>([]);
@@ -44,6 +41,7 @@ const Tab = () => {
     }
     getData();
   }, []);
+
   return (
     <HomeSection>
       <HomeContainer>

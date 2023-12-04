@@ -20,6 +20,7 @@ export default function PostPage() {
   const [file, setFile] = useState<any>(PostBg1);
   const [editing, setEditing] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const {data: session} = useSession();
 
   const handleEditing = () => {
     setEditing(true);
@@ -27,7 +28,6 @@ export default function PostPage() {
   const handleText = (value: string) => {
     setText(value);
   };
-  console.log('imageurl in post', imageUrl);
 
   const handleImage = async (file: any) => {
     if(!file) {return};
@@ -41,7 +41,7 @@ export default function PostPage() {
 
   try{
     const compressedFile = await imageCompression(imageFile, options);
-    const convert = new File([imageFile], imageFile.name, {
+    const convert = new File([compressedFile], imageFile.name, {
       type: `${imageFile.type}`
     });
     setFile(convert);
@@ -53,12 +53,10 @@ export default function PostPage() {
   }
 };
 
-
   const handleIsChecked = (e: any) => {
     setIsChecked(e.target.checked);
   };
 
-  const {data: session} = useSession();
 
   const handleUpload = async () => {
     if(!text || !imageUrl) return;

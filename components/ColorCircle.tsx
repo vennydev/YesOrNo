@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import styled from 'styled-components';
 import Image from 'next/image';
 import { Check } from '../public/images';
@@ -12,11 +12,15 @@ type ColorProps = {
   handleMouseEnter: (index: number) => void;
   handleMouseLeave: () => void;
   selectBgImage: (e: any, img: any) => void;
+  setSelecteBg: (state: string) => void;
 }
 
 export default function ColorCircle ({image, index, hoveredIndex, handleMouseEnter, handleMouseLeave, selectBgImage}: ColorProps) {
+  const currentCategoryRef = useRef();
+
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
+    console.log('clicked!', );
     selectBgImage(e, image);
   };
 
@@ -47,4 +51,4 @@ const Button = styled.button`
   &:hover{
     background-color: black;
   }
-`
+`;

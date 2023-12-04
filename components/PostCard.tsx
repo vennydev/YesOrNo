@@ -5,7 +5,7 @@ import { DefaultProfile, DimmedProfile, PostBg1, PostBg2 } from '../public/image
 import Image from 'next/image';
 import styled from 'styled-components';
 import ColorCircle from './ColorCircle';
-import PostCardforHome from './PostCardforHome';
+import PostImageforHome from './PostImageforHome';
 import { getDownloadURL, ref } from 'firebase/storage';
 import storage from '@/firebase/firestore';
 
@@ -37,8 +37,8 @@ export default function PostCard ({
   handleText
   }:postPropsType) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [selectedBg, setSelecteBg] = useState('');
   const [imgurl, setImgurl] = useState("");
-  
   const handleMouseEnter = (index: number) => {
     setHoveredIndex(index);
   };
@@ -69,7 +69,8 @@ export default function PostCard ({
       </DividedText>
     )
   };
-  const shouldDisplayImage = () => {
+
+  const postImageforPost = () => {
     if(imageUrl === undefined) return;
     if(imageUrl.src){
       return (
@@ -82,20 +83,10 @@ export default function PostCard ({
     }
   };
 
-  useEffect(() => {
-    const getDownloadUrlfromImageName = async () => {
-      if(imageUrl !== undefined){
-          const reference = ref(storage, `posts/${imageUrl}`);
-          await getDownloadURL(reference).then((url) => {
-            setImgurl(url);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      }
-    };
-    getDownloadUrlfromImageName();
-  }, [imageUrl])
+  const postImageforHome = () => {
+        return ( <PostImageforHome imageUrl={imageUrl}/> )
+  }
+  
 
   return (
       <PostContainer>
@@ -114,8 +105,8 @@ export default function PostCard ({
             </PostMetadata>
             <>
             {votingBtn 
-            ? ( imgurl !== "" && <PostCardforHome imgurl={imgurl}/>)
-             : shouldDisplayImage()
+            ? postImageforHome()
+             : postImageforPost()
              }
             </>
           {votingBtn ? <PostQuestion>{text}</PostQuestion> : divideText()              
@@ -140,6 +131,7 @@ export default function PostCard ({
                         handleMouseEnter={handleMouseEnter} 
                         handleMouseLeave={handleMouseLeave} 
                         selectBgImage={selectBgImage} 
+                        setSelecteBg={setSelecteBg}
                         key={index}/>
                     )
                   })}
