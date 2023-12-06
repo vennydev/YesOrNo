@@ -16,6 +16,7 @@ export default function PostImageforHome({imageUrl}: ImageUrlProp) {
   const handleOnError = () => {
     return <h1>Image error</h1>
   };
+  
   useEffect(() => {
     const getDownloadUrlfromImageName = async () => {
       if(imageUrl !== undefined){
