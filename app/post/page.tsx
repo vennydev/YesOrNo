@@ -12,7 +12,7 @@ import firebasedb from '@/firebase/firebasedb';
 import { addDoc, collection, getFirestore } from 'firebase/firestore';
 import { doc, setDoc } from "firebase/firestore"; 
 import { useSession } from 'next-auth/react';
-import storage from '@/firebase/firestore';
+import storage from '@/firebase/storage';
 
 export default function PostPage() {
   const [text, setText] = useState("");
@@ -96,7 +96,7 @@ export default function PostPage() {
           docData = { 
             author: session?.user?.name,
             text:text,
-            createAt: new Date().toString(),
+            createdAt: new Date().getTime(),
             imageUrl: snapshot.ref.name,
             isOver: false, 
             isParticipantCountPublic: isChecked,
@@ -104,7 +104,7 @@ export default function PostPage() {
             noCount: 0,
           };
         uploadToFireStore(docData);
-        console.log('Uploaded a blob or file!');
+        console.log('Uploaded post with default image!');
       });
      }).catch(error => console.log(error));
     } else {
@@ -113,7 +113,7 @@ export default function PostPage() {
           docData = { 
             author: session?.user?.name,
             text:text,
-            createAt: new Date().toString(),
+            createdAt: new Date().getTime(),
             imageUrl: snapshot.ref.name,
             isOver: false,
             isParticipantCountPublic: isChecked,
@@ -121,7 +121,8 @@ export default function PostPage() {
             noCount: 0,
           };
           uploadToFireStore(docData);
-        console.log('Uploaded a blob or file!');
+        console.log('Uploaded post with uploaded image!');
+
       });
     }
   };

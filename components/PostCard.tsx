@@ -6,15 +6,17 @@ import Image from 'next/image';
 import styled from 'styled-components';
 import ColorCircle from './ColorCircle';
 import PostImageforHome from './PostImageforHome';
-import { getDownloadURL, ref } from 'firebase/storage';
-import storage from '@/firebase/firestore';
+import VotingBtn from './VotingBtn';
+import { doc, increment, setDoc, updateDoc } from 'firebase/firestore';
+import firestore from '@/firebase/firestore';
 
 const imageArr = [PostBg1, PostBg2];
 
-interface postPropsType {
+interface PostCardPropsType {
   text:string;
   username:string;
   imageUrl?: any;
+  id?: string;
   time:string;
   votingBtn: boolean;
   editing?: boolean;
@@ -28,6 +30,7 @@ export default function PostCard ({
   text, 
   username, 
   imageUrl, 
+  id,
   time, 
   votingBtn, 
   editing, 
@@ -35,14 +38,13 @@ export default function PostCard ({
   setFile,
   handleEditing, 
   handleText
-  }:postPropsType) {
+  }:PostCardPropsType) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [selectedBg, setSelecteBg] = useState('');
-  const [imgurl, setImgurl] = useState("");
+  const [selectedAnswer, setSelectedAnswer] = useState('');
   const handleMouseEnter = (index: number) => {
     setHoveredIndex(index);
   };
-  
   const handleMouseLeave = () => {
     setHoveredIndex(null);
   };
@@ -84,9 +86,22 @@ export default function PostCard ({
   };
 
   const postImageforHome = () => {
-        return ( <PostImageforHome imageUrl={imageUrl}/> )
+    return ( <PostImageforHome imageUrl={imageUrl}/> )
   }
-  
+
+
+  const handleVotesCount = async (e: any) => {
+    const selectedOption = e.target.value;
+    if(selectedOption === 'yes'){
+      await updateDoc(doc(firestore, 'posts', String(id)), {
+        yesCount: increment(1)
+      })
+    } else if (selectedOption === 'no'){
+      await updateDoc(doc(firestore, 'posts', String(id)), {
+        noCount: increment(1)
+      })
+    }
+  }
 
   return (
       <PostContainer>
@@ -112,13 +127,7 @@ export default function PostCard ({
           {votingBtn ? <PostQuestion>{text}</PostQuestion> : divideText()              
           }
           {votingBtn 
-            ?  (
-              <PostVoteWrapper>
-                  <VoteBtn>YES</VoteBtn>
-                    <Divider/>
-                  <VoteBtn>NO</VoteBtn>
-                </PostVoteWrapper>
-            )
+              ?  (<VotingBtn handleVotesCount={handleVotesCount}/>)
             : (
               <>
                 <BgSelectorWrapper>
@@ -212,30 +221,6 @@ const PostQuestionInput = styled.textarea`
   &:focus {
   outline: none;
   }
-`;
-
-const PostVoteWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  height: 66px;
-  border-radius: 14px;
-  border: ${(props) => `1px solid ${props.theme.color.mainBorderColor}`};
-  position: relative;
-`;
-
-const VoteBtn = styled.button`
-  width: 50%;
-  text-align: center;
-`;
-
-const Divider = styled.div`
-  height: 45px;
-  width: 1px;
-  background: #8C8C8C;
-  position: absolute;
-  left:50%;
-  top:50%;
-  transform: translateY(-50%);
 `;
 
 const StyledDefaultImage = styled(Image)`

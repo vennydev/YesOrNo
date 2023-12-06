@@ -5,7 +5,10 @@ import Profile from '../../components/Profile';
 import { DefaultProfile, Pencil } from "@/public/images";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import firestore from "@/firebase/firestore";
+import MyPost from "@/components/MyPost";
 
 interface TabSelected {
   $focused: boolean;
@@ -35,19 +38,7 @@ export default function Mypage() {
         <TabButton $focused={isSelected === 1} onClick={() => handleSelectedTab(1)}>참여한 투표</TabButton>
       </TabWrapper>
       <MyPostsContainer>
-        {
-          isSelected === 0 
-          ? (
-            <>
-              내가 만든거
-            </>
-          )
-          : (
-            <>
-              참여한거
-            </>
-          )
-        }
+        { isSelected === 0 ? <MyPost/>: null }
         <SignOutBtnWrapper>
           <button onClick={() => signOut()}>로그아웃</button>
           <Divider/>

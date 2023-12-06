@@ -4,17 +4,14 @@ import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 import PostCard from '../components/PostCard';
 import firebasedb from '@/firebase/firebasedb';
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
-import firebase from 'firebase/compat/app';
-import storage from '@/firebase/firestore';
+import { getFirestore, collection, getDocs, setDoc, doc } from "firebase/firestore";
+import { useSession } from 'next-auth/react';
 
-type StringDatas = (string)[];
-
-interface PostsProps {
-    author: string,
+export interface PostsProps {
     text: string,
-    createAt: string,
-    id: string,
+    author: string,
+    createdAt: number,
+    id?: string,
     imageUrl: string, 
     isOver: boolean,
     isParticipantCountPublic: boolean,
@@ -24,7 +21,9 @@ interface PostsProps {
 
 const Tab = () => {
   const [selectedTab, setSelectedTab] = useState(1);
-  const [posts, setPosts] = useState<any>([]);
+  const [openPosts, setOpenPosts] = useState<any>([]);
+  const [closePost, setClosePost] = useState<any>([]);
+  const { data: session } = useSession();
   
   const handleClick = (index: number) => {
     setSelectedTab(index);
@@ -37,10 +36,15 @@ const Tab = () => {
       const data = querySnapshot.docs.map((doc) => ({
         ...doc.data(), id: doc.id
       })); 
-      setPosts(data);
-    }
+      setOpenPosts(data);
+    };
     getData();
   }, []);
+  
+
+  useEffect(() => {
+   localStorage.setItem("username", JSON.stringify(session?.user?.name))
+  }, [session?.user?.name])
 
   return (
     <HomeSection>
@@ -55,16 +59,16 @@ const Tab = () => {
           {selectedTab === 1 
           ?  
           <>
-            {posts.map((post: PostsProps) => {
+            {openPosts.map((post: PostsProps) => {
               return (
-                <PostCard text={post.text} username={post.author} imageUrl={post.imageUrl} time="종료 시간 : 12:40:00" votingBtn={true} key={post.id}/>
+                <PostCard text={post.text} username={post.author} imageUrl={post.imageUrl} time="종료 시간 : 12:40:00" votingBtn={true} id={post.id} key={post.id}/>
                 )})}
           </>
           : 
           <>
-            {posts.map((post: PostsProps) => {
+            {closePost.map((post: PostsProps) => {
               return (
-                <PostCard text={post.text} username={post.author} imageUrl={post.imageUrl} time="종료 시간 : 12:40:00" votingBtn={true} key={post.id}/>
+                <PostCard text={post.text} username={post.author} imageUrl={post.imageUrl} time="종료 시간 : 12:40:00" votingBtn={true} id={post.id} key={post.id}/>
                 )})}
           </>
           }

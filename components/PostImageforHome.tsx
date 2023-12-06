@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { getDownloadURL, ref } from 'firebase/storage';
-import storage from '@/firebase/firestore';
+import storage from '@/firebase/storage';
 
 type ImageUrlProp = {
   imageUrl: string;

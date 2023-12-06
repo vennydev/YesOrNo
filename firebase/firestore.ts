@@ -1,5 +1,5 @@
-import { getStorage } from "firebase/storage";
-import firebasedb from "./firebasedb";
+import { getFirestore } from "firebase/firestore"
+import firebasedb from "./firebasedb"
 
-const storage = getStorage(firebasedb);
-export default storage;
+const firestore = getFirestore(firebasedb);
+export default firestore;
