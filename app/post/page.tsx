@@ -13,6 +13,7 @@ import { addDoc, collection, getFirestore } from 'firebase/firestore';
 import { doc, setDoc } from "firebase/firestore"; 
 import { useSession } from 'next-auth/react';
 import storage from '@/firebase/storage';
+import { useRouter } from 'next/navigation';
 
 export default function PostPage() {
   const [text, setText] = useState("");
@@ -21,6 +22,7 @@ export default function PostPage() {
   const [editing, setEditing] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const {data: session} = useSession();
+  const router = useRouter();
 
   const handleEditing = () => {
     setEditing(true);
@@ -104,26 +106,25 @@ export default function PostPage() {
             noCount: 0,
           };
         uploadToFireStore(docData);
-        console.log('Uploaded post with default image!');
+        router.push('/');
       });
-     }).catch(error => console.log(error));
+     }).catch(error => console.log('기본 이미지 포함 데이터 객체 업로드 실패', error));
     } else {
       const postsRef = ref(storage, `posts/${file.name}`);
       uploadBytes(postsRef, file).then((snapshot) => {
-          docData = { 
-            author: session?.user?.name,
-            text:text,
-            createdAt: new Date().getTime(),
-            imageUrl: snapshot.ref.name,
-            isOver: false,
-            isParticipantCountPublic: isChecked,
-            yesCount: 0,
-            noCount: 0,
-          };
-          uploadToFireStore(docData);
-        console.log('Uploaded post with uploaded image!');
-
-      });
+        docData = { 
+          author: session?.user?.name,
+          text:text,
+          createdAt: new Date().getTime(),
+          imageUrl: snapshot.ref.name,
+          isOver: false,
+          isParticipantCountPublic: isChecked,
+          yesCount: 0,
+          noCount: 0,
+        };
+        uploadToFireStore(docData);
+        router.push('/');
+      }).catch(error => console.log('업로드된 이미지 포함 데이터 객체 업로드 실패',error));
     }
   };
 

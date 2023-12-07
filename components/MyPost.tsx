@@ -6,6 +6,7 @@ import firestore from "@/firebase/firestore";
 import { useSession } from "next-auth/react";
 import { PostsProps } from "@/app/page";
 import PostCard from "./PostCard";
+import styled from "styled-components";
 
 
 export default function MyPost() {
@@ -25,12 +26,15 @@ export default function MyPost() {
   }, [session?.user?.name]);
 
   return (
-    <>
+    <MyPostContainer>
       {mypost.length !== 0 && mypost.map((post: PostsProps, index: number) => {
         return (
             <PostCard text={post.text} username={post.author} imageUrl={post.imageUrl} time="종료 시간 : 12:40:00" votingBtn={true} id={post.id} key={index}/>
         )
       })}
-    </>
+    </MyPostContainer>
   )
-}
+};
+
+const MyPostContainer = styled.div`
+`

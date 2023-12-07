@@ -29,7 +29,6 @@ const PostVoteWrapper = styled.div`
 const VoteBtn = styled.button`
   width: 50%;
   text-align: center;
-  background-color:blue
 `;
 
 const YesBtn = styled(VoteBtn)`

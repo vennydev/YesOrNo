@@ -87,10 +87,10 @@ export default function PostCard ({
 
   const postImageforHome = () => {
     return ( <PostImageforHome imageUrl={imageUrl}/> )
-  }
-
+  };
 
   const handleVotesCount = async (e: any) => {
+    console.log('id: ', id);
     const selectedOption = e.target.value;
     if(selectedOption === 'yes'){
       await updateDoc(doc(firestore, 'posts', String(id)), {

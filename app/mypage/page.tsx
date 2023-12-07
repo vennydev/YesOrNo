@@ -41,7 +41,7 @@ export default function Mypage() {
         { isSelected === 0 ? <MyPost/>: null }
         <SignOutBtnWrapper>
           <button onClick={() => signOut()}>로그아웃</button>
-          <Divider/>
+          {/* <Divider/> */}
           <button>탈퇴</button>
         </SignOutBtnWrapper>
       </MyPostsContainer>
@@ -94,12 +94,16 @@ const MyPostsContainer = styled.div`
 
 const SignOutBtnWrapper = styled.div`
   font-size: 11px;
-  color: ${props => props.theme.color.main}
-button {
-
-}
+  color: ${props => props.theme.color.main};
+  height: 80px;
+  margin-bottom:58px;
+  display:flex;
+  align-items: center;
+  justify-content: center;
 `;
 
-const Divider = styled.div`
-  
-`;
+// const Divider = styled.div`
+//   height: 100%;
+//   width: 1px;
+//   background: #8C8C8C;
+// `; 
