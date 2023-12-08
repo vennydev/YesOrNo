@@ -13,6 +13,7 @@ export interface PostsProps {
     createdAt: number,
     imageUrl: string, 
     isOver: boolean,
+    id: string,
     isParticipantCountPublic: boolean,
     yesUser: string[],
     noUser: string[],
@@ -59,9 +60,10 @@ export default function Home () {
                   text={post.text} 
                   username={post.author} 
                   imageUrl={post.imageUrl} 
-                  time="종료 시간 : 12:40:00" 
+                  id={post.id}
+                  time="종료 시간 : 12:40:00"
+                  isParticipantCountPublic={post.isParticipantCountPublic}
                   votingBtn={true} 
-                  id={post.id} 
                   yesCount={post.yesUser.length}
                   noCount={post.noUser.length} 
                   key={index}/>
@@ -75,9 +77,10 @@ export default function Home () {
                   text={post.text} 
                   username={post.author} 
                   imageUrl={post.imageUrl} 
+                  id={post.id}
                   time="종료 시간 : 12:40:00" 
+                  isParticipantCountPublic={post.isParticipantCountPublic}
                   votingBtn={true} 
-                  id={post.id} 
                   yesCount={post.yesUser.length} 
                   noCount={post.noUser.length} 
                   key={index}/>

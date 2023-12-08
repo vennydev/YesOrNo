@@ -26,7 +26,8 @@ interface PostCardPropsType {
   time:string;
   votingBtn: boolean;
   editing?: boolean;
-  id?: number; 
+  id?: string; 
+  isParticipantCountPublic?: boolean;
   setImageUrl?: React.Dispatch<React.SetStateAction<any>>;
   setFile?: (value: any) => void;
   handleEditing?: () => void;
@@ -40,6 +41,7 @@ export default function PostCard ({
   username, 
   imageUrl, 
   time, 
+  isParticipantCountPublic,
   votingBtn, 
   id,
   editing, 
@@ -57,6 +59,7 @@ export default function PostCard ({
   });
   const [voteStatus, setVoteStatus] = useState("");
   const [percentageOfYes, setPercentage] = useState(0);
+  const [totalParticipantsCount, setTotalParticipantsCount] = useState(0);
   
   const {data: session} = useSession();
   const userid = session?.user.id;
@@ -64,7 +67,7 @@ export default function PostCard ({
   const handleMouseEnter = (index: number) => {
     setHoveredIndex(index);
   };
-  
+
   const handleMouseLeave = () => {
     setHoveredIndex(null);
   };
@@ -115,6 +118,12 @@ export default function PostCard ({
       setPercentage(percentage);
     }
   };
+
+  const calcTotalParticipantsCount = (yesCount: number | undefined, noCount: number | undefined) => {
+    if(typeof yesCount === 'number' && typeof noCount === 'number' ){
+      setTotalParticipantsCount(yesCount + noCount)
+    }
+  }
 
   const handleVotesCount = async (e: any) => {
     const selectedOption = e.target.value;
@@ -180,6 +189,7 @@ export default function PostCard ({
 
 useEffect(() => {
   calcPercentage(totalCount.yesTotal, totalCount.noTotal);
+  calcTotalParticipantsCount(totalCount.yesTotal, totalCount.noTotal)
 }, [totalCount.yesTotal, totalCount.noTotal]);
 
   return (
@@ -206,7 +216,16 @@ useEffect(() => {
           {votingBtn ? <PostQuestion>{text}</PostQuestion> : divideText()              
           }
           {votingBtn 
-              ?  (<VotingBtn handleVotesCount={handleVotesCount} percentage={percentageOfYes} voteStatus={voteStatus}/>)
+              ?  (
+              <>
+                <VotingBtn 
+                  handleVotesCount={handleVotesCount} 
+                  percentage={percentageOfYes} 
+                  voteStatus={voteStatus}
+                  totalParticipantsCount={totalParticipantsCount}
+                  isParticipantCountPublic={isParticipantCountPublic}
+                  />
+              </> )
             : (
               <>
                 <BgSelectorWrapper>
@@ -279,9 +298,7 @@ const DeadLine = styled.div<{$votingBtn? : boolean}>`
   color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.disabledfontColor}}`};
 `;
 
-const PostQuestion = styled.div`
-  
-`;
+const PostQuestion = styled.div``;
 
 const PostQuestionInput = styled.textarea`
   height: 100%;
