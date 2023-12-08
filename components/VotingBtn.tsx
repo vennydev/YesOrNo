@@ -18,6 +18,10 @@ export default function VotingBtn({percentage, voteStatus, isParticipantCountPub
     return Math.round(number)
   };
 
+  const showPercentage = (percentage: number) => {
+    return voteStatus !== "no response" && <ParticipantsRate>{getOnlyIntergers(percentage)}%</ParticipantsRate>
+  }
+
   return (
     <VotingBtnContainer>
       {isParticipantCountPublic && <ParticiPatnsCount>{totalParticipantsCount}명 투표 참여</ParticiPatnsCount>}
@@ -25,12 +29,12 @@ export default function VotingBtn({percentage, voteStatus, isParticipantCountPub
         <BtnWrapper>
           <YesBtn value="yes" $voteStatus={voteStatus} onClick={(e) => handleVotesCount(e)}>
             <BtnTitle>YES</BtnTitle>
-            <ParticipantsRate>{getOnlyIntergers(yesPercentage)}%</ParticipantsRate>
+            {showPercentage(yesPercentage)}
           </YesBtn>
           <Divider/>
           <NoBtn value="no" $voteStatus={voteStatus} onClick={(e) => handleVotesCount(e)}>
             <BtnTitle>NO</BtnTitle>
-            <ParticipantsRate>{getOnlyIntergers(noPercentage)}%</ParticipantsRate>
+            {showPercentage(noPercentage)}
           </NoBtn>
         </BtnWrapper>
         <BarWrapper>
