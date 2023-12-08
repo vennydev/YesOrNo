@@ -1,5 +1,5 @@
 import firestore from "@/firebase/firestore";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import NextAuth from "next-auth/next";
 import KakaoProvider from "next-auth/providers/kakao";
 
@@ -14,7 +14,6 @@ const handler = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   callbacks : {
     async signIn({ user }) {
-
       const isAllowedToSignIn = true
       if (isAllowedToSignIn) {
         await setDoc(doc(firestore, 'users', user.id), {
@@ -22,13 +21,24 @@ const handler = NextAuth({
           name: user.name,
           email: user.email,
           myPost: [],
-          votesParticipated: []
         });
+
         return true
       } else {
         console.log('로그인에 실패했습니다.')
         return false
       }
+    },
+    jwt({ token, account, user }) {
+      if (account) {
+        token.accessToken = account.access_token
+        token.id = user?.id
+      }
+      return token
+    },
+    async session({ session, user, token }) {
+      session.user.id = token.id as any;
+      return session
     },
   }
 });
