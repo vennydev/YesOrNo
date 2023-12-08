@@ -7,44 +7,64 @@ import styled from 'styled-components';
 import ColorCircle from './ColorCircle';
 import PostImageforHome from './PostImageforHome';
 import VotingBtn from './VotingBtn';
-import { doc, increment, setDoc, updateDoc } from 'firebase/firestore';
+import { arrayRemove, arrayUnion, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
+import { useSession } from 'next-auth/react';
 
+const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = [PostBg1, PostBg2];
+
+interface TotalCountType {
+  yesTotal: number | undefined,
+  noTotal: number | undefined,
+}
 
 interface PostCardPropsType {
   text:string;
   username:string;
   imageUrl?: any;
-  id?: string;
   time:string;
   votingBtn: boolean;
   editing?: boolean;
+  id?: number; 
   setImageUrl?: React.Dispatch<React.SetStateAction<any>>;
   setFile?: (value: any) => void;
   handleEditing?: () => void;
   handleText?: (value: string) => void;
+  yesCount?: number | undefined; 
+  noCount?: number | undefined;
 }
 
 export default function PostCard ({
   text, 
   username, 
   imageUrl, 
-  id,
   time, 
   votingBtn, 
+  id,
   editing, 
+  yesCount,
+  noCount,
   setImageUrl, 
   setFile,
   handleEditing, 
   handleText
   }:PostCardPropsType) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-  const [selectedBg, setSelecteBg] = useState('');
-  const [selectedAnswer, setSelectedAnswer] = useState('');
+  const [totalCount, setTotalCount] = useState<TotalCountType>({
+    yesTotal: yesCount,
+    noTotal: noCount,
+  });
+  const [voteStatus, setVoteStatus] = useState("");
+  const [percentageOfYes, setPercentage] = useState(0);
+  
+  const {data: session} = useSession();
+  const userid = session?.user.id;
+
   const handleMouseEnter = (index: number) => {
     setHoveredIndex(index);
   };
+  
   const handleMouseLeave = () => {
     setHoveredIndex(null);
   };
@@ -89,19 +109,78 @@ export default function PostCard ({
     return ( <PostImageforHome imageUrl={imageUrl}/> )
   };
 
-  const handleVotesCount = async (e: any) => {
-    console.log('id: ', id);
-    const selectedOption = e.target.value;
-    if(selectedOption === 'yes'){
-      await updateDoc(doc(firestore, 'posts', String(id)), {
-        yesCount: increment(1)
-      })
-    } else if (selectedOption === 'no'){
-      await updateDoc(doc(firestore, 'posts', String(id)), {
-        noCount: increment(1)
-      })
+  const calcPercentage = (yesCount: number | undefined, noCount: number | undefined): void => {
+    if(typeof yesCount === 'number' && typeof noCount === 'number' ){
+      const percentage = (yesCount / (yesCount + noCount))*100;
+      setPercentage(percentage);
     }
-  }
+  };
+
+  const handleVotesCount = async (e: any) => {
+    const selectedOption = e.target.value;
+    const postRef = doc(firestore, 'posts', String(id));
+    if(voteStatus === "no response"){
+      if(selectedOption === 'yes'){
+        await updateDoc(postRef, {
+          yesUser: arrayUnion(userid),
+        });
+        if(typeof totalCount.yesTotal === "number" && typeof totalCount.noTotal === "number"){
+          setTotalCount({...totalCount, yesTotal: totalCount.yesTotal + 1})
+        }
+        setVoteStatus(VOTE_STATUS[1]);
+      }else if (selectedOption === 'no'){
+        await updateDoc(postRef, {
+          noUser: arrayUnion(userid),
+        });
+        if(typeof totalCount.yesTotal === "number" && typeof totalCount.noTotal === "number"){
+          setTotalCount({...totalCount, noTotal: totalCount.noTotal + 1})
+        }
+        setVoteStatus(VOTE_STATUS[2]);
+      }
+    }else if(voteStatus === "yes") {
+      if(selectedOption === 'yes'){
+        return alert("재투표 노노")
+        }else if (selectedOption === 'no'){
+          await updateDoc(postRef, {
+            noUser: arrayUnion(userid),
+            yesUser: arrayRemove(userid),
+          });
+        setVoteStatus(VOTE_STATUS[2]);
+        if(typeof totalCount.yesTotal === "number" && typeof totalCount.noTotal === "number"){
+          setTotalCount({yesTotal: totalCount.yesTotal - 1, noTotal: totalCount.noTotal + 1})
+        }}
+    }else if(voteStatus === "no"){
+      if(selectedOption === 'no'){
+        return alert("재투표 노노")
+      }else if (selectedOption === 'yes'){
+          await updateDoc(postRef, {
+            yesUser: arrayUnion(userid),
+            noUser: arrayRemove(userid),
+          });
+        setVoteStatus(VOTE_STATUS[1]);
+        if(typeof totalCount.yesTotal === "number" && typeof totalCount.noTotal === "number"){
+          setTotalCount({yesTotal: totalCount.yesTotal! + 1, noTotal: totalCount.noTotal! - 1})
+        }}
+    }
+  };
+
+  useEffect(() => {
+    onSnapshot(doc(firestore, 'posts', String(id)), (doc) => {
+      const yesArr = doc.data()?.yesUser.includes(userid);
+      const noArr = doc.data()?.noUser.includes(userid);
+      if(yesArr){
+        setVoteStatus(VOTE_STATUS[1]);
+      } else if(noArr){
+        setVoteStatus(VOTE_STATUS[2]);
+      } else {
+        setVoteStatus(VOTE_STATUS[0]);
+      }
+    })
+}, []);
+
+useEffect(() => {
+  calcPercentage(totalCount.yesTotal, totalCount.noTotal);
+}, [totalCount.yesTotal, totalCount.noTotal]);
 
   return (
       <PostContainer>
@@ -127,7 +206,7 @@ export default function PostCard ({
           {votingBtn ? <PostQuestion>{text}</PostQuestion> : divideText()              
           }
           {votingBtn 
-              ?  (<VotingBtn handleVotesCount={handleVotesCount}/>)
+              ?  (<VotingBtn handleVotesCount={handleVotesCount} percentage={percentageOfYes} voteStatus={voteStatus}/>)
             : (
               <>
                 <BgSelectorWrapper>
@@ -140,7 +219,6 @@ export default function PostCard ({
                         handleMouseEnter={handleMouseEnter} 
                         handleMouseLeave={handleMouseLeave} 
                         selectBgImage={selectBgImage} 
-                        setSelecteBg={setSelecteBg}
                         key={index}/>
                     )
                   })}

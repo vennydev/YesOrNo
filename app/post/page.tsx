@@ -102,8 +102,9 @@ export default function PostPage() {
             imageUrl: snapshot.ref.name,
             isOver: false, 
             isParticipantCountPublic: isChecked,
-            yesCount: 0,
-            noCount: 0,
+            participatedUser: [],
+            yesUser: [],
+            noUser: [],
           };
         uploadToFireStore(docData);
         router.push('/');
@@ -119,8 +120,9 @@ export default function PostPage() {
           imageUrl: snapshot.ref.name,
           isOver: false,
           isParticipantCountPublic: isChecked,
-          yesCount: 0,
-          noCount: 0,
+          participatedUser: [],
+          yesUser: [],
+          noUser: [],
         };
         uploadToFireStore(docData);
         router.push('/');

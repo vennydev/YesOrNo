@@ -12,7 +12,6 @@ type ColorProps = {
   handleMouseEnter: (index: number) => void;
   handleMouseLeave: () => void;
   selectBgImage: (e: any, img: any) => void;
-  setSelecteBg: (state: string) => void;
 }
 
 export default function ColorCircle ({image, index, hoveredIndex, handleMouseEnter, handleMouseLeave, selectBgImage}: ColorProps) {
@@ -20,7 +19,6 @@ export default function ColorCircle ({image, index, hoveredIndex, handleMouseEnt
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    console.log('clicked!', );
     selectBgImage(e, image);
   };
 

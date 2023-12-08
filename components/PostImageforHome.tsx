@@ -12,7 +12,6 @@ type ImageUrlProp = {
 
 export default function PostImageforHome({imageUrl}: ImageUrlProp) {
   const [imgurl, setImgurl] = useState("");
-
   const handleOnError = () => {
     return <h1>Image error</h1>
   };
