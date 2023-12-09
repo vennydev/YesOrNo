@@ -49,10 +49,6 @@ export default function Home () {
     getData();
   }, []);
 
-  useEffect(() => {
-    console.log('openpost is uploaded... ', openPosts);
-  }, [openPosts])
-
   return (
     <HomeSection>
       <HomeContainer>

@@ -10,6 +10,7 @@ import VotingBtn from './VotingBtn';
 import { arrayRemove, arrayUnion, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { useSession } from 'next-auth/react';
+import useInterval from '@/util/useInterval';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = [PostBg1, PostBg2];
@@ -66,27 +67,36 @@ export default function PostCard ({
   const [voteStatus, setVoteStatus] = useState("");
   const [percentageOfYes, setPercentage] = useState(0);
   const [totalParticipantsCount, setTotalParticipantsCount] = useState(0);
-  const [remainingTime, setRemainingTime] = useState();
+  const [remainingTime, setRemainingTime] = useState<RemainingTimeType>();
+  const [hours, setHours] = useState(0);
+  const [min, setMin] = useState(0);
+  const [sec, setSec] = useState(0);
   const {data: session} = useSession();
   const userid = session?.user.id;
+  let intervalId: any;
 
-  const getRemainingTime = (expiredTime: number, currentTime: number) => {
+  const getRemainingTime = (expiredTime: number) => {
+    let currentTime = new Date().getTime();
     let diffMilleSec =  expiredTime - currentTime;
     let totalMin = Math.floor((diffMilleSec / (1000*60)));
     let hourRemaining = Math.floor(totalMin / 60);
     let minRemaining = Math.floor(totalMin%60);
     let secRemaining = Math.floor((diffMilleSec / 1000) % 60 );
-    setRemainingTime({
-      hour: hourRemaining,
-      minutes: minRemaining,
-      seconds: secRemaining,
-    });
+    setHours(hourRemaining);
+    setMin(minRemaining)
+    setSec(secRemaining);
+    // setRemainingTime({
+    //   hour: hourRemaining,
+    //   minutes: minRemaining,
+    //   seconds: secRemaining,
+    // });
   };
 
+  // useInterval(() => {setSec(sec -1)}, 3000, hours, min);
+  
   useEffect(() => {
-    let currentTime = new Date().getTime();
-    typeof expiredAt === 'number' && getRemainingTime(expiredAt, currentTime);
-  }, [])
+    typeof expiredAt === 'number' && getRemainingTime(expiredAt);
+  }, []);
 
 
   const handleMouseEnter = (index: number) => {
@@ -102,34 +112,6 @@ export default function PostCard ({
     setImageUrl?.(img);
     setFile?.(img);
   };
-
-  const countRemainingTime = (h: number, m: number, s: number) => {
-    console.log(h, m, s);
-      // setRemainingTime({...remainingTime, minutes: remainingTime.minutes-1});
-  };
-
-  console.log('remaining', remainingTime);
-  
-  useEffect(() => {
-  // remainingTime !== 'undefiend' && (
-    // setInterval(() => countRemainingTime(remainingTime.hour, remainingTime.minutes, remainingTime.seconds), 1000)
-  // );
-
-  // console.log('remaining in useEffect', remainingTime);
-
-  // props로 받아온 데이터를
-// remainingTime 데이터가 들어오고 난 후
-// setTimeout으로 1초 씩 줄인다
-// seconds - 1
-// seconds == 0이 되면
-// minutes - 1
-// minutes == 0이 되면
-// hour - 1 / minutes, seconds 초기화
-// hour == 0 이 되면
-// 함수 실행 종료하고 dim 처리 or 해당 게시물 클릭 후 redirect 처리
-    // setInterval(() => console.log("qweqwe"), 1000)
-
-  }, [remainingTime])
 
   const divideText = () => {
     const topText = text.substring(0,10)
@@ -245,6 +227,13 @@ export default function PostCard ({
     calcTotalParticipantsCount(totalCount.yesTotal, totalCount.noTotal)
   }, [totalCount.yesTotal, totalCount.noTotal]);
 
+  const addZero = (time: number) => {
+    if(time < 10){
+      return `0${time}`
+    }
+    return time
+  }
+
   return (
       <PostContainer>
         <PostWrapper $votingBtn={votingBtn}>
@@ -257,7 +246,7 @@ export default function PostCard ({
             </PostMetadataLeft>
               <PostMetadataRight>
               <UserName $votingBtn={votingBtn}>{username}</UserName>
-              <DeadLine $votingBtn={votingBtn}>{}</DeadLine>
+              <DeadLine $votingBtn={votingBtn}>{addZero(hours)} : {addZero(min)} : {addZero(sec)}</DeadLine>
             </PostMetadataRight>  
             </PostMetadata>
             <>
