@@ -11,7 +11,6 @@ const handler = NextAuth({
       
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
   callbacks : {
     async signIn({ user }) {
       const isAllowedToSignIn = true
@@ -40,7 +39,8 @@ const handler = NextAuth({
       session.user.id = token.id as any;
       return session
     },
-  }
+  },
+  secret: process.env.NEXTAUTH_SECRET,
 });
 
 export { handler as GET, handler as POST };

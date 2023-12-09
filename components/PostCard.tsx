@@ -31,7 +31,7 @@ interface PostCardPropsType {
   text:string;
   username:string;
   imageUrl?: any;
-  expiredAt: number | undefined;
+  expiredAt?: number | undefined;
   votingBtn: boolean;
   editing?: boolean;
   yesCount?: number | undefined; 
@@ -41,6 +41,7 @@ interface PostCardPropsType {
   setFile?: (value: any) => void;
   handleEditing?: () => void;
   handleText?: (value: string) => void;
+  time?: string;
 }
 
 export default function PostCard ({
@@ -96,7 +97,7 @@ export default function PostCard ({
   
   useEffect(() => {
     typeof expiredAt === 'number' && getRemainingTime(expiredAt);
-  }, []);
+  }, [expiredAt]);
 
 
   const handleMouseEnter = (index: number) => {
@@ -220,7 +221,7 @@ export default function PostCard ({
         setVoteStatus(VOTE_STATUS[0]);
       }
     })
-}, []);
+}, [id, userid]);
 
   useEffect(() => {
     calcPercentage(totalCount.yesTotal, totalCount.noTotal);
