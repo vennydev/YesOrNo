@@ -5,12 +5,11 @@ import styled from "styled-components";
 import PostCard from '../components/PostCard';
 import firebasedb from '@/firebase/firebasedb';
 import { getFirestore, collection, getDocs } from "firebase/firestore";
-import { useSession } from 'next-auth/react';
 
 export interface PostsProps {
     text: string,
     author: string,
-    createdAt: number,
+    expiredAt: number,
     imageUrl: string, 
     isOver: boolean,
     id: string,
@@ -23,24 +22,37 @@ export interface PostsProps {
 export default function Home () {
   const [selectedTab, setSelectedTab] = useState(1);
   const [openPosts, setOpenPosts] = useState<any>([]);
-  const [closePost, setClosePost] = useState<any>([]);
+  const [closePosts, setClosePosts] = useState<any>([]);
 
   const handleClick = (index: number) => {
     setSelectedTab(index);
   };
-  
+
   async function getData() {
     const db = getFirestore(firebasedb);
     const querySnapshot = await getDocs(collection(db, "posts"));
-    const data = querySnapshot.docs.map((doc) => ({
-      ...doc.data(), id: doc.id
-    })); 
-    setOpenPosts(data);
+    const openArr: any = [];
+    const closeArr: any = [];
+    querySnapshot.forEach((doc) => {
+      let currentTime = new Date().getTime();
+      if (doc.data().expiredAt > currentTime){
+        openArr.push({...doc.data(), id: doc.id, isOver: false});
+      } else if (doc.data().expiredAt < currentTime) {
+        closeArr.push({...doc.data(), id: doc.id, isOver: true});
+      }
+    })
+    setOpenPosts(openArr);
+    setClosePosts(closeArr);
   };
-  
+
   useEffect(() => {
     getData();
   }, []);
+
+  useEffect(() => {
+    console.log('openpost is uploaded... ', openPosts);
+  }, [openPosts])
+
   return (
     <HomeSection>
       <HomeContainer>
@@ -57,32 +69,32 @@ export default function Home () {
             {openPosts.length > 0 && openPosts.map((post: PostsProps, index :number) => {
               return (
                 <PostCard 
-                  text={post.text} 
-                  username={post.author} 
-                  imageUrl={post.imageUrl} 
                   id={post.id}
-                  time="종료 시간 : 12:40:00"
-                  isParticipantCountPublic={post.isParticipantCountPublic}
+                  text={post.text}
+                  username={post.author}
+                  imageUrl={post.imageUrl} 
+                  expiredAt={post.expiredAt}
                   votingBtn={true} 
                   yesCount={post.yesUser.length}
                   noCount={post.noUser.length} 
+                  isParticipantCountPublic={post.isParticipantCountPublic}
                   key={index}/>
                 )})}
           </>
           : 
           <>
-            {closePost.map((post: PostsProps, index :number) => {
+            {closePosts.map((post: PostsProps, index :number) => {
               return (
                 <PostCard 
                   text={post.text} 
                   username={post.author} 
                   imageUrl={post.imageUrl} 
+                  expiredAt={post.expiredAt}
                   id={post.id}
-                  time="종료 시간 : 12:40:00" 
-                  isParticipantCountPublic={post.isParticipantCountPublic}
                   votingBtn={true} 
                   yesCount={post.yesUser.length} 
-                  noCount={post.noUser.length} 
+                  noCount={post.noUser.length}
+                  isParticipantCountPublic={post.isParticipantCountPublic}
                   key={index}/>
                 )})}
           </>
@@ -95,7 +107,7 @@ export default function Home () {
 
 const HomeSection = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   padding:0 20px;
 `;
 
@@ -104,9 +116,6 @@ const HomeContainer = styled.div`
 `;
 
 const TabContainer = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: flex-start;
 `;
 
 const TabWrapper = styled.div`

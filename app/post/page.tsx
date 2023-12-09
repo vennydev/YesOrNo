@@ -15,6 +15,8 @@ import { useSession } from 'next-auth/react';
 import storage from '@/firebase/storage';
 import { useRouter } from 'next/navigation';
 
+const ONEDAY = 24*60*60*1000;
+
 export default function PostPage() {
   const [text, setText] = useState("");
   const [imageUrl, setImageUrl] = useState<any>(PostBg1);
@@ -99,6 +101,7 @@ export default function PostPage() {
             author: session?.user?.name,
             text:text,
             createdAt: new Date().getTime(),
+            expiredAt: new Date().getTime()+ONEDAY,
             imageUrl: snapshot.ref.name,
             isOver: false, 
             isParticipantCountPublic: isChecked,
@@ -117,6 +120,7 @@ export default function PostPage() {
           author: session?.user?.name,
           text:text,
           createdAt: new Date().getTime(),
+          expiredAt: new Date().getTime()+ONEDAY,
           imageUrl: snapshot.ref.name,
           isOver: false,
           isParticipantCountPublic: isChecked,
