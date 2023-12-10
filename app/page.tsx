@@ -41,6 +41,7 @@ export default function Home () {
         closeArr.push({...doc.data(), id: doc.id, isOver: true});
       }
     })
+
     setOpenPosts(openArr);
     setClosePosts(closeArr);
   };
@@ -88,6 +89,7 @@ export default function Home () {
                   expiredAt={post.expiredAt}
                   id={post.id}
                   votingBtn={true} 
+                  isOver={post.isOver}
                   yesCount={post.yesUser.length} 
                   noCount={post.noUser.length}
                   isParticipantCountPublic={post.isParticipantCountPublic}

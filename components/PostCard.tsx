@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DefaultProfile, DimmedProfile, PostBg1, PostBg2 } from '../public/images';
 import Image from 'next/image';
 import styled from 'styled-components';
@@ -10,7 +10,6 @@ import VotingBtn from './VotingBtn';
 import { arrayRemove, arrayUnion, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { useSession } from 'next-auth/react';
-import useInterval from '@/util/useInterval';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = [PostBg1, PostBg2];
@@ -42,6 +41,7 @@ interface PostCardPropsType {
   handleEditing?: () => void;
   handleText?: (value: string) => void;
   time?: string;
+  isOver?: boolean;
 }
 
 export default function PostCard ({
@@ -54,6 +54,7 @@ export default function PostCard ({
   editing, 
   yesCount,
   noCount,
+  isOver,
   isParticipantCountPublic,
   setImageUrl, 
   setFile,
@@ -74,7 +75,6 @@ export default function PostCard ({
   const [sec, setSec] = useState(0);
   const {data: session} = useSession();
   const userid = session?.user.id;
-  let intervalId: any;
 
   const getRemainingTime = (expiredTime: number) => {
     let currentTime = new Date().getTime();
@@ -86,19 +86,8 @@ export default function PostCard ({
     setHours(hourRemaining);
     setMin(minRemaining)
     setSec(secRemaining);
-    // setRemainingTime({
-    //   hour: hourRemaining,
-    //   minutes: minRemaining,
-    //   seconds: secRemaining,
-    // });
   };
-
-  // useInterval(() => {setSec(sec -1)}, 3000, hours, min);
   
-  useEffect(() => {
-    typeof expiredAt === 'number' && getRemainingTime(expiredAt);
-  }, [expiredAt]);
-
 
   const handleMouseEnter = (index: number) => {
     setHoveredIndex(index);
@@ -229,11 +218,38 @@ export default function PostCard ({
   }, [totalCount.yesTotal, totalCount.noTotal]);
 
   const addZero = (time: number) => {
-    if(time < 10){
-      return `0${time}`
-    }
-    return time
-  }
+    return time.toString().padStart(2, '0')
+  };
+
+  useEffect(() => {
+    typeof expiredAt === 'number' && getRemainingTime(expiredAt);
+  }, [expiredAt]);
+
+  useEffect(() => {
+    if (hours === 0 && min === 0 && sec === 0) return;
+
+    let interval: any;
+    interval = setInterval(() => {
+      if(sec > 0) {
+        setSec(prev => prev - 1);
+      }else if(sec === 0 && min > 0){
+        setMin(prev => prev - 1);
+        if (min !== 0) {
+          setSec(59);
+        }
+      }else if(sec === 0 && min === 0){
+        setHours(prev => prev - 1);
+        if(hours > 0) {
+          setMin(59);
+          setSec(59);
+        }
+        if(hours === 0){
+          clearInterval(interval)
+        }
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+}, [hours, min, sec]);
 
   return (
       <PostContainer>
@@ -247,7 +263,18 @@ export default function PostCard ({
             </PostMetadataLeft>
               <PostMetadataRight>
               <UserName $votingBtn={votingBtn}>{username}</UserName>
-              <DeadLine $votingBtn={votingBtn}>{addZero(hours)} : {addZero(min)} : {addZero(sec)}</DeadLine>
+              <DeadLine $votingBtn={votingBtn}>
+                {isOver ? (
+                    <>
+                      00 : 00 : 00
+                    </>
+                  ) : (
+                    <>
+                      {addZero(hours)} : {addZero(min)} : {addZero(sec)}
+                    </>
+                  )}
+                
+                </DeadLine>
             </PostMetadataRight>  
             </PostMetadata>
             <>
