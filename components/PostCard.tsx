@@ -10,6 +10,8 @@ import VotingBtn from './VotingBtn';
 import { arrayRemove, arrayUnion, doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { useSession } from 'next-auth/react';
+import ModalPortal from './modal/ModalPortal';
+import LoginModal from './LoginModal';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = [PostBg1, PostBg2];
@@ -67,6 +69,8 @@ export default function PostCard ({
   const [min, setMin] = useState(0);
   const [sec, setSec] = useState(0);
   const {data: session, status} = useSession();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const userid = session?.user.id;
 
   const getRemainingTime = (expiredTime: number) => {
@@ -93,6 +97,10 @@ export default function PostCard ({
     e.stopPropagation();
     setImageUrl?.(img);
     setFile?.(img);
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false)
   };
 
   const divideText = () => {
@@ -143,6 +151,11 @@ export default function PostCard ({
   }
 
   const handleVotesCount = async (e: any) => {
+    if(!userid){
+      setIsModalVisible(true); 
+      return
+    };
+
     const selectedOption = e.target.value;
     const postRef = doc(firestore, 'posts', String(id));
     if(voteStatus === "no response"){
@@ -312,6 +325,11 @@ export default function PostCard ({
             )
           }
         </PostWrapper>
+        {isModalVisible && 
+        <ModalPortal>
+          <LoginModal closeModal={closeModal}/>
+        </ModalPortal>
+      }
       </PostContainer>
   )
 }

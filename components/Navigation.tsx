@@ -79,6 +79,7 @@ const NaviContainer = styled.div`
   align-items: center;
   box-shadow: 0px -0.33px 0px 0px #000;
   background-color: white;
+  z-index: 1000;
 `;
 
 const NaviLink = styled.div`

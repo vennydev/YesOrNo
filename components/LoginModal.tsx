@@ -5,12 +5,15 @@ import styled from "styled-components";
 
 interface ModalProps {
   closeModal: () => void,
-  setActiveTab: (url: string) => void,
+  setActiveTab?: (url: string) => void,
 }
 
 export default function LoginModal({closeModal, setActiveTab}: ModalProps ) {
   return (
-    <LoginModalContainer onClick={() => {closeModal(); setActiveTab("/")}}>
+    <LoginModalContainer onClick={() => {
+      closeModal(); 
+      setActiveTab !== undefined && setActiveTab("/")
+      }}>
       <ModalWrapper>
         <ModalMsg>로그인을 해야<br />이용가능한 서비스 입니다.</ModalMsg>
         <Link href={'/login'} onClick={closeModal}>
