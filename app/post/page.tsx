@@ -9,7 +9,7 @@ import ImageUploader from '../../components/ImageUploader';
 import imageCompression from 'browser-image-compression';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import firebasedb from '@/firebase/firebasedb';
-import { addDoc, collection, getFirestore } from 'firebase/firestore';
+import { addDoc, collection, getFirestore, serverTimestamp } from 'firebase/firestore';
 import { doc, setDoc } from "firebase/firestore"; 
 import { useSession } from 'next-auth/react';
 import storage from '@/firebase/storage';
@@ -108,6 +108,7 @@ export default function PostPage() {
             participatedUser: [],
             yesUser: [],
             noUser: [],
+            timestamp: serverTimestamp(),
           };
         uploadToFireStore(docData);
         router.push('/');
@@ -127,6 +128,7 @@ export default function PostPage() {
           participatedUser: [],
           yesUser: [],
           noUser: [],
+          timestamp: serverTimestamp(),
         };
         uploadToFireStore(docData);
         router.push('/');
