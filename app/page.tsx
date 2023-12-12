@@ -5,6 +5,7 @@ import styled from "styled-components";
 import PostCard from '../components/PostCard';
 import firebasedb from '@/firebase/firebasedb';
 import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { useSession } from 'next-auth/react';
 
 export interface PostsProps {
     text: string,
@@ -23,10 +24,19 @@ export default function Home () {
   const [selectedTab, setSelectedTab] = useState(1);
   const [openPosts, setOpenPosts] = useState<any>([]);
   const [closePosts, setClosePosts] = useState<any>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const {data: session, status} = useSession();
 
   const handleClick = (index: number) => {
     setSelectedTab(index);
   };
+
+  const handleLoginModal = () => {
+    if(status !== "authenticated"){
+      setIsModalVisible(true);
+    };
+  }
 
   async function getData() {
     const db = getFirestore(firebasedb);

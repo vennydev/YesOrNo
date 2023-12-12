@@ -16,4 +16,4 @@ export default function ProvidersWrapper({
       {pathname !== '/login' && <Navigation/>}
     </SessionProvider>
   )
-}
+};

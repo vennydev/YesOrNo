@@ -37,4 +37,5 @@ export default function MyPost() {
 };
 
 const MyPostContainer = styled.div`
+  margin-bottom: 1px;
 `

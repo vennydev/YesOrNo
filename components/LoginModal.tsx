@@ -5,32 +5,41 @@ import styled from "styled-components";
 
 interface ModalProps {
   closeModal: () => void,
-  setActiveTab: () => void,
+  setActiveTab: (url: string) => void,
 }
 
-export default function LoginModal({closeModal, setActiveTab}: any ) {
+export default function LoginModal({closeModal, setActiveTab}: ModalProps ) {
   return (
-    <LoginModalContainer onClick={() => {closeModal(); setActiveTab("home")}}>
-      <ModalWrapper onClick={(e) => e.stopPropagation()}>
+    <LoginModalContainer onClick={() => {closeModal(); setActiveTab("/")}}>
+      <ModalWrapper>
         <ModalMsg>로그인을 해야<br />이용가능한 서비스 입니다.</ModalMsg>
         <Link href={'/login'} onClick={closeModal}>
           <NaviToLoginPageBtn>확인</NaviToLoginPageBtn>
         </Link>
       </ModalWrapper>
+      <TransparentBg/>
     </LoginModalContainer>
   )
 };
 
 const LoginModalContainer = styled.div`
-  position: fixed;
-	top: 0;
-  left: 0;
+  position: absolute;
+  top:0;
   width: 100%;
   height: 100%;
-  background-color: rgb(102, 102, 102);
   display: flex;
   justify-content: center;
   align-items:center;
+  z-index: 1000;
+`;
+
+const TransparentBg = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color:black;
+  z-index: 99;
+  opacity: 0.6;
 `;
 
 const ModalWrapper = styled.div`
@@ -68,4 +77,4 @@ const ModalMsg = styled.p`
   padding: 26px 0px;
   text-align: center;
   line-height: 28px;
-`
+`;

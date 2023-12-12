@@ -69,11 +69,10 @@ export default function PostCard ({
   const [voteStatus, setVoteStatus] = useState("");
   const [percentageOfYes, setPercentage] = useState(0);
   const [totalParticipantsCount, setTotalParticipantsCount] = useState(0);
-  const [remainingTime, setRemainingTime] = useState<RemainingTimeType>();
   const [hours, setHours] = useState(0);
   const [min, setMin] = useState(0);
   const [sec, setSec] = useState(0);
-  const {data: session} = useSession();
+  const {data: session, status} = useSession();
   const userid = session?.user.id;
 
   const getRemainingTime = (expiredTime: number) => {
@@ -87,7 +86,6 @@ export default function PostCard ({
     setMin(minRemaining)
     setSec(secRemaining);
   };
-  
 
   const handleMouseEnter = (index: number) => {
     setHoveredIndex(index);
