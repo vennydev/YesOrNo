@@ -19,12 +19,6 @@ interface TotalCountType {
   noTotal: number | undefined,
 }
 
-interface RemainingTimeType {
-  hour: number;
-  minutes: number;
-  seconds: number;
-}
-
 interface PostCardPropsType {
   id?: string; 
   text:string;
@@ -281,7 +275,11 @@ export default function PostCard ({
              : postImageforPost()
              }
             </>
-          {votingBtn ? <PostQuestion>{text}</PostQuestion> : divideText()              
+          {votingBtn ? <PostQuestion>
+            <Text>
+              {text}
+            </Text>
+            </PostQuestion> : divideText()              
           }
           {votingBtn 
               ?  (
@@ -366,7 +364,20 @@ const DeadLine = styled.div<{$votingBtn? : boolean}>`
   color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.disabledfontColor}}`};
 `;
 
-const PostQuestion = styled.div``;
+const PostQuestion = styled.div`
+  width: 100%;
+  height:81px;
+  text-align: center;
+  padding: 0 30px;
+  overflow: scroll;
+`;
+
+const Text = styled.span`
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 28px;
+  word-wrap: break-word;
+`;
 
 const PostQuestionInput = styled.textarea`
   height: 100%;
