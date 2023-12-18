@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-export default function ModalPoral ({ children }: { children: ReactElement }) {
+export default function ModalPoral ({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState<boolean>(false);
 
   useEffect(() => {

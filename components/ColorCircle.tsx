@@ -1,22 +1,19 @@
 "use client"
 
-import React, { useRef, useState } from 'react'
+import React from 'react'
 import styled from 'styled-components';
 import Image from 'next/image';
 import { Check } from '../public/images';
 
 type ColorProps = {
   image:{};
-  index:number;
-  hoveredIndex:number | null;
-  handleMouseEnter: (index: number) => void;
-  handleMouseLeave: () => void;
+  index:number;     
+  selectedImg: number | null;
   selectBgImage: (e: any, img: any) => void;
+  setSelectedImg: (index: number | null) => void;
 }
 
-export default function ColorCircle ({image, index, hoveredIndex, handleMouseEnter, handleMouseLeave, selectBgImage}: ColorProps) {
-  const currentCategoryRef = useRef();
-
+export default function ColorCircle ({image, index, selectBgImage, setSelectedImg, selectedImg}: ColorProps) {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     selectBgImage(e, image);
@@ -24,19 +21,20 @@ export default function ColorCircle ({image, index, hoveredIndex, handleMouseEnt
 
   return (
     <Button 
-      onMouseOver={() => handleMouseEnter(index)} 
-      onMouseLeave={handleMouseLeave} 
       onClick={(e) => {
         handleClick(e);
+        setSelectedImg(index)
       }}
-    > 
-      {hoveredIndex === index &&
+      $selectedImg={selectedImg}
+      $index={index}
+      > 
+      {selectedImg === index &&
         <Image src={Check} alt='check' width={18}/>}
     </Button>
   )
 };
 
-const Button = styled.button`
+const Button = styled.button<{$selectedImg: number | null, $index: number}>`
   width: 34px;
   height: 34px;
   border: ${(props) => `1px solid ${props.theme.color.mainBorderColor}`};
@@ -45,8 +43,5 @@ const Button = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  
-  &:hover{
-    background-color: black;
-  }
+  background-color: ${props => props.$selectedImg === props.$index ? 'black' : 'white'};
 `;

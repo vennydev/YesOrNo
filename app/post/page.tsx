@@ -1,16 +1,15 @@
-"use client"
+"use client" 
 
-import React, { useEffect, useState } from 'react'
-import { ClearIcon, AddIcon } from '../../public/icons/index';
+import React, { useState } from 'react';
+import { ClearIcon } from '../../public/icons/index';
 import PostCard from '../../components/PostCard';
 import styled from 'styled-components';
-import { DefaultProfile, DimmedProfile, PostBg1, PostBg2 } from '@/public/images';
+import { PostBg1 } from '@/public/images';
 import ImageUploader from '../../components/ImageUploader';
 import imageCompression from 'browser-image-compression';
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
+import { ref, uploadBytes } from 'firebase/storage';
 import firebasedb from '@/firebase/firebasedb';
 import { addDoc, collection, getFirestore, serverTimestamp } from 'firebase/firestore';
-import { doc, setDoc } from "firebase/firestore"; 
 import { useSession } from 'next-auth/react';
 import storage from '@/firebase/storage';
 import { useRouter } from 'next/navigation';
@@ -19,7 +18,9 @@ const ONEDAY = 24*60*60*1000;
 
 export default function PostPage() {
   const [text, setText] = useState("");
+  // imageUrl: image download url을 가져와 이미지를 다운받아 preview에 보여줌
   const [imageUrl, setImageUrl] = useState<any>(PostBg1);
+  // file: 업로드한 이미지
   const [file, setFile] = useState<any>(PostBg1);
   const [editing, setEditing] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -29,6 +30,7 @@ export default function PostPage() {
   const handleEditing = () => {
     setEditing(true);
   };
+
   const handleText = (value: string) => {
     setText(value);
   };
@@ -37,12 +39,11 @@ export default function PostPage() {
     if(!file) {return};
 
   const imageFile = file[0];
-
   const options = {
     maxSizeMB: 2.0,
     maxWidthOrHeight: 500,
   };
-
+  
   try{
     const compressedFile = await imageCompression(imageFile, options);
     const convert = new File([compressedFile], imageFile.name, {
@@ -61,10 +62,9 @@ export default function PostPage() {
     setIsChecked(e.target.checked);
   };
 
-
   const handleUpload = async () => {
     if(!text || !imageUrl) return;
-    let docData;;
+    let docData;
 
     const toDataURL = (url: string) => (
         fetch(url)
@@ -74,9 +74,9 @@ export default function PostPage() {
           reader.onloadend = () => resolve(reader.result);
           reader.onerror = reject;
           reader.readAsDataURL(blob);
-       }))
+      }))
     );
-     
+    console.log('file:', file);
     const dataURLtoFile = (dataurl :any, filename: any) => {
       const arr = dataurl.split(',');
       const mime = arr[0].match(/:(.*?);/)[1];
@@ -147,15 +147,16 @@ return (
         <ActionBtnWrapper>
           <ClearIcon/>
           <PageTitle>질문하기</PageTitle>
-          <PostBtn onClick={handleUpload}>완료</PostBtn>
+          <PostBtn onClick={handleUpload} $text={text}>완료</PostBtn>
         </ActionBtnWrapper>
 
         <div>
           <PostCard 
-            text='YES OR NO로 대답 할 수 있는 질문을 작성해주세요' 
-            username='마일로앞발' 
+            text='YES OR NO로 대답 할 수 있는 질문을 작성해주세요'
+            username={session?.user.name}
             imageUrl={imageUrl}
             time='23년 11월 9일 투표 완료' 
+            file={file}
             votingBtn={false}
             editing={editing}
             setImageUrl={setImageUrl}
@@ -199,10 +200,10 @@ const PageTitle = styled.div`
   font-size: 16px;
   font-weight: 600;
   line-height: 28px;
-`;;
+`;
 
-const PostBtn = styled.div`
-  color: var(--disabled-font-color);
+const PostBtn = styled.div<{$text: string}>`
+  color: ${props => props.$text !== "" ? 'black' : `${props.theme.color.dimFontColor}`};
   line-height: 30px;
   letter-spacing: -0.3px;
   font-size: 18px;

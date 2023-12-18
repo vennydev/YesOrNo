@@ -1,6 +1,10 @@
+"use client"
+
 import { useRef } from "react";
 import { AddIcon } from "@/public/icons";
 import styled from 'styled-components';
+import { useRecoilState } from "recoil";
+import { selectedImgIndexState } from "@/recoil/post/atom";
 
 interface ImageUploaderProps {
   handleImage: (file: any) => void;
@@ -8,6 +12,7 @@ interface ImageUploaderProps {
 
 export default function ImageUploader({handleImage}: ImageUploaderProps) {
   const fileInput = useRef<HTMLInputElement>(null);
+  const [selectedImgIndex, setSelectedImgIndex] = useRecoilState(selectedImgIndexState);
 
   return (
     <>
@@ -21,7 +26,10 @@ export default function ImageUploader({handleImage}: ImageUploaderProps) {
         name='image_URL' 
         accept='image/*' 
         ref={fileInput} 
-        onChange={(e: React.ChangeEvent<{ files: FileList | null }>) => handleImage(e.target.files)} 
+        onChange={(e: React.ChangeEvent<{ files: FileList | null }>) => {
+          handleImage(e.target.files);
+          setSelectedImgIndex(null);
+        }} 
         style={{display: "none"}} />
     </>
   )

@@ -5,7 +5,6 @@ import styled from "styled-components";
 import PostCard from '../components/PostCard';
 import firebasedb from '@/firebase/firebasedb';
 import { getFirestore, collection, getDocs, orderBy, query } from "firebase/firestore";
-import { useSession } from 'next-auth/react';
 
 export interface PostsProps {
     text: string,

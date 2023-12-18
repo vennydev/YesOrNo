@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DefaultProfile, DimmedProfile, PostBg1, PostBg2 } from '../public/images';
 import Image from 'next/image';
 import styled from 'styled-components';
@@ -12,6 +12,8 @@ import firestore from '@/firebase/firestore';
 import { useSession } from 'next-auth/react';
 import ModalPortal from './modal/ModalPortal';
 import LoginModal from './LoginModal';
+import { useRecoilState } from 'recoil';
+import { selectedImgIndexState } from '@/recoil/post/atom';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = [PostBg1, PostBg2];
@@ -38,6 +40,7 @@ interface PostCardPropsType {
   handleText?: (value: string) => void;
   time?: string;
   isOver?: boolean;
+  file?: any;
 }
 
 export default function PostCard ({
@@ -51,23 +54,25 @@ export default function PostCard ({
   yesCount,
   noCount,
   isOver,
+  file,
   isParticipantCountPublic,
   setImageUrl, 
   setFile,
   handleEditing, 
   handleText
   }:PostCardPropsType) {
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [totalCount, setTotalCount] = useState<TotalCountType>({
     yesTotal: yesCount,
     noTotal: noCount,
   });
+  
   const [voteStatus, setVoteStatus] = useState("");
   const [percentageOfYes, setPercentage] = useState(0);
   const [totalParticipantsCount, setTotalParticipantsCount] = useState(0);
   const [hours, setHours] = useState(0);
   const [min, setMin] = useState(0);
   const [sec, setSec] = useState(0);
+  const [selectedImg, setSelectedImg] = useRecoilState(selectedImgIndexState);
   const {data: session, status} = useSession();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -85,14 +90,6 @@ export default function PostCard ({
     setSec(secRemaining);
   };
 
-  const handleMouseEnter = (index: number) => {
-    setHoveredIndex(index);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredIndex(null);
-  };
-  
   const selectBgImage = async (e: any, img: any) => {
     e.stopPropagation();
     setImageUrl?.(img);
@@ -148,14 +145,13 @@ export default function PostCard ({
     if(typeof yesCount === 'number' && typeof noCount === 'number' ){
       setTotalParticipantsCount(yesCount + noCount)
     }
-  }
+  };
 
   const handleVotesCount = async (e: any) => {
     if(!userid){
       setIsModalVisible(true); 
       return
     };
-
     const selectedOption = e.target.value;
     const postRef = doc(firestore, 'posts', String(id));
     if(voteStatus === "no response"){
@@ -256,6 +252,7 @@ export default function PostCard ({
     return () => clearInterval(interval)
 }, [hours, min, sec]);
 
+
   return (
       <PostContainer>
         <PostWrapper $votingBtn={votingBtn}>
@@ -266,7 +263,7 @@ export default function PostCard ({
                 : (<Image src={DimmedProfile} alt='profile-example' width={40} height={40} priority />) 
               }
             </PostMetadataLeft>
-              <PostMetadataRight>
+            <PostMetadataRight>
               <UserName $votingBtn={votingBtn}>{username}</UserName>
               <DeadLine $votingBtn={votingBtn}>
                 {isOver ? (
@@ -278,15 +275,14 @@ export default function PostCard ({
                       {addZero(hours)} : {addZero(min)} : {addZero(sec)}
                     </>
                   )}
-                
                 </DeadLine>
             </PostMetadataRight>  
             </PostMetadata>
             <>
             {votingBtn 
-            ? postImageforHome()
-             : postImageforPost()
-             }
+              ? postImageforHome()
+              : postImageforPost()
+            }
             </>
           {votingBtn ? <PostQuestion>
             <Text>
@@ -313,10 +309,9 @@ export default function PostCard ({
                       <ColorCircle 
                         image={image} 
                         index={index} 
-                        hoveredIndex={hoveredIndex} 
-                        handleMouseEnter={handleMouseEnter} 
-                        handleMouseLeave={handleMouseLeave} 
                         selectBgImage={selectBgImage} 
+                        selectedImg={selectedImg}
+                        setSelectedImg={setSelectedImg}
                         key={index}/>
                     )
                   })}
@@ -329,10 +324,10 @@ export default function PostCard ({
         <ModalPortal>
           <LoginModal closeModal={closeModal}/>
         </ModalPortal>
-      }
+        }
       </PostContainer>
   )
-}
+};
 
 const PostContainer = styled.div`
   width: 335px;
@@ -375,11 +370,11 @@ const PostMetadataRight = styled.div`
 
 const UserName = styled.div<{$votingBtn? : boolean}>`
   margin-bottom: 3px;
-  color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.disabledfontColor}}`};
+  color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.dimFontColor}}`};
 `;
 
 const DeadLine = styled.div<{$votingBtn? : boolean}>`
-  color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.disabledfontColor}}`};
+  color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.dimFontColor}}`};
 `;
 
 const PostQuestion = styled.div`
@@ -453,5 +448,5 @@ const DividedText = styled.div<{$image? : string}>`
   margin-top: ${props => props.$image ? "104px" : "14px"};
   font-size: 16px;
   line-height: 28px; 
-  color: ${props => `${props.theme.color.disabledfontColor}}`};
+  color: ${props => `${props.theme.color.dimFontColor}}`};
 `;
