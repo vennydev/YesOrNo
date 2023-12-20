@@ -1,10 +1,10 @@
 "use client"
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { AddIcon } from "@/public/icons";
 import styled from 'styled-components';
-import { useRecoilState } from "recoil";
-import { selectedImgIndexState } from "@/recoil/post/atom";
+import { useSetRecoilState } from "recoil";
+import { isCheckDeletionModalVisible, selectedImgIndexState } from "@/recoil/post/atom";
 
 interface ImageUploaderProps {
   handleImage: (file: any) => void;
@@ -12,8 +12,7 @@ interface ImageUploaderProps {
 
 export default function ImageUploader({handleImage}: ImageUploaderProps) {
   const fileInput = useRef<HTMLInputElement>(null);
-  const [selectedImgIndex, setSelectedImgIndex] = useRecoilState(selectedImgIndexState);
-
+  const setSelectedImgIndex = useSetRecoilState(selectedImgIndexState);
   return (
     <>
       <ImageUploadBtn htmlFor="input-file">
@@ -28,7 +27,7 @@ export default function ImageUploader({handleImage}: ImageUploaderProps) {
         ref={fileInput} 
         onChange={(e: React.ChangeEvent<{ files: FileList | null }>) => {
           handleImage(e.target.files);
-          setSelectedImgIndex(null);
+          setSelectedImgIndex(null)
         }} 
         style={{display: "none"}} />
     </>

@@ -6,19 +6,33 @@ import styled from "styled-components";
 interface ModalProps {
   closeModal: () => void,
   setActiveTab?: (url: string) => void,
+  text: string,
+  to: string,
 }
 
-export default function LoginModal({closeModal, setActiveTab}: ModalProps ) {
+export default function LoginModal({closeModal, setActiveTab, text, to}: ModalProps ) {
+  const divideText = () => {
+    return text.split("\n").map((string, index) => (
+      <span key={index}>
+        {string}
+        <br/>
+      </span>
+  ))};
+
   return (
     <LoginModalContainer onClick={() => {
       closeModal(); 
       setActiveTab !== undefined && setActiveTab("/")
       }}>
       <ModalWrapper>
-        <ModalMsg>로그인을 해야<br />이용가능한 서비스 입니다.</ModalMsg>
-        <Link href={'/login'} onClick={closeModal}>
-          <NaviToLoginPageBtn>확인</NaviToLoginPageBtn>
-        </Link>
+        <ModalMsg>{divideText()}</ModalMsg>
+              {typeof to === 'string' && (
+                <>
+                  <Link href={to} onClick={closeModal}>
+                    <NaviToLoginPageBtn>확인</NaviToLoginPageBtn>
+                  </Link>
+                </>
+              )}
       </ModalWrapper>
       <TransparentBg/>
     </LoginModalContainer>
@@ -80,4 +94,8 @@ const ModalMsg = styled.p`
   padding: 26px 0px;
   text-align: center;
   line-height: 28px;
+`;
+
+const CanelBtn = styled.button`
+
 `;

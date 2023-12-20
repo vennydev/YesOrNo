@@ -21,12 +21,11 @@ export default function PostPage() {
   // imageUrl: image download url을 가져와 이미지를 다운받아 preview에 보여줌
   const [imageUrl, setImageUrl] = useState<any>(PostBg1);
   // file: 업로드한 이미지
-  const [file, setFile] = useState<any>(PostBg1);
+  const [file, setFile] = useState<any>(null);
   const [editing, setEditing] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const {data: session} = useSession();
   const router = useRouter();
-
   const handleEditing = () => {
     setEditing(true);
   };
@@ -49,6 +48,7 @@ export default function PostPage() {
     const convert = new File([compressedFile], imageFile.name, {
       type: `${imageFile.type}`
     });
+    
     setFile(convert);
     const reader = new FileReader();
     reader.readAsDataURL(convert);
@@ -76,17 +76,17 @@ export default function PostPage() {
           reader.readAsDataURL(blob);
       }))
     );
-    console.log('file:', file);
+
     const dataURLtoFile = (dataurl :any, filename: any) => {
       const arr = dataurl.split(',');
       const mime = arr[0].match(/:(.*?);/)[1];
       const bstr = atob(arr[1]);
       let n = bstr.length, u8arr = new Uint8Array(n);
       while(n--){
-      u8arr[n] = bstr.charCodeAt(n);
+        u8arr[n] = bstr.charCodeAt(n);
       }
-    return new File([u8arr], filename, {type:mime});
-    };  
+      return new File([u8arr], filename, {type:mime});
+    };
     
     if(file.name === undefined){
       const url = imageUrl.src;
@@ -160,6 +160,7 @@ return (
             votingBtn={false}
             editing={editing}
             setImageUrl={setImageUrl}
+            setFile={setFile}
             handleEditing={handleEditing}
             handleText={handleText}
             />
@@ -219,7 +220,7 @@ const ParticipantsWrapper = styled.div`
 
 const ParticipantsText = styled.p`
   font-size: 11px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 `;

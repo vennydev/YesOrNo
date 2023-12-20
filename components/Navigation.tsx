@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { addPostW, addPostB, myPageW, myPageB, homeW, homeB } from '../public/images/index';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation'
-import LoginModal from './LoginModal';
+import LoginModal from './Modal';
 import ModalPortal from './modal/ModalPortal';
 
 const Navigation = () => {
@@ -23,7 +23,7 @@ const Navigation = () => {
       return isAuthed ? setActiveTab(text) : setIsModalVisible(true);
     };
 
-  const closeModal = () => {
+  const closeLoginModal = () => {
     setIsModalVisible(false)
   };
   useEffect(() => {
@@ -61,7 +61,7 @@ const Navigation = () => {
       </Link>
       {isModalVisible && 
         <ModalPortal>
-          <LoginModal closeModal={closeModal} setActiveTab={setActiveTab}/>
+          <LoginModal type="login" closeModal={closeLoginModal}/>
         </ModalPortal>
       }
     </NaviContainer>

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DefaultProfile, DimmedProfile, PostBg1, PostBg2 } from '../public/images';
 import Image from 'next/image';
 import styled from 'styled-components';
@@ -11,9 +11,9 @@ import { arrayRemove, arrayUnion, doc, onSnapshot, updateDoc } from 'firebase/fi
 import firestore from '@/firebase/firestore';
 import { useSession } from 'next-auth/react';
 import ModalPortal from './modal/ModalPortal';
-import LoginModal from './LoginModal';
+import Modal from './Modal';
 import { useRecoilState } from 'recoil';
-import { selectedImgIndexState } from '@/recoil/post/atom';
+import { isCheckDeletionModalVisible } from '@/recoil/post/atom';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = [PostBg1, PostBg2];
@@ -72,11 +72,19 @@ export default function PostCard ({
   const [hours, setHours] = useState(0);
   const [min, setMin] = useState(0);
   const [sec, setSec] = useState(0);
-  const [selectedImg, setSelectedImg] = useRecoilState(selectedImgIndexState);
   const {data: session, status} = useSession();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isCheckDeletionModal, setIsCheckDeletionModal] = useRecoilState(isCheckDeletionModalVisible);
 
   const userid = session?.user.id;
+
+  const closeLoginModal = () => {
+    setIsModalVisible(false)
+  };
+
+  const closeDeleteModal = () => {
+    setIsCheckDeletionModal(false);
+  }
 
   const getRemainingTime = (expiredTime: number) => {
     let currentTime = new Date().getTime();
@@ -90,14 +98,10 @@ export default function PostCard ({
     setSec(secRemaining);
   };
 
-  const selectBgImage = async (e: any, img: any) => {
-    e.stopPropagation();
+  const selectBgImage = (e: any, img: any) => {
+    e && e.stopPropagation();
     setImageUrl?.(img);
     setFile?.(img);
-  };
-
-  const closeModal = () => {
-    setIsModalVisible(false)
   };
 
   const divideText = () => {
@@ -310,8 +314,6 @@ export default function PostCard ({
                         image={image} 
                         index={index} 
                         selectBgImage={selectBgImage} 
-                        selectedImg={selectedImg}
-                        setSelectedImg={setSelectedImg}
                         key={index}/>
                     )
                   })}
@@ -321,9 +323,14 @@ export default function PostCard ({
           }
         </PostWrapper>
         {isModalVisible && 
-        <ModalPortal>
-          <LoginModal closeModal={closeModal}/>
-        </ModalPortal>
+          <ModalPortal>
+            <Modal type="login" closeModal={closeLoginModal}/>
+          </ModalPortal>
+        }
+        {isCheckDeletionModal && 
+          <ModalPortal>
+            <Modal type="deleteDefaultImage" closeModal={closeDeleteModal} selectBgImage={selectBgImage}/>
+          </ModalPortal>
         }
       </PostContainer>
   )
