@@ -13,6 +13,8 @@ import { addDoc, collection, getFirestore, serverTimestamp } from 'firebase/fire
 import { useSession } from 'next-auth/react';
 import storage from '@/firebase/storage';
 import { useRouter } from 'next/navigation';
+import { useResetRecoilState, useSetRecoilState } from 'recoil';
+import { selectedImgIndexState } from '@/recoil/post/atom';
 
 const ONEDAY = 24*60*60*1000;
 
@@ -21,11 +23,13 @@ export default function PostPage() {
   // imageUrl: image download url을 가져와 이미지를 다운받아 preview에 보여줌
   const [imageUrl, setImageUrl] = useState<any>(PostBg1);
   // file: 업로드한 이미지
-  const [file, setFile] = useState<any>(null);
+  const [file, setFile] = useState<any>(PostBg1);
   const [editing, setEditing] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const {data: session} = useSession();
   const router = useRouter();
+  const setIndex = useResetRecoilState(selectedImgIndexState);
+
   const handleEditing = () => {
     setEditing(true);
   };
@@ -36,7 +40,6 @@ export default function PostPage() {
 
   const handleImage = async (e: any) => {
     const file = e.target.files;
-    console.log('file: ', file);
     if(!file) {return};
 
   const imageFile = file[0];
@@ -54,8 +57,10 @@ export default function PostPage() {
     setFile(convert);
     const reader = new FileReader();
     reader.readAsDataURL(convert);
-    reader.onloadend = () => setImageUrl(reader.result);
-    e.target.value = '';
+    reader.onloadend = () => {
+      setImageUrl(reader.result);
+      e.target.value = '';
+    }
   }catch(error) {
     console.log(error);
   }
@@ -90,7 +95,6 @@ export default function PostPage() {
       }
       return new File([u8arr], filename, {type:mime});
     };
-    
     if(file.name === undefined){
       const url = imageUrl.src;
       const splitUrl = url.split("/");
@@ -114,6 +118,7 @@ export default function PostPage() {
             timestamp: serverTimestamp(),
           };
         uploadToFireStore(docData);
+        setIndex();
         router.push('/');
       });
      }).catch(error => console.log('기본 이미지 포함 데이터 객체 업로드 실패', error));
@@ -134,6 +139,7 @@ export default function PostPage() {
           timestamp: serverTimestamp(),
         };
         uploadToFireStore(docData);
+        setIndex();
         router.push('/');
       }).catch(error => console.log('업로드된 이미지 포함 데이터 객체 업로드 실패',error));
     }

@@ -51,7 +51,6 @@ export default function PostImageforHome({imageUrl}: ImageUrlProp) {
 const ImageBG = styled.div`
 width: 100%;
 height: 184px;
-background-color: black;
 z-index: -1000;
 border-radius: 14px;
 border: 1px solid #000;
