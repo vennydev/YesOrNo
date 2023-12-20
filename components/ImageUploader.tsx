@@ -25,9 +25,9 @@ export default function ImageUploader({handleImage}: ImageUploaderProps) {
         name='image_URL' 
         accept='image/*' 
         ref={fileInput} 
-        onChange={(e: React.ChangeEvent<{ files: FileList | null }>) => {
-          handleImage(e.target.files);
-          setSelectedImgIndex(null)
+        onChange={(e: React.FormEvent<HTMLInputElement>) => {
+          handleImage(e);
+          setSelectedImgIndex(null);
         }} 
         style={{display: "none"}} />
     </>

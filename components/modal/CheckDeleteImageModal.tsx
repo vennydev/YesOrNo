@@ -6,7 +6,7 @@ import styled from "styled-components";
 
 interface ModalProps {
   text: string;
-  selectBgImage?: (e: any | null, image: any) => void;
+  selectBgImage: (e: any | null, image: any) => void;
   closeModal: () => void;
 }
 
@@ -29,7 +29,7 @@ export default function CheckDeleteImageModal({ text, closeModal, selectBgImage 
     const imageIndex = parsedImageInfo.index;
 
     setIndex(imageIndex);
-    selectBgImage && selectBgImage(null, imageObj);
+    selectBgImage(null, imageObj);
     setIsCheckDeletionModal(false);
   };
 

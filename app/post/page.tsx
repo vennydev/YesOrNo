@@ -34,7 +34,9 @@ export default function PostPage() {
     setText(value);
   };
 
-  const handleImage = async (file: any) => {
+  const handleImage = async (e: any) => {
+    const file = e.target.files;
+    console.log('file: ', file);
     if(!file) {return};
 
   const imageFile = file[0];
@@ -53,6 +55,7 @@ export default function PostPage() {
     const reader = new FileReader();
     reader.readAsDataURL(convert);
     reader.onloadend = () => setImageUrl(reader.result);
+    e.target.value = '';
   }catch(error) {
     console.log(error);
   }
@@ -145,7 +148,7 @@ return (
     <PostSection>
       <PostContainer>
         <ActionBtnWrapper>
-          <ClearIcon/>
+          <ClearIcon onClick={() => router.push("/")}/>
           <PageTitle>질문하기</PageTitle>
           <PostBtn onClick={handleUpload} $text={text}>완료</PostBtn>
         </ActionBtnWrapper>

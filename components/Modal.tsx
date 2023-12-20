@@ -15,8 +15,23 @@ export default function Modal({ type, closeModal, setActiveTab, selectBgImage }:
 
   switch(type) {
     case 'login': 
-      return (<LoginModal closeModal={closeModal} to='/login' text={"로그인을 해야 \n 이용가능한 서비스 입니다."} setActiveTab={setActiveTab}/> )
+      return (
+      <LoginModal 
+        closeModal={closeModal} 
+        to='/login' 
+        text={"로그인을 해야 \n 이용가능한 서비스 입니다."} 
+        setActiveTab={setActiveTab}/> 
+      )
     case 'deleteDefaultImage':
-      return (<CheckDeleteImageModal closeModal={closeModal} text={"배경을 선택하면 \n 사진이 삭제됩니다."} selectBgImage={selectBgImage}/>)
+      return (
+        <>
+          {selectBgImage &&
+            <CheckDeleteImageModal 
+              closeModal={closeModal} 
+              text={"배경을 선택하면 \n 사진이 삭제됩니다."} 
+              selectBgImage={selectBgImage}/>
+          }
+        </>
+      )
   };
 };
