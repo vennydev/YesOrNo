@@ -14,7 +14,7 @@ const selectedImgIndexState = atom<selectedImgIndexStateType>({
 const isCheckDeletionModalVisible = atom<isCheckDeletionModalVisibleStateType>({
   key: 'isCheckDeletionModalVisible',
   default: false,
-})
+});
 
 export { 
   selectedImgIndexState,

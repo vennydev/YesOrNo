@@ -6,21 +6,37 @@ import { DefaultProfile, Pencil } from "@/public/images";
 import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import firestore from "@/firebase/firestore";
 import MyPost from "@/components/MyPost";
+import { RecoilEnv } from "recoil";
 
-interface TabSelected {
-  $focused: boolean;
-}
+// env에 넣을까 말까
+RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
 export default function Mypage() {
   const [isSelected, setIsSelected] = useState(0);
   const {data: session } = useSession();
   const username = session?.user?.name;
+  const [myPostsArr, setMyPostsArr] = useState([]);
+  const [votedPosts, setVotedPosts] = useState([]);
+
+  
+  async function getData() {
+    const userid = localStorage.getItem("userID");
+    const docRef = doc(firestore, "users", String(userid));
+    const docSnap = await getDoc(docRef);
+    setMyPostsArr(docSnap?.data()?.myPosts);
+    setVotedPosts(docSnap?.data()?.votedPosts);
+  };
+  
   const handleSelectedTab = (index: number) => {
     setIsSelected(index);
   };
+  
+  useEffect(() => {
+      getData();
+  }, []);
 
   return (
     <MyPageSection>
@@ -38,7 +54,11 @@ export default function Mypage() {
         <TabButton $focused={isSelected === 1} onClick={() => handleSelectedTab(1)}>참여한 투표</TabButton>
       </TabWrapper>
       <MyPostsContainer>
-        { isSelected === 0 ? <MyPost/>: null }
+        { isSelected === 0 ? (
+          myPostsArr.map((id) => {
+            return (<MyPost key={id} id={id}/>)
+          })
+        ) : null}
         <SignOutBtnWrapper>
           <button onClick={() => signOut()}>로그아웃</button>
           {/* <Divider/> */}
@@ -77,7 +97,7 @@ const TabWrapper = styled.div`
   width: 100%;
 `;
 
-const TabButton = styled.button<TabSelected>`
+const TabButton = styled.button<{$focused: boolean}>`
   width: 50%;
   text-align: center;
   padding-bottom: 10px;
@@ -106,4 +126,5 @@ const SignOutBtnWrapper = styled.div`
 //   height: 100%;
 //   width: 1px;
 //   background: #8C8C8C;
-// `; 
+// `;
+ 

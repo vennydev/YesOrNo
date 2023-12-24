@@ -19,7 +19,8 @@ const handler = NextAuth({
           id: user.id,
           name: user.name,
           email: user.email,
-          myPost: [],
+          myPosts: [],
+          votedPosts: []
         });
 
         return true

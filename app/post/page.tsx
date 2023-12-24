@@ -1,6 +1,6 @@
 "use client" 
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ClearIcon } from '../../public/icons/index';
 import PostCard from '../../components/PostCard';
 import styled from 'styled-components';
@@ -9,12 +9,13 @@ import ImageUploader from '../../components/ImageUploader';
 import imageCompression from 'browser-image-compression';
 import { ref, uploadBytes } from 'firebase/storage';
 import firebasedb from '@/firebase/firebasedb';
-import { addDoc, collection, getFirestore, serverTimestamp } from 'firebase/firestore';
+import { addDoc, arrayUnion, collection, doc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useSession } from 'next-auth/react';
 import storage from '@/firebase/storage';
 import { useRouter } from 'next/navigation';
-import { useResetRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
 import { selectedImgIndexState } from '@/recoil/post/atom';
+import firestore from '@/firebase/firestore';
 
 const ONEDAY = 24*60*60*1000;
 
@@ -120,7 +121,7 @@ export default function PostPage() {
         uploadToFireStore(docData);
         setIndex();
         router.push('/');
-      });
+      })
      }).catch(error => console.log('기본 이미지 포함 데이터 객체 업로드 실패', error));
     } else {
       const postsRef = ref(storage, `posts/${file.name}`);
@@ -147,9 +148,12 @@ export default function PostPage() {
 
   const uploadToFireStore = async (data: object) => {
     const db = getFirestore(firebasedb);
-    const docRef = await addDoc(collection(db, 'posts'), data);
+    const postRef = await addDoc(collection(db, 'posts'), data);
+    const usersRef = doc(firestore, 'users', session?.user.id);
+    await updateDoc(usersRef, {
+      myPosts: arrayUnion(postRef.id)
+    })
   };
-
 return (
     <PostSection>
       <PostContainer>
