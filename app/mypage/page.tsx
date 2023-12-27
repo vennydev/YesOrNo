@@ -37,7 +37,7 @@ export default function Mypage() {
   useEffect(() => {
       getData();
   }, []);
-
+console.log('myPostsArr: ', myPostsArr);
   return (
     <MyPageSection>
       <UserInfoWrapper>
@@ -55,12 +55,12 @@ export default function Mypage() {
       </TabWrapper>
       <MyPostsContainer>
         { isSelected === 0 ? (
-          myPostsArr.map((id) => {
+          myPostsArr && myPostsArr.map((id) => {
             return (<MyPost key={id} id={id}/>)
           })
         ) : null}
         <SignOutBtnWrapper>
-          <button onClick={() => signOut()}>로그아웃</button>
+          <button onClick={() => signOut({ callbackUrl: '/' })}>로그아웃</button>
           {/* <Divider/> */}
           <button>탈퇴</button>
         </SignOutBtnWrapper>
