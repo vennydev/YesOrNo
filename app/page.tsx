@@ -5,8 +5,11 @@ import styled from "styled-components";
 import PostCard from '../components/PostCard';
 import firebasedb from '@/firebase/firebasedb';
 import { getFirestore, collection, getDocs, orderBy, query } from "firebase/firestore";
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { useSession } from 'next-auth/react';
+import Toast from '@/components/Toast';
+import { yesToastMsg } from '@/constants/toast';
+import { toastState } from '@/recoil/toast/atom';
 
 export interface PostsProps {
     text: string,
@@ -25,6 +28,7 @@ export default function Home () {
   const [selectedTab, setSelectedTab] = useState(1);
   const [openPosts, setOpenPosts] = useState<any>([]);
   const [closePosts, setClosePosts] = useState<any>([]);
+  const toast = useRecoilValue(toastState);
   const {data: session } = useSession();
 
   const handleClick = (index: number) => {
@@ -104,6 +108,7 @@ export default function Home () {
           }
           </PostContainer>
       </HomeContainer>
+      {toast.isShown && <Toast position='bottom'/>}
     </HomeSection>
   )
 };

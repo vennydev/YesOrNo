@@ -57,7 +57,7 @@ const VotingBtnContainer = styled.div`
 const PostVoteWrapper = styled.div`
   display: flex;
   width: 100%;
-  height: 66px;
+  height: 60px;
   border-radius: 14px;
   border: ${(props) => `1px solid ${props.theme.color.mainBorderColor}`};
   position: relative;
@@ -86,13 +86,11 @@ const VoteBtn = styled.button`
 const YesBtn = styled(VoteBtn)<{$voteStatus: string}>`
   border-top-left-radius: 14px;
   border-bottom-left-radius: 14px;
-  color: ${props => props.$voteStatus === "no response" ? "black" : "white"}
 `;
 
 const NoBtn = styled(VoteBtn)<{$voteStatus: string}>`
   border-top-right-radius: 14px;
   border-bottom-right-radius: 14px;
-  color: ${props => props.$voteStatus === "no response" ? "black" : "white"}
 `;
 
 const BtnTitle = styled.span`
@@ -104,11 +102,12 @@ const BtnTitle = styled.span`
 `;
 
 const ParticipantsRate = styled.div`
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 400;
   line-height: normal;
   font-family: 'MaruBuri';
   position: relative;
+  opacity: 0.5;
   z-index: -1000;
 `;
 
@@ -123,7 +122,6 @@ const BarWrapper = styled.div`
 
 const Bar = styled.div`
   position:absolute;
-  background-color: ${props => props.theme.color.pointColor};
   height:100%;
   z-index:-100;
   display: flex;
@@ -135,12 +133,14 @@ const Bar = styled.div`
 const YesBar = styled(Bar)<{$percentage: number}>`
   width: ${props => props.$percentage ? `${props.$percentage}%` : '0px'};
   left:0;
+  background-color: ${props => props.theme.color.yesBarColor};
   border-right: ${props => props.$percentage ? `1px solid ${props.theme.color.mainBorderColor}` : 'none'};
 `;
 
 const NoBar = styled(Bar)<{$percentage: number}>`
   width: ${props => props.$percentage && `${props.$percentage}%`};
   right:0;
+  background-color: ${props => props.theme.color.noBarColor};
   border-left: ${props => props.$percentage ? `1px solid ${props.theme.color.mainBorderColor}` : 'none'};
 `;
 

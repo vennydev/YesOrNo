@@ -17,6 +17,8 @@ const color = {
   mainFontColor: "#262626",
   mainBorderColor: "#262626",
   pointColor: "#796EFF",
+  yesBarColor: "#C3BEFD",
+  noBarColor: "#FFB5C3",
 }
 
 const theme = {

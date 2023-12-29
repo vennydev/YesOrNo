@@ -14,6 +14,7 @@ import ModalPortal from './modal/ModalPortal';
 import Modal from './Modal';
 import { useRecoilState } from 'recoil';
 import { isCheckDeletionModalVisible } from '@/recoil/post/atom';
+import { toastState } from '@/recoil/toast/atom';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = [PostBg1, PostBg2];
@@ -59,7 +60,7 @@ export default function PostCard ({
   setImageUrl, 
   setFile,
   handleEditing, 
-  handleText
+  handleText,
   }:PostCardPropsType) {
   const [totalCount, setTotalCount] = useState<TotalCountType>({
     yesTotal: yesCount,
@@ -75,6 +76,7 @@ export default function PostCard ({
   const {data: session, status} = useSession();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCheckDeletionModal, setIsCheckDeletionModal] = useRecoilState(isCheckDeletionModalVisible);
+  const [toastInfo, setToastInfo] = useRecoilState(toastState);
 
   const userid = session?.user.id;
 
@@ -150,13 +152,15 @@ export default function PostCard ({
       setTotalParticipantsCount(yesCount + noCount)
     }
   };
-
+  console.log('toastState: ', toastState);
   const handleVotesCount = async (e: any) => {
     if(!userid){
       setIsModalVisible(true); 
       return
     };
+    
     const selectedOption = e.target.value;
+
     const postRef = doc(firestore, 'posts', String(id));
     if(voteStatus === "no response"){
       if(selectedOption === 'yes'){
@@ -176,6 +180,13 @@ export default function PostCard ({
         }
         setVoteStatus(VOTE_STATUS[2]);
       }
+      if(typeof id === 'string') {
+        setToastInfo({
+          isShown: true,
+          id: id,
+          voteResult: selectedOption === 'yes' ? 'YES' : 'NO',
+        })
+      };
     }else if(voteStatus === "yes") {
       if(selectedOption === 'yes'){
         return alert("재투표 노노")
@@ -185,6 +196,13 @@ export default function PostCard ({
             yesUser: arrayRemove(userid),
           });
         setVoteStatus(VOTE_STATUS[2]);
+        if(typeof id === 'string') {
+          setToastInfo({
+            isShown: true,
+            id: id,
+            voteResult: 'NO',
+          })
+        };
         if(typeof totalCount.yesTotal === "number" && typeof totalCount.noTotal === "number"){
           setTotalCount({yesTotal: totalCount.yesTotal - 1, noTotal: totalCount.noTotal + 1})
         }}
@@ -197,6 +215,13 @@ export default function PostCard ({
             noUser: arrayRemove(userid),
           });
         setVoteStatus(VOTE_STATUS[1]);
+        if(typeof id === 'string') {
+          setToastInfo({
+            isShown: true,
+            id: id,
+            voteResult: 'YES',
+          })
+        };
         if(typeof totalCount.yesTotal === "number" && typeof totalCount.noTotal === "number"){
           setTotalCount({yesTotal: totalCount.yesTotal! + 1, noTotal: totalCount.noTotal! - 1})
         }}
@@ -234,25 +259,25 @@ export default function PostCard ({
     if (hours === 0 && min === 0 && sec === 0) return;
 
     let interval: any;
-    interval = setInterval(() => {
-      if(sec > 0) {
-        setSec(prev => prev - 1);
-      }else if(sec === 0 && min > 0){
-        setMin(prev => prev - 1);
-        if (min !== 0) {
-          setSec(59);
-        }
-      }else if(sec === 0 && min === 0){
-        setHours(prev => prev - 1);
-        if(hours > 0) {
-          setMin(59);
-          setSec(59);
-        }
-        if(hours === 0){
-          clearInterval(interval)
-        }
-      }
-    }, 1000)
+    // interval = setInterval(() => {
+    //   if(sec > 0) {
+    //     setSec(prev => prev - 1);
+    //   }else if(sec === 0 && min > 0){
+    //     setMin(prev => prev - 1);
+    //     if (min !== 0) {
+    //       setSec(59);
+    //     }
+    //   }else if(sec === 0 && min === 0){
+    //     setHours(prev => prev - 1);
+    //     if(hours > 0) {
+    //       setMin(59);
+    //       setSec(59);
+    //     }
+    //     if(hours === 0){
+    //       clearInterval(interval)
+    //     }
+    //   }
+    // }, 1000)
     return () => clearInterval(interval)
 }, [hours, min, sec]);
 
