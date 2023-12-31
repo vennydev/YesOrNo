@@ -1,16 +1,23 @@
 "use client"
 
 import styled from 'styled-components';
+import VotingClickEffect from './animation/VotingClickEffect';
+import { useState } from 'react';
+import { useRecoilValue } from 'recoil';
+import { clickEffectState } from '@/recoil/post/atom';
 
 interface VotingBtnProps {
   percentage: number;
   voteStatus: string;
   isParticipantCountPublic: boolean | undefined;
   totalParticipantsCount: number;
+  isOver: boolean | undefined;
+  onEffect: boolean;
+  setOnEffect: (state: boolean) => void;
   handleVotesCount: (e: any) => void;
 }
 
-export default function VotingBtn({percentage, voteStatus, isParticipantCountPublic, totalParticipantsCount, handleVotesCount}: VotingBtnProps) {
+export default function VotingBtn({percentage, voteStatus, isParticipantCountPublic, totalParticipantsCount, isOver, onEffect, setOnEffect, handleVotesCount}: VotingBtnProps) {
   const yesPercentage: number = percentage;
   const noPercentage: number = 100 - percentage;
 
@@ -35,38 +42,22 @@ export default function VotingBtn({percentage, voteStatus, isParticipantCountPub
     }
   };
   
-  const showBtn = (text: string) => {
-    if(yesPercentage > noPercentage){
-      return (
-        <BtnElements>
-          <BtnTitle>{text}</BtnTitle>
-          <ParticipantsRate>{getOnlyIntergers(yesPercentage)}%</ParticipantsRate>
-        </BtnElements>
-      )
-    }else if(noPercentage > yesPercentage){
-      return (
-        <BtnElements>
-          <BtnTitle>{text}</BtnTitle>
-          <ParticipantsRate>{getOnlyIntergers(noPercentage)}%</ParticipantsRate>
-      </BtnElements>
-      )
-    }
-  };
-
   return (
     <VotingBtnContainer>
       {isParticipantCountPublic && <ParticiPatnsCount>{totalParticipantsCount}명 투표 참여</ParticiPatnsCount>}
-      <PostVoteWrapper>
+      <PostVoteWrapper $isOver={isOver}>
         <BtnWrapper>
           <YesBtn $voteStatus={voteStatus} value="yes" onClick={(e) => handleVotesCount(e)}>
+            {typeof window !== 'undefined' ? (onEffect && <VotingClickEffect position='left' setOnEffect={setOnEffect}/>): null}
             {voteStatus === 'no response' ? (
-              <BtnTitle>YES</BtnTitle>
-            ) : (
-              <>
+              <BtnTitle $isOver={isOver}>YES</BtnTitle>       
+              
+              ) : (
+                <>
                 {(yesPercentage > noPercentage || yesPercentage === noPercentage) && 
                   <BtnElements>
-                    <BtnTitle>YES</BtnTitle>
-                    <ParticipantsRate>{getOnlyIntergers(yesPercentage)}%</ParticipantsRate>
+                    <BtnTitle $isOver={isOver}>YES</BtnTitle>
+                    <ParticipantsRate $isOver={isOver}>{getOnlyIntergers(yesPercentage)}%</ParticipantsRate>
                   </BtnElements>
                 }
               </>
@@ -74,14 +65,15 @@ export default function VotingBtn({percentage, voteStatus, isParticipantCountPub
           </YesBtn>
           {voteStatus === 'no response' && <Divider/>}
           <NoBtn $voteStatus={voteStatus} value="no" onClick={(e) => handleVotesCount(e)}>
+            {typeof window !== 'undefined' ? (onEffect && <VotingClickEffect position='right' setOnEffect={setOnEffect}/>) : null}
           {voteStatus === 'no response' ? (
-              <BtnTitle>NO</BtnTitle>
+            <BtnTitle $isOver={isOver}>NO</BtnTitle>
             ) : (
               <>
                 {(noPercentage > yesPercentage || yesPercentage === noPercentage) && 
                   <BtnElements>
-                    <BtnTitle>NO</BtnTitle>
-                    <ParticipantsRate>{getOnlyIntergers(noPercentage)}%</ParticipantsRate>
+                    <BtnTitle $isOver={isOver}>NO</BtnTitle>
+                    <ParticipantsRate $isOver={isOver}>{getOnlyIntergers(noPercentage)}%</ParticipantsRate>
                   </BtnElements>
                 }
               </>
@@ -103,13 +95,14 @@ const VotingBtnContainer = styled.div`
   width: 100%;
 `;
 
-const PostVoteWrapper = styled.div`
+const PostVoteWrapper = styled.div<{$isOver: boolean | undefined}>`
   display: flex;
   width: 100%;
   height: 60px;
   border-radius: 12px;
-  border: ${(props) => `1px solid ${props.theme.color.mainBorderColor}`};
+  border: ${(props) => props.$isOver ? `1px solid #bfbfbf` : `1px solid ${props.theme.color.mainBorderColor}`};
   position: relative;
+  background-color: ${props => props.$isOver ? '#F2F2F2' : 'null'};
 `;
 
 const ParticiPatnsCount = styled.span`
@@ -145,21 +138,27 @@ const NoBtn = styled(VoteBtn)<{$voteStatus: string}>`
   border-bottom-right-radius: 12px;
 `;
 
-const BtnElements = styled.div`
-  width: 74px;
-  display: flex;
-  flex-direction: column;
-`
 
-const BtnTitle = styled.span`
+const BtnTitle = styled.span<{$isOver: boolean | undefined}>`
   font-size: 20px;
   line-height: 32px;
   font-family: 'MaruBuri';
   position: relative;
   z-index: -1000;
-`;
+  color:red;
+  color: ${props => props.$isOver ? '#BFBFBF' : 'inherit'};
+  `;
 
-const ParticipantsRate = styled.div`
+  const BtnElements = styled.div`
+    width: 74px;
+    display: flex;
+    flex-direction: column;
+    &:hover ${BtnTitle}{
+      font-size:21px;
+    }
+  `
+
+const ParticipantsRate = styled.div<{$isOver: boolean | undefined}>`
   font-size: 9px;
   font-weight: 400;
   line-height: normal;
@@ -168,6 +167,7 @@ const ParticipantsRate = styled.div`
   opacity: 0.5;
   z-index: -1000;
   padding: 0 10px;
+  color: ${props => props.$isOver ? '#8C8C8C' : 'inherit'};
 `;
 
 const BarWrapper = styled.div`
@@ -185,7 +185,6 @@ const Bar = styled.div<{$percentage: number}>`
   z-index:-100;
   display: flex;
   border-radius: 12px;
-  /* border-radius:${props => props.$percentage === 50 ? '1px' : '12px'}; */
   justify-content: space-between;
   transition: all 0.3s ease-in-out;
   width: ${props => props.$percentage ? `${props.$percentage}%` : '0px'};

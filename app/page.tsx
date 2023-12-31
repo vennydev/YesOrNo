@@ -56,15 +56,20 @@ export default function Home () {
 
   useEffect(() => {
     getData();
-    localStorage.setItem('userID', session?.user.id);
   }, []);
+  
+  useEffect(() => {
+    if(session){
+      localStorage.setItem('userID', session?.user.id);
+    }
+  }, [session])
 
   return (
     <HomeSection>
       <HomeContainer>
         <TabContainer>
           <TabWrapper>
-            <TabButton $isSelected={selectedTab === 1 ? "selected" : null} onClick={() => handleClick(1)}>진행 중</TabButton>
+            <TabButton $isSelected={selectedTab === 1 ? "selected" : null} onClick={() => handleClick(1)}>진행중</TabButton>
             <TabButton $isSelected={selectedTab === 2 ? "selected" : null} onClick={() => handleClick(2)}>마감</TabButton>
           </TabWrapper>
         </TabContainer>

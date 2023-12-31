@@ -12,8 +12,8 @@ import firestore from '@/firebase/firestore';
 import { useSession } from 'next-auth/react';
 import ModalPortal from './modal/ModalPortal';
 import Modal from './Modal';
-import { useRecoilState } from 'recoil';
-import { isCheckDeletionModalVisible } from '@/recoil/post/atom';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { clickEffectState, isCheckDeletionModalVisible } from '@/recoil/post/atom';
 import { toastState } from '@/recoil/toast/atom';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
@@ -77,6 +77,8 @@ export default function PostCard ({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCheckDeletionModal, setIsCheckDeletionModal] = useRecoilState(isCheckDeletionModalVisible);
   const [toastInfo, setToastInfo] = useRecoilState(toastState);
+  const [endTime, setEndTime] = useState('');
+  const [onEffect, setOnEffect] = useState(false);
 
   const userid = session?.user.id;
 
@@ -152,14 +154,16 @@ export default function PostCard ({
       setTotalParticipantsCount(yesCount + noCount)
     }
   };
-  console.log('toastState: ', toastState);
+
   const handleVotesCount = async (e: any) => {
     if(!userid){
       setIsModalVisible(true); 
       return
     };
+    if(isOver) return;
     
-    const selectedOption = e.target.value;
+    const selectedOption = e.currentTarget.value;
+    console.log('e: ', selectedOption);
 
     const postRef = doc(firestore, 'posts', String(id));
     if(voteStatus === "no response"){
@@ -171,6 +175,7 @@ export default function PostCard ({
           setTotalCount({...totalCount, yesTotal: totalCount.yesTotal + 1})
         }
         setVoteStatus(VOTE_STATUS[1]);
+        setOnEffect(true);
       }else if (selectedOption === 'no'){
         await updateDoc(postRef, {
           noUser: arrayUnion(userid),
@@ -179,6 +184,7 @@ export default function PostCard ({
           setTotalCount({...totalCount, noTotal: totalCount.noTotal + 1})
         }
         setVoteStatus(VOTE_STATUS[2]);
+        setOnEffect(true);
       }
       if(typeof id === 'string') {
         setToastInfo({
@@ -196,6 +202,7 @@ export default function PostCard ({
             yesUser: arrayRemove(userid),
           });
         setVoteStatus(VOTE_STATUS[2]);
+        setOnEffect(true);
         if(typeof id === 'string') {
           setToastInfo({
             isShown: true,
@@ -214,7 +221,7 @@ export default function PostCard ({
             yesUser: arrayUnion(userid),
             noUser: arrayRemove(userid),
           });
-        setVoteStatus(VOTE_STATUS[1]);
+        setOnEffect(true);
         if(typeof id === 'string') {
           setToastInfo({
             isShown: true,
@@ -228,6 +235,10 @@ export default function PostCard ({
     }
   };
 
+  useEffect(() => {
+    setOnEffect(true);
+  }, [setVoteStatus])
+  
   useEffect(() => {
     onSnapshot(doc(firestore, 'posts', String(id)), (doc) => {
       const yesArr = doc.data()?.yesUser.includes(userid);
@@ -281,6 +292,15 @@ export default function PostCard ({
     return () => clearInterval(interval)
 }, [hours, min, sec]);
 
+useEffect(() => {
+  if(typeof expiredAt === 'number') {
+      const endTime = new Date(expiredAt);
+      const year = endTime.getFullYear();
+      const month = endTime.getMonth() + 1;
+      const day = endTime.getDate();
+      setEndTime(`${year}년 ${month}월 ${day}일`)
+    }
+  }, [expiredAt]);
 
   return (
       <PostContainer>
@@ -297,7 +317,7 @@ export default function PostCard ({
               <DeadLine $votingBtn={votingBtn}>
                 {isOver ? (
                     <>
-                      00 : 00 : 00
+                      {endTime} 투표 완료
                     </>
                   ) : (
                     <>
@@ -313,12 +333,13 @@ export default function PostCard ({
               : postImageforPost()
             }
             </>
-          {votingBtn ? <PostQuestion>
-            <Text>
-              {text}
-            </Text>
-            </PostQuestion> : divideText()              
-          }
+          {votingBtn 
+          ? ( <PostQuestion>
+              <Text>
+                {text}
+              </Text>
+            </PostQuestion> )
+            : divideText()}
           {votingBtn 
               ?  (
               <>
@@ -328,6 +349,9 @@ export default function PostCard ({
                   voteStatus={voteStatus}
                   totalParticipantsCount={totalParticipantsCount}
                   isParticipantCountPublic={isParticipantCountPublic}
+                  isOver={isOver}
+                  setOnEffect={setOnEffect}
+                  onEffect={onEffect}
                   />
               </> )
             : (
@@ -385,7 +409,7 @@ const PostWrapper = styled.div<{$votingBtn? : boolean;}>`
 `; 
 
 const PostMetadata = styled.div`
-    align-self: flex-start;
+  align-self: flex-start;
   display: flex;
   align-items: center;
   gap:6px;
@@ -459,7 +483,6 @@ const StyledImage = styled(Image)`
   border: 1px solid #000;
   margin-top: 20px;
   object-fit: contain;
-  background-color: black;
 `;
 
 const BgSelectorWrapper = styled.ul`

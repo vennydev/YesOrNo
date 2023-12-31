@@ -16,7 +16,13 @@ const isCheckDeletionModalVisible = atom<isCheckDeletionModalVisibleStateType>({
   default: false,
 });
 
+const clickEffectState = atom({
+  key: 'clickEffectState',
+  default: false,
+});
+
 export { 
   selectedImgIndexState,
-  isCheckDeletionModalVisible
+  isCheckDeletionModalVisible,
+  clickEffectState,
 };

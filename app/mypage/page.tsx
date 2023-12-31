@@ -11,7 +11,6 @@ import firestore from "@/firebase/firestore";
 import MyPost from "@/components/MyPost";
 import { RecoilEnv } from "recoil";
 
-// env에 넣을까 말까
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
 export default function Mypage() {
@@ -26,6 +25,7 @@ export default function Mypage() {
     const userid = localStorage.getItem("userID");
     const docRef = doc(firestore, "users", String(userid));
     const docSnap = await getDoc(docRef);
+    console.log('docSnap: ', docSnap.data());
     setMyPostsArr(docSnap?.data()?.myPosts);
     setVotedPosts(docSnap?.data()?.votedPosts);
   };
@@ -37,7 +37,7 @@ export default function Mypage() {
   useEffect(() => {
       getData();
   }, []);
-console.log('myPostsArr: ', myPostsArr);
+// console.log('myPostsArr: ', myPostsArr);
   return (
     <MyPageSection>
       <UserInfoWrapper>
@@ -60,7 +60,10 @@ console.log('myPostsArr: ', myPostsArr);
           })
         ) : null}
         <SignOutBtnWrapper>
-          <button onClick={() => signOut({ callbackUrl: '/' })}>로그아웃</button>
+          <button onClick={() => {
+            signOut({ callbackUrl: '/' });
+            localStorage.clear();
+            }}>로그아웃</button>
           {/* <Divider/> */}
           <button>탈퇴</button>
         </SignOutBtnWrapper>
