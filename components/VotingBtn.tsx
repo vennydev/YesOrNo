@@ -2,9 +2,6 @@
 
 import styled from 'styled-components';
 import VotingClickEffect from './animation/VotingClickEffect';
-import { useState } from 'react';
-import { useRecoilValue } from 'recoil';
-import { clickEffectState } from '@/recoil/post/atom';
 
 interface VotingBtnProps {
   percentage: number;

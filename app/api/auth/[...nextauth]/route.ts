@@ -1,5 +1,5 @@
 import firestore from "@/firebase/firestore";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, collection, getDocs } from "firebase/firestore";
 import NextAuth from "next-auth/next";
 import KakaoProvider from "next-auth/providers/kakao";
 
@@ -13,15 +13,25 @@ const handler = NextAuth({
   ],
   callbacks : {
     async signIn({ user }) {
-      const isAllowedToSignIn = true
+      const isAllowedToSignIn = true;
+      
+      const querySnapshot = await getDocs(collection(firestore, "users"));
+      let signedInUser = false;
+      querySnapshot.forEach((doc) => {
+        if(doc.id === user.id){
+          signedInUser = true;
+      }});
+
       if (isAllowedToSignIn) {
-        await setDoc(doc(firestore, 'users', user.id), {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          myPosts: [],
-          votedPosts: []
-        });
+        if(!signedInUser){
+          await setDoc(doc(firestore, 'users', user.id), {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            myPosts: [],
+            votedPosts: []
+          });
+        }
 
         return true
       } else {
