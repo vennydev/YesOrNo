@@ -18,31 +18,80 @@ export default function VotingBtn({percentage, voteStatus, isParticipantCountPub
     return Math.round(number)
   };
 
-  const showPercentage = (percentage: number) => {
-    return voteStatus !== "no response" && <ParticipantsRate>{getOnlyIntergers(percentage)}%</ParticipantsRate>
-  }
+  const showBar = () => {
+    if(voteStatus !== "no response"){
+      if(yesPercentage > noPercentage){
+        return <YesBar $percentage={yesPercentage}/>
+      }else if(noPercentage > yesPercentage){
+        return <NoBar $percentage={noPercentage}/>
+      }else{
+        return (
+          <>
+            <YesBar $percentage={yesPercentage} />
+            <NoBar $percentage={noPercentage} />
+          </>
+        )
+      }
+    }
+  };
+  
+  const showBtn = (text: string) => {
+    if(yesPercentage > noPercentage){
+      return (
+        <BtnElements>
+          <BtnTitle>{text}</BtnTitle>
+          <ParticipantsRate>{getOnlyIntergers(yesPercentage)}%</ParticipantsRate>
+        </BtnElements>
+      )
+    }else if(noPercentage > yesPercentage){
+      return (
+        <BtnElements>
+          <BtnTitle>{text}</BtnTitle>
+          <ParticipantsRate>{getOnlyIntergers(noPercentage)}%</ParticipantsRate>
+      </BtnElements>
+      )
+    }
+  };
 
   return (
     <VotingBtnContainer>
       {isParticipantCountPublic && <ParticiPatnsCount>{totalParticipantsCount}명 투표 참여</ParticiPatnsCount>}
       <PostVoteWrapper>
         <BtnWrapper>
-          <YesBtn value="yes" $voteStatus={voteStatus} onClick={(e) => handleVotesCount(e)}>
-            <BtnTitle>YES</BtnTitle>
-            {showPercentage(yesPercentage)}
+          <YesBtn $voteStatus={voteStatus} value="yes" onClick={(e) => handleVotesCount(e)}>
+            {voteStatus === 'no response' ? (
+              <BtnTitle>YES</BtnTitle>
+            ) : (
+              <>
+                {(yesPercentage > noPercentage || yesPercentage === noPercentage) && 
+                  <BtnElements>
+                    <BtnTitle>YES</BtnTitle>
+                    <ParticipantsRate>{getOnlyIntergers(yesPercentage)}%</ParticipantsRate>
+                  </BtnElements>
+                }
+              </>
+            )}
           </YesBtn>
-          <Divider/>
-          <NoBtn value="no" $voteStatus={voteStatus} onClick={(e) => handleVotesCount(e)}>
-            <BtnTitle>NO</BtnTitle>
-            {showPercentage(noPercentage)}
+          {voteStatus === 'no response' && <Divider/>}
+          <NoBtn $voteStatus={voteStatus} value="no" onClick={(e) => handleVotesCount(e)}>
+          {voteStatus === 'no response' ? (
+              <BtnTitle>NO</BtnTitle>
+            ) : (
+              <>
+                {(noPercentage > yesPercentage || yesPercentage === noPercentage) && 
+                  <BtnElements>
+                    <BtnTitle>NO</BtnTitle>
+                    <ParticipantsRate>{getOnlyIntergers(noPercentage)}%</ParticipantsRate>
+                  </BtnElements>
+                }
+              </>
+            )}
           </NoBtn>
         </BtnWrapper>
         <BarWrapper>
-          <YesBar $percentage={yesPercentage}/>
-          <NoBar $percentage={noPercentage}/>
+          {showBar()}
         </BarWrapper>
       </PostVoteWrapper>
-
     </VotingBtnContainer>
   )
 };
@@ -58,7 +107,7 @@ const PostVoteWrapper = styled.div`
   display: flex;
   width: 100%;
   height: 60px;
-  border-radius: 14px;
+  border-radius: 12px;
   border: ${(props) => `1px solid ${props.theme.color.mainBorderColor}`};
   position: relative;
 `;
@@ -74,24 +123,33 @@ const ParticiPatnsCount = styled.span`
 const BtnWrapper = styled.div`
   display: flex;
   width: 100%;
-  color:white;
+  color: white;
 `;
 
 const VoteBtn = styled.button`
   width: 50%;
-  text-align: center;
   z-index: 100;
-`;
+  display: flex;
+  align-items: center;
+  `;
 
 const YesBtn = styled(VoteBtn)<{$voteStatus: string}>`
-  border-top-left-radius: 14px;
-  border-bottom-left-radius: 14px;
+  justify-content: ${props => props.$voteStatus !== 'no response' ? 'start' : 'center'};
+  border-top-left-radius: 12px;
+  border-bottom-left-radius: 12px;
 `;
 
 const NoBtn = styled(VoteBtn)<{$voteStatus: string}>`
-  border-top-right-radius: 14px;
-  border-bottom-right-radius: 14px;
+  justify-content: ${props => props.$voteStatus !== 'no response' ? 'end' : 'center'};
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 `;
+
+const BtnElements = styled.div`
+  width: 74px;
+  display: flex;
+  flex-direction: column;
+`
 
 const BtnTitle = styled.span`
   font-size: 20px;
@@ -109,6 +167,7 @@ const ParticipantsRate = styled.div`
   position: relative;
   opacity: 0.5;
   z-index: -1000;
+  padding: 0 10px;
 `;
 
 const BarWrapper = styled.div`
@@ -120,27 +179,32 @@ const BarWrapper = styled.div`
   z-index:-1000;
 `;
 
-const Bar = styled.div`
+const Bar = styled.div<{$percentage: number}>`
   position:absolute;
   height:100%;
   z-index:-100;
   display: flex;
-  border-radius:14px;
+  border-radius: 12px;
+  /* border-radius:${props => props.$percentage === 50 ? '1px' : '12px'}; */
   justify-content: space-between;
   transition: all 0.3s ease-in-out;
+  width: ${props => props.$percentage ? `${props.$percentage}%` : '0px'};
+
   `;
 
 const YesBar = styled(Bar)<{$percentage: number}>`
-  width: ${props => props.$percentage ? `${props.$percentage}%` : '0px'};
   left:0;
   background-color: ${props => props.theme.color.yesBarColor};
+  border-top-right-radius:${props => props.$percentage === 50 ? '0px' : '12px'};
+  border-bottom-right-radius:${props => props.$percentage === 50 ? '0px' : '12px'};
   border-right: ${props => props.$percentage ? `1px solid ${props.theme.color.mainBorderColor}` : 'none'};
 `;
 
 const NoBar = styled(Bar)<{$percentage: number}>`
-  width: ${props => props.$percentage && `${props.$percentage}%`};
   right:0;
   background-color: ${props => props.theme.color.noBarColor};
+  border-top-left-radius:${props => props.$percentage === 50 ? '0px' : '12px'};
+  border-bottom-left-radius:${props => props.$percentage === 50 ? '0px' : '12px'};
   border-left: ${props => props.$percentage ? `1px solid ${props.theme.color.mainBorderColor}` : 'none'};
 `;
 
