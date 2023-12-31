@@ -270,25 +270,25 @@ export default function PostCard ({
     if (hours === 0 && min === 0 && sec === 0) return;
 
     let interval: any;
-    interval = setInterval(() => {
-      if(sec > 0) {
-        setSec(prev => prev - 1);
-      }else if(sec === 0 && min > 0){
-        setMin(prev => prev - 1);
-        if (min !== 0) {
-          setSec(59);
-        }
-      }else if(sec === 0 && min === 0){
-        setHours(prev => prev - 1);
-        if(hours > 0) {
-          setMin(59);
-          setSec(59);
-        }
-        if(hours === 0){
-          clearInterval(interval)
-        }
-      }
-    }, 1000)
+    // interval = setInterval(() => {
+    //   if(sec > 0) {
+    //     setSec(prev => prev - 1);
+    //   }else if(sec === 0 && min > 0){
+    //     setMin(prev => prev - 1);
+    //     if (min !== 0) {
+    //       setSec(59);
+    //     }
+    //   }else if(sec === 0 && min === 0){
+    //     setHours(prev => prev - 1);
+    //     if(hours > 0) {
+    //       setMin(59);
+    //       setSec(59);
+    //     }
+    //     if(hours === 0){
+    //       clearInterval(interval)
+    //     }
+    //   }
+    // }, 1000)
     return () => clearInterval(interval)
 }, [hours, min, sec]);
 
