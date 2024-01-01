@@ -14,7 +14,6 @@ interface MyPostPropsType {
 
 export default function MyPost({ id }: MyPostPropsType) {
   const [post, setPost] = useState<any>(null);
-
   useEffect(() => {
     async function getMyPost() {
       const docRef = doc(firestore, "posts", id);
@@ -27,13 +26,13 @@ export default function MyPost({ id }: MyPostPropsType) {
     }
     getMyPost(); 
   }, []);
-
+  
   return (
     <MyPostContainer>
-      {post !== null && 
+      {post !== null ?
         (
           <PostCard text={post.text} username={post.author} imageUrl={post.imageUrl} time="종료 시간 : 12:40:00" votingBtn={true} id={post.id} key={post.id}/>
-        )
+        ) : <h1>게시물이 없습니다.</h1>
       }
     </MyPostContainer>
   )

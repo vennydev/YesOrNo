@@ -195,7 +195,7 @@ export default function PostCard ({
       };
     }else if(voteStatus === "yes") {
       if(selectedOption === 'yes'){
-        return alert("재투표 노노")
+        return alert('이미 선택되어있어요!\n반대편을 누르면 투표선택을 바꿀 수 있어요.')
         }else if (selectedOption === 'no'){
           await updateDoc(postRef, {
             noUser: arrayUnion(userid),
@@ -215,7 +215,7 @@ export default function PostCard ({
         }}
     }else if(voteStatus === "no"){
       if(selectedOption === 'no'){
-        return alert("재투표 노노")
+        return alert('이미 선택되어있어요!\n반대편을 누르면 투표선택을 바꿀 수 있어요.')
       }else if (selectedOption === 'yes'){
           await updateDoc(postRef, {
             yesUser: arrayUnion(userid),
@@ -235,10 +235,6 @@ export default function PostCard ({
     }
   };
 
-  useEffect(() => {
-    setOnEffect(true);
-  }, [setVoteStatus])
-  
   useEffect(() => {
     onSnapshot(doc(firestore, 'posts', String(id)), (doc) => {
       const yesArr = doc.data()?.yesUser.includes(userid);
@@ -460,7 +456,7 @@ const PostQuestionInput = styled.textarea`
   line-height: 28px; 
   border: none;
   overflow: hidden;
-
+  font-family: 'MaruBuri';
   &:focus {
   outline: none;
   }

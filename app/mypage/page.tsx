@@ -36,7 +36,6 @@ export default function Mypage() {
   useEffect(() => {
       getData();
   }, []);
-// console.log('myPostsArr: ', myPostsArr);
   return (
     <MyPageSection>
       <UserInfoWrapper>
@@ -54,7 +53,7 @@ export default function Mypage() {
       </TabWrapper>
       <MyPostsContainer>
         { isSelected === 0 ? (
-          myPostsArr && myPostsArr.map((id) => {
+          myPostsArr.length > 0 && myPostsArr.map((id) => {
             return (<MyPost key={id} id={id}/>)
           })
         ) : null}
@@ -64,7 +63,9 @@ export default function Mypage() {
             localStorage.removeItem("userID");
             }}>로그아웃</button>
           {/* <Divider/> */}
-          <button>탈퇴</button>
+          <button onClick={()=> {
+            alert("곧 됩니다..!")
+          }}>탈퇴</button>
         </SignOutBtnWrapper>
       </MyPostsContainer>
     </MyPageSection>
