@@ -17,15 +17,16 @@ interface VotingBtnProps {
 export default function VotingBtn({percentage, voteStatus, isParticipantCountPublic, totalParticipantsCount, isOver, onEffect, setOnEffect, handleVotesCount}: VotingBtnProps) {
   const yesPercentage: number = percentage;
   const noPercentage: number = 100 - percentage;
+  const isVoted = (isNaN(yesPercentage) || isNaN(noPercentage)) ? false : true ;
 
   const getOnlyIntergers = (number: number) => {
     return Math.round(number)
   };
-
+  
   const showBar = () => {
-    if(voteStatus !== "no response"){
+    if(isVoted || voteStatus !== "no response" ){
       if(yesPercentage > noPercentage){
-        return <YesBar $percentage={yesPercentage}/>
+        return <YesBar $percentage={yesPercentage} />
       }else if(noPercentage > yesPercentage){
         return <NoBar $percentage={noPercentage}/>
       }else{
@@ -38,17 +39,16 @@ export default function VotingBtn({percentage, voteStatus, isParticipantCountPub
       }
     }
   };
-  
+
   return (
     <VotingBtnContainer>
       {isParticipantCountPublic && <ParticiPatnsCount>{totalParticipantsCount}명 투표 참여</ParticiPatnsCount>}
       <PostVoteWrapper $isOver={isOver}>
         <BtnWrapper>
-          <YesBtn $voteStatus={voteStatus} value="yes" onClick={(e) => handleVotesCount(e)}>
+          <YesBtn $voteStatus={voteStatus} $isVoted={isVoted} value="yes" onClick={(e) => handleVotesCount(e)}>
             {typeof window !== 'undefined' ? (onEffect && <VotingClickEffect position='left' setOnEffect={setOnEffect}/>): null}
-            {voteStatus === 'no response' ? (
+            {voteStatus === 'no response' && !isVoted ? (
               <BtnTitle $isOver={isOver}>YES</BtnTitle>       
-              
               ) : (
                 <>
                 {(yesPercentage > noPercentage || yesPercentage === noPercentage) && 
@@ -60,10 +60,10 @@ export default function VotingBtn({percentage, voteStatus, isParticipantCountPub
               </>
             )}
           </YesBtn>
-          {voteStatus === 'no response' && <Divider/>}
-          <NoBtn $voteStatus={voteStatus} value="no" onClick={(e) => handleVotesCount(e)}>
+          {(voteStatus === 'no response' && !isVoted) && <Divider/>}
+          <NoBtn $voteStatus={voteStatus} $isVoted={isVoted} value="no" onClick={(e) => handleVotesCount(e)}>
             {typeof window !== 'undefined' ? (onEffect && <VotingClickEffect position='right' setOnEffect={setOnEffect}/>) : null}
-          {voteStatus === 'no response' ? (
+          {voteStatus === 'no response' && !isVoted ? (
             <BtnTitle $isOver={isOver}>NO</BtnTitle>
             ) : (
               <>
@@ -123,18 +123,17 @@ const VoteBtn = styled.button`
   align-items: center;
   `;
 
-const YesBtn = styled(VoteBtn)<{$voteStatus: string}>`
-  justify-content: ${props => props.$voteStatus !== 'no response' ? 'start' : 'center'};
+const YesBtn = styled(VoteBtn)<{$voteStatus: string, $isVoted: boolean}>`
+  justify-content: ${props => (props.$isVoted || props.$voteStatus !== 'no response') ? 'start' : 'center'};
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
 `;
 
-const NoBtn = styled(VoteBtn)<{$voteStatus: string}>`
-  justify-content: ${props => props.$voteStatus !== 'no response' ? 'end' : 'center'};
+const NoBtn = styled(VoteBtn)<{$voteStatus: string, $isVoted: boolean}>`
+  justify-content: ${props => (props.$isVoted || props.$voteStatus !== 'no response') ? 'end' : 'center'};
   border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
 `;
-
 
 const BtnTitle = styled.span<{$isOver: boolean | undefined}>`
   font-size: 20px;
@@ -207,7 +206,7 @@ const NoBar = styled(Bar)<{$percentage: number}>`
 const Divider = styled.div`
   height: 45px;
   width: 1px;
-  background: #8C8C8C;
+  background: ${props => props.theme.color.dimBorderColor};
   position: absolute;
   left:50%;
   top:50%;

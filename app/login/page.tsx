@@ -38,6 +38,7 @@ const LoginContainer = styled.div`
   padding:0 20px;
   display: flex;
   flex-direction: column;
+  align-items:center;
 `;
 
 const LogoWrapper = styled.div`

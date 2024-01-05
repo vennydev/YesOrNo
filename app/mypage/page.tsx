@@ -20,7 +20,6 @@ export default function Mypage() {
   const [myPostsArr, setMyPostsArr] = useState([]);
   const [votedPosts, setVotedPosts] = useState([]);
 
-  
   async function getData() {
     const userid = localStorage.getItem("userID");
     const docRef = doc(firestore, "users", String(userid));
@@ -36,6 +35,7 @@ export default function Mypage() {
   useEffect(() => {
       getData();
   }, []);
+
   return (
     <MyPageSection>
       <UserInfoWrapper>
@@ -53,10 +53,10 @@ export default function Mypage() {
       </TabWrapper>
       <MyPostsContainer>
         { isSelected === 0 ? (
-          myPostsArr.length > 0 && myPostsArr.map((id) => {
+          myPostsArr.length > 0 && myPostsArr.reverse().map((id) => {
             return (<MyPost key={id} id={id}/>)
           })
-        ) : null}
+        ) : <h1>준비중입니다.</h1>}
         <SignOutBtnWrapper>
           <button onClick={() => {
             signOut({ callbackUrl: '/' });
@@ -113,6 +113,9 @@ const MyPostsContainer = styled.div`
   padding: 25px 20px;
   height: 100%;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const SignOutBtnWrapper = styled.div`

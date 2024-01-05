@@ -195,7 +195,7 @@ const PostSection = styled.form`
   display: flex;
   justify-content: center;
   margin-top:65px;
-  padding:0 20px;
+  padding: 0 20px 99px 20px;
 `;
 
 const PostContainer = styled.div`

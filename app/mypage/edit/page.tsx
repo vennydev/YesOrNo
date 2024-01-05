@@ -1,5 +1,19 @@
+import styled from 'styled-components';
+
 export default function EditUserName(){
   return (
-    <h1>hello</h1>
+    <EditPageContainer>
+      <EditPageWrapper>
+        <GoBack></GoBack>
+        <div>
+          
+        </div>
+      </EditPageWrapper>
+    </EditPageContainer>    
   )
-}
+};
+
+const EditPageContainer = styled.div``;
+const EditPageWrapper = styled.div``;
+const GoBack = styled.div``;
+

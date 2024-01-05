@@ -8,6 +8,9 @@ const nextConfig = {
       "localhost",
       "firebasestorage.googleapis.com"
     ]
+  },
+  compiler : {
+    styledComponents: true,
   }
 }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { DefaultProfile, DimmedProfile, PostBg1, PostBg2 } from '../public/images';
 import Image from 'next/image';
 import styled from 'styled-components';
@@ -15,6 +15,8 @@ import Modal from './Modal';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { clickEffectState, isCheckDeletionModalVisible } from '@/recoil/post/atom';
 import { toastState } from '@/recoil/toast/atom';
+import dynamic from 'next/dynamic';
+import Circular from './loading/Circular';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = [PostBg1, PostBg2];
@@ -66,7 +68,6 @@ export default function PostCard ({
     yesTotal: yesCount,
     noTotal: noCount,
   });
-  
   const [voteStatus, setVoteStatus] = useState("");
   const [percentageOfYes, setPercentage] = useState(0);
   const [totalParticipantsCount, setTotalParticipantsCount] = useState(0);
@@ -79,11 +80,11 @@ export default function PostCard ({
   const [toastInfo, setToastInfo] = useRecoilState(toastState);
   const [endTime, setEndTime] = useState('');
   const [onEffect, setOnEffect] = useState(false);
-
+  
   const userid = session?.user.id;
 
   const closeLoginModal = () => {
-    setIsModalVisible(false)
+    setIsModalVisible(false);
   };
 
   const closeDeleteModal = () => {
@@ -161,14 +162,12 @@ export default function PostCard ({
       return
     };
     if(isOver) return;
-    
     const selectedOption = e.currentTarget.value;
-    console.log('e: ', selectedOption);
 
-    const postRef = doc(firestore, 'posts', String(id));
+    const postRef = doc(firestore, 'posts', String(id)); 
     if(voteStatus === "no response"){
       if(selectedOption === 'yes'){
-        await updateDoc(postRef, {
+         await updateDoc(postRef, {
           yesUser: arrayUnion(userid),
         });
         if(typeof totalCount.yesTotal === "number" && typeof totalCount.noTotal === "number"){
@@ -266,25 +265,25 @@ export default function PostCard ({
     if (hours === 0 && min === 0 && sec === 0) return;
 
     let interval: any;
-    interval = setInterval(() => {
-      if(sec > 0) {
-        setSec(prev => prev - 1);
-      }else if(sec === 0 && min > 0){
-        setMin(prev => prev - 1);
-        if (min !== 0) {
-          setSec(59);
-        }
-      }else if(sec === 0 && min === 0){
-        setHours(prev => prev - 1);
-        if(hours > 0) {
-          setMin(59);
-          setSec(59);
-        }
-        if(hours === 0){
-          clearInterval(interval)
-        }
-      }
-    }, 1000);
+    // interval = setInterval(() => {
+    //   if(sec > 0) {
+    //     setSec(prev => prev - 1);
+    //   }else if(sec === 0 && min > 0){
+    //     setMin(prev => prev - 1);
+    //     if (min !== 0) {
+    //       setSec(59);
+    //     }
+    //   }else if(sec === 0 && min === 0){
+    //     setHours(prev => prev - 1);
+    //     if(hours > 0) {
+    //       setMin(59);
+    //       setSec(59);
+    //     }
+    //     if(hours === 0){
+    //       clearInterval(interval)
+    //     }
+    //   }
+    // }, 1000);
     return () => clearInterval(interval)
 }, [hours, min, sec]);
 
@@ -300,29 +299,30 @@ useEffect(() => {
 
   return (
       <PostContainer>
-        <PostWrapper $votingBtn={votingBtn}>
-            <PostMetadata>
-            <PostMetadataLeft>
-              {votingBtn 
-                ? (<Image src={DefaultProfile} alt='profile-example' width={40} height={40} priority />)
-                : (<Image src={DimmedProfile} alt='profile-example' width={40} height={40} priority />) 
-              }
-            </PostMetadataLeft>
-            <PostMetadataRight>
-              <UserName $votingBtn={votingBtn}>{username}</UserName>
-              <DeadLine $votingBtn={votingBtn}>
-                {isOver ? (
-                    <>
-                      {endTime} 투표 완료
-                    </>
-                  ) : (
-                    <>
-                      {addZero(hours)} : {addZero(min)} : {addZero(sec)}
-                    </>
-                  )}
-                </DeadLine>
-            </PostMetadataRight>  
-            </PostMetadata>
+          <PostWrapper $votingBtn={votingBtn}>
+              <PostMetadata>
+              <PostMetadataLeft>
+                {votingBtn 
+                  ? (<Image src={DefaultProfile} alt='profile-example' width={40} height={40} priority />)
+                  : (<Image src={DimmedProfile} alt='profile-example' width={40} height={40} priority />) 
+                }
+              </PostMetadataLeft>
+              <PostMetadataRight>
+                <UserName $votingBtn={votingBtn}>{username}</UserName>
+                <DeadLine $votingBtn={votingBtn}>
+                  {isOver ? (
+                      <>
+                        {endTime} 투표 완료
+                      </>
+                    ) : (
+                      <>
+                        {addZero(hours)} : {addZero(min)} : {addZero(sec)}
+                      </>
+                    )}
+                  </DeadLine>
+              </PostMetadataRight>  
+              </PostMetadata>
+
             <>
             {votingBtn 
               ? postImageforHome()
@@ -338,7 +338,7 @@ useEffect(() => {
             : divideText()}
           {votingBtn 
               ?  (
-              <>
+                <>
                 <VotingBtn 
                   handleVotesCount={handleVotesCount} 
                   percentage={percentageOfYes} 
@@ -356,17 +356,17 @@ useEffect(() => {
                   {imageArr.map((image, index) => {
                     return (
                       <ColorCircle 
-                        image={image} 
-                        index={index} 
-                        selectBgImage={selectBgImage} 
-                        key={index}/>
-                    )
-                  })}
+                      image={image} 
+                      index={index} 
+                      selectBgImage={selectBgImage} 
+                      key={index}/>
+                      )
+                    })}
                 </BgSelectorWrapper>
               </>
             )
           }
-        </PostWrapper>
+          </PostWrapper>
         {isModalVisible && 
           <ModalPortal>
             <Modal type="login" closeModal={closeLoginModal}/>
