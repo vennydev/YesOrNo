@@ -32,10 +32,6 @@ export default function Home () {
   const toast = useRecoilValue(toastState);
   const {data: session } = useSession();
 
-  // const PostCardWrapper = dynamic(() => import('../components/postcard/PostCardWrapper'), {
-  //   loading: () => <Circular/>
-  // })
-
   const handleClick = (index: number) => {
     setSelectedTab(index);
   };

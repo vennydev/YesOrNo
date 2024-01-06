@@ -9,7 +9,10 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import firestore from "@/firebase/firestore";
 import MyPost from "@/components/MyPost";
-import { RecoilEnv } from "recoil";
+import { RecoilEnv, useRecoilValue } from "recoil";
+import Link from "next/link";
+import { toastState } from "@/recoil/toast/atom";
+import Toast from "@/components/Toast";
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
@@ -19,13 +22,14 @@ export default function Mypage() {
   const username = session?.user?.name;
   const [myPostsArr, setMyPostsArr] = useState([]);
   const [votedPosts, setVotedPosts] = useState([]);
+  const toast = useRecoilValue(toastState);
 
   async function getData() {
     const userid = localStorage.getItem("userID");
     const docRef = doc(firestore, "users", String(userid));
     const docSnap = await getDoc(docRef);
-    setMyPostsArr(docSnap?.data()?.myPosts);
-    setVotedPosts(docSnap?.data()?.votedPosts);
+    setMyPostsArr(docSnap?.data()?.myPosts.reverse());
+    setVotedPosts(docSnap?.data()?.votedPosts.reverse());
   };
   
   const handleSelectedTab = (index: number) => {
@@ -36,15 +40,23 @@ export default function Mypage() {
       getData();
   }, []);
 
+console.log('myPostsArr:', myPostsArr);
+
   return (
     <MyPageSection>
       <UserInfoWrapper>
         <Profile image={DefaultProfile.src} alt={"default profile"} width={90} height={90} />
         <UserIDWrapper>
           <span>{username}</span>
-          <div>
+          <StyledLinkToEdit 
+            href={{
+              pathname: '/mypage/edit',
+              query: {
+                username: username
+              }}}
+              >
             <Image src={Pencil} alt="edit-button" width={14} height={14}></Image>
-          </div>
+          </StyledLinkToEdit>
         </UserIDWrapper>
       </UserInfoWrapper>
       <TabWrapper>
@@ -53,7 +65,7 @@ export default function Mypage() {
       </TabWrapper>
       <MyPostsContainer>
         { isSelected === 0 ? (
-          myPostsArr.length > 0 && myPostsArr.reverse().map((id) => {
+          myPostsArr.length > 0 && myPostsArr.map((id) => {
             return (<MyPost key={id} id={id}/>)
           })
         ) : <h1>준비중입니다.</h1>}
@@ -68,6 +80,7 @@ export default function Mypage() {
           }}>탈퇴</button>
         </SignOutBtnWrapper>
       </MyPostsContainer>
+      {toast.isShown && <Toast position='bottom'/>}
     </MyPageSection>
   )
 }
@@ -128,9 +141,7 @@ const SignOutBtnWrapper = styled.div`
   justify-content: center;
 `;
 
-// const Divider = styled.div`
-//   height: 100%;
-//   width: 1px;
-//   background: #8C8C8C;
-// `;
+const StyledLinkToEdit = styled(Link)`
+  padding: 0 4px;
+`;
  

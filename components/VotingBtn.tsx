@@ -200,7 +200,7 @@ const NoBar = styled(Bar)<{$percentage: number}>`
   background-color: ${props => props.theme.color.noBarColor};
   border-top-left-radius:${props => props.$percentage === 50 ? '0px' : '12px'};
   border-bottom-left-radius:${props => props.$percentage === 50 ? '0px' : '12px'};
-  border-left: ${props => props.$percentage ? `1px solid ${props.theme.color.mainBorderColor}` : 'none'};
+  border-left: ${props => props.$percentage !== 50 ? `1px solid ${props.theme.color.mainBorderColor}` : 'none'};
 `;
 
 const Divider = styled.div`

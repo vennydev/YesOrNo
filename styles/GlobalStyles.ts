@@ -9,7 +9,8 @@ const GlobalStyles = createGlobalStyle`
     }
     
     *{
-        box-sizing: border-box;
+      box-sizing: border-box;
+      font-family: 'MaruBuri';
     }
 
     html{
@@ -25,8 +26,9 @@ const GlobalStyles = createGlobalStyle`
     }
 
     body{
-        line-height: 1;
-        font-family: 'MaruBuri';
+      line-height: 1;
+      font-family: 'MaruBuri';
+        
     }
     
     ol, ul{

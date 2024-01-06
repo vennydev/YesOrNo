@@ -161,9 +161,13 @@ export default function PostCard ({
       setIsModalVisible(true); 
       return
     };
-    if(isOver) return;
-    const selectedOption = e.currentTarget.value;
 
+    if(isOver){
+      alert('이미 마감된 투표입니다.'); 
+      return
+    };
+
+    const selectedOption = e.currentTarget.value;
     const postRef = doc(firestore, 'posts', String(id)); 
     if(voteStatus === "no response"){
       if(selectedOption === 'yes'){
@@ -447,7 +451,7 @@ const Text = styled.span`
 const PostQuestionInput = styled.textarea`
   height: 100%;
   width:295px;
-  padding:10px 40px;
+  padding:10px 29px;
   resize: none;
   text-align: center;
   font-size: 16px;
@@ -486,7 +490,7 @@ const BgSelectorWrapper = styled.ul`
   justify-content: flex-start;
   align-items: center;
   gap: 14px;
-  border-top: ${(props) => `2px solid ${props.theme.color.mainFontColor}`};
+  border-top: ${(props) => `1px solid ${props.theme.color.mainFontColor}`};
   position: absolute;
   bottom:0;
   padding:16px;
@@ -499,5 +503,6 @@ const DividedText = styled.div<{$image? : string}>`
   margin-top: ${props => props.$image ? "104px" : "14px"};
   font-size: 16px;
   line-height: 28px; 
+  width:100%;
   color: ${props => `${props.theme.color.dimFontColor}}`};
 `;

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { ClearIcon } from '../../public/icons/index';
 import PostCard from '../../components/PostCard';
 import styled from 'styled-components';
-import { PostBg1 } from '@/public/images';
+import { CheckBox, PostBg1 } from '@/public/images';
 import ImageUploader from '../../components/ImageUploader';
 import imageCompression from 'browser-image-compression';
 import { ref, uploadBytes } from 'firebase/storage';
@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
 import { selectedImgIndexState } from '@/recoil/post/atom';
 import firestore from '@/firebase/firestore';
+import Image from 'next/image';
 
 const ONEDAY = 24*60*60*1000;
 
@@ -65,10 +66,10 @@ export default function PostPage() {
   }catch(error) {
     console.log(error);
   }
-};
+  };
 
-  const handleIsChecked = (e: any) => {
-    setIsChecked(e.target.checked);
+  const handleIsChecked = ({target : {checked}}: any) => {
+    setIsChecked(!isChecked);
   };
 
   const handleUpload = async () => {
@@ -160,7 +161,7 @@ return (
         <ActionBtnWrapper>
           <ClearIcon onClick={() => router.push("/")}/>
           <PageTitle>질문하기</PageTitle>
-          <PostBtn onClick={handleUpload} $text={text}>완료</PostBtn>
+          <PostBtn onClick={handleUpload} $text={text}>등록</PostBtn>
         </ActionBtnWrapper>
 
         <div>
@@ -182,7 +183,12 @@ return (
         <ImageUploader handleImage={handleImage}/>
 
         <ParticipantsWrapper>
-          <input type="checkbox" name='isParticipantCountPublic' onClick={handleIsChecked}/>
+          {isChecked ? (
+            <Image src={CheckBox} width={16} height={16} alt='check-box' onClick={handleIsChecked}></Image>
+          ) : (
+            <ParticipantsLabel htmlFor="isParticipantCountPublic"/>
+          )}
+          <ParticipantsInput type="checkbox" id='isParticipantCountPublic' onClick={handleIsChecked}/>
           <ParticipantsText>참여자 수 공개</ParticipantsText>
         </ParticipantsWrapper>
       </PostContainer>
@@ -190,6 +196,16 @@ return (
   )
 }
 
+const ParticipantsLabel = styled.label`
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid #8C8C8C;
+`;
+
+const ParticipantsInput = styled.input`
+  display: none;
+`;
 
 const PostSection = styled.form`
   display: flex;
@@ -213,14 +229,14 @@ const ActionBtnWrapper = styled.div`
 const PageTitle = styled.div`
   font-size: 16px;
   font-weight: 600;
-  line-height: 28px;
 `;
 
 const PostBtn = styled.div<{$text: string}>`
   color: ${props => props.$text !== "" ? 'black' : `${props.theme.color.dimFontColor}`};
-  line-height: 30px;
   letter-spacing: -0.3px;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 600;
+
   `;
 
 const ParticipantsWrapper = styled.div`
