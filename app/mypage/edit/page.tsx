@@ -7,9 +7,13 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function EditUserName() {
   const searchParams = useSearchParams();
-  const nameParam = searchParams.get('username');
-  const [username, setUsername] = useState(nameParam);
+  const [username, setUsername] = useState('');
   const router = useRouter()
+  
+  useEffect(() => {
+    const nameParam = searchParams.get('username');
+    if(typeof nameParam === 'string') setUsername(nameParam);
+  }, [])
 
   return (
     <MyPageSection>
@@ -72,7 +76,7 @@ const InputWrapper = styled.div`
   flex-direction: column;
 `;
 
-const NameLabel = styled.div`
+const NameLabel = styled.label`
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -81,7 +85,7 @@ const NameLabel = styled.div`
   color: #8C8C8C;
 `;
 
-const NameInput = styled.div`
+const NameInput = styled.input`
 `;
 
 // const GoBack = styled.div`
