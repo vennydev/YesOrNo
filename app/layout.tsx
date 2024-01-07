@@ -4,9 +4,10 @@ import RecoilRootProvider from '@/components/provider/RecoilRootProvider';
 import StyledComponentsRegistry from '../lib/registry';
 import Header from '@/components/Header';
 
-export const metadata: Metadata = {
-  title: '질문있어욘',
-}
+// export const metadata: Metadata = {
+//   title: '질문있어욘',
+//   description: "사소하고 별거 아닌 고민들을 올려봅시다",
+// }
 
 export default function RootLayout({
   children,
@@ -15,6 +16,15 @@ export default function RootLayout({
 }) {
   return (
     <html>
+      <head>
+	      <meta property="og:title" content="rtrt" />
+	      <meta property="og:description" content="사소하고 별거 아닌 고민들을 올려봅시다" />
+	      <meta property="og:url" content="https://yesorno-lac.vercel.app"/>
+        <meta
+          property="og:image"
+          content="../"
+        />
+      </head>
       <body suppressHydrationWarning={true}>
       <link href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" rel="stylesheet"></link>
             <StyledComponentsRegistry>

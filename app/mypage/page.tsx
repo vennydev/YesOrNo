@@ -49,11 +49,12 @@ console.log('myPostsArr:', myPostsArr);
         <UserIDWrapper>
           <span>{username}</span>
           <StyledLinkToEdit 
-            href={{
-              pathname: '/mypage/edit',
-              query: {
-                username: username
-              }}}
+          onClick={() => alert("준비중입니다")}
+            // href={{
+            //   pathname: '/mypage/edit',
+            //   query: {
+            //     username: username
+            //   }}}
               >
             <Image src={Pencil} alt="edit-button" width={14} height={14}></Image>
           </StyledLinkToEdit>
@@ -141,7 +142,7 @@ const SignOutBtnWrapper = styled.div`
   justify-content: center;
 `;
 
-const StyledLinkToEdit = styled(Link)`
+const StyledLinkToEdit = styled.div`
   padding: 0 4px;
 `;
  
