@@ -17,13 +17,15 @@ export default function RootLayout({
   return (
     <html>
       <head>
-	      <meta property="og:title" content="rtrt" />
+	      <meta property="og:title" content="질문있어욘" />
 	      <meta property="og:description" content="사소하고 별거 아닌 고민들을 올려봅시다" />
 	      <meta property="og:url" content="https://yesorno-lac.vercel.app"/>
         <meta
           property="og:image"
-          content="../"
+          content="../thumnail.jpeg"
         />
+        <meta property="og:image:width" content="800" />
+        <meta property="og:image:height" content="800" />
       </head>
       <body suppressHydrationWarning={true}>
       <link href="https://hangeul.pstatic.net/hangeul_static/css/maru-buri.css" rel="stylesheet"></link>
