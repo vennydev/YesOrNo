@@ -12,6 +12,7 @@ import MyPost from "@/components/MyPost";
 import { RecoilEnv, useRecoilValue } from "recoil";
 import { toastState } from "@/recoil/toast/atom";
 import Toast from "@/components/Toast";
+import Link from 'next/link';
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
@@ -50,12 +51,11 @@ export default function Mypage() {
         <UserIDWrapper>
           <span>{username}</span>
           <StyledLinkToEdit 
-          onClick={() => alert("준비중입니다")}
-            // href={{
-            //   pathname: '/mypage/edit',
-            //   query: {
-            //     username: username
-            //   }}}
+            href={{
+              pathname: '/mypage/edit',
+              query: {
+                username: username
+              }}}
               >
             <Image src={Pencil} alt="edit-button" width={14} height={14}></Image>
           </StyledLinkToEdit>
@@ -147,7 +147,7 @@ const SignOutBtnWrapper = styled.div`
   justify-content: center;
 `;
 
-const StyledLinkToEdit = styled.div`
+const StyledLinkToEdit = styled(Link)`
   padding: 0 4px;
 `;
 

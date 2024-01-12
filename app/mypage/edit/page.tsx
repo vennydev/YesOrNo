@@ -2,39 +2,70 @@
 
 import styled from "styled-components";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from 'next/navigation'
-import { TextRemover } from "@/public/images";
-import Image from "next/image";
-import { doc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, updateDoc, where, writeBatch } from "firebase/firestore";
 import firestore from "@/firebase/firestore";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { usernameState } from "@/recoil/mypage/atom";
+import EditInput from '../../../components/edit/EditInput';
+import Image from "next/image";
+import { TextRemover } from "@/public/images";
 
 export default function EditUserName() {
   const searchParams = useSearchParams();
   const nameParam = searchParams.get('username');
   const [username, setUsername] = useState(nameParam);
-  const [name, setName] = useRecoilState(usernameState);
   const router = useRouter();
 
   const handleNameChange = ({target : { value }}: any) => {
+    console.log('value: ', value);
     setUsername(value);
   };
 
+  const removeName = () => {
+    setUsername('');
+  }
+
   const handleSubmit = async () => {
     const userid = localStorage.getItem("userID");
-    const userRef = doc(firestore, "users", String(userid));
-    try {
-      await updateDoc(userRef, {
-        name: username
-      });
-      if(typeof username === 'string'){
-        setName(username);
+    const q = query(collection(firestore, "users"), where("nickname", "==", username));
+    const querySnapshot = await getDocs(q);
+    let isValidated = true;
+    // querySnapshot.forEach((doc) => {
+    //   console.log('doc.id: ', doc.id);
+    //     if(doc.id){
+    //       isValidated = false; 
+    //       return alert("이미 존재하는 이름입니다. 다른 이름을 사용해주세요.");
+    //     }else{
+    //       isValidated = true
+    //     } 
+    //   });
+      if(isValidated){
+        try {
+          const userRef = doc(firestore, "users", String(userid));
+          const docSnap = await getDoc(userRef);
+          
+          await updateDoc(userRef, {
+            nickname: username
+          });
+
+          if(docSnap.data() === undefined){
+            return
+          }else{
+            docSnap?.data()?.myPosts.forEach(async (postId: string) => {
+              const docRef = doc(firestore, "posts", postId);
+              await updateDoc(docRef, {
+                author: username
+              })
+            })
+          }
+    
+          localStorage.setItem("user", JSON.stringify({id: userid, nickname: username}));
+          router.push('/mypage');
+        } catch (error) {
+          console.log('error: ', error);
+          
+        }
       }
-    } catch (error) {
-      alert(error);
-    }
   }
 
   return (
@@ -46,6 +77,14 @@ export default function EditUserName() {
           </GoBack>
           <EditPageTitle>프로필 이름 변경</EditPageTitle>
         </Header>
+        {/* <EditInput 
+          purpose='edit' 
+          text='프로필 이름을 변경해주세요' 
+          username={username}
+          handleSubmit={handleSubmit} 
+          handleNameChange={handleNameChange} 
+          removeName={removeName}
+        /> */}
         <InputContainer>
           <NameLabel htmlFor="username">프로필 이름</NameLabel>  
           <InputWrapper>
@@ -65,8 +104,10 @@ const MyPageSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 65px 20px 99px 20px;
-  height: 100%;
+  justify-content: center;
+  padding: 45px 20px 54px 20px;
+  height: 100vh;
+  width: 100%;
 `;
 
 const MyPageWrapper = styled.div`

@@ -12,20 +12,9 @@ const handler = NextAuth({
     }),
   ],
   callbacks : {
-    async session({ session, token }) {
-      session.user.id = token.id as any;
-      return session
-    },
-    jwt({ token, user, account }) {
-      if (account) {
-        token.accessToken = account.access_token
-        token.id = user?.id
-      }
-      return token
-    },
     async signIn({ user }) {
       const isAllowedToSignIn = true;
-
+      
       const querySnapshot = await getDocs(collection(firestore, "users"));
       let signedInUser = false;
       querySnapshot.forEach((doc) => {
@@ -44,13 +33,24 @@ const handler = NextAuth({
               votedPosts: []
             });
           }
-            return true
-      } else {
-        console.log('로그인에 실패했습니다.')
-        return false
-      }
+          return true
+        } else {
+          console.log('로그인에 실패했습니다.')
+          return false
+        }
+      },
+      async session({ session, token }) {
+        session.user.id = token.id as any;
+        return session
+      },
+      jwt({ token, user, account }) {
+        if (account) {
+          token.accessToken = account.access_token
+          token.id = user?.id
+        }
+        return token
+      },
     },
-  },
   secret: process.env.NEXTAUTH_SECRET,
 });
 

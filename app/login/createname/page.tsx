@@ -1,5 +1,6 @@
 "use client"
 
+import styled from "styled-components";
 import EditInput from "@/components/edit/EditInput";
 import { createUserNameText } from "@/constants";
 import { useEffect, useState } from "react";
@@ -38,7 +39,24 @@ export default function CreateUserName() {
 
   return (
     <>
-    {isLoading ? <Loading/> : <EditInput text={createUserNameText}/>}
+    {isLoading ? <Loading/> : (
+      <CreateUserNameCOntainer>
+        <EditWrapper>
+          <EditInput text={createUserNameText}/>
+        </EditWrapper>
+      </CreateUserNameCOntainer>
+    )
+    }
     </>
-  )
-}
+)};
+
+const CreateUserNameCOntainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height:100vh;
+`;
+
+const EditWrapper = styled.div`
+  width: 375px;
+`
