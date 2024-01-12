@@ -20,16 +20,19 @@ export default function Mypage() {
   const [isSelected, setIsSelected] = useState(0);
   const [myPostsArr, setMyPostsArr] = useState([]);
   const [votedPosts, setVotedPosts] = useState([]);
+  const [name, setName] = useState('');
 
   const toast = useRecoilValue(toastState);
-  const user = typeof window !== 'undefined' && localStorage.getItem("user");
-  const username = typeof user === 'string' && JSON.parse(user).nickname;
+  
   
   const handleSelectedTab = (index: number) => {
     setIsSelected(index);
   };
   
   useEffect(() => {
+    const user = localStorage.getItem("user");
+    const username = typeof user === 'string' && JSON.parse(user).nickname;
+    setName(username);
       async function getData() {
         const userid = localStorage.getItem("userID");
         const docRef = doc(firestore, "users", String(userid));
@@ -42,19 +45,19 @@ export default function Mypage() {
         }
       };
       getData();
-  }, [username]);
+  }, []);
 
   return (
     <MyPageSection>
       <UserInfoWrapper>
         <Profile image={DefaultProfile.src} alt={"default profile"} width={90} height={90} />
         <UserIDWrapper>
-          <span>{username}</span>
+          <span>{name}</span>
           <StyledLinkToEdit 
             href={{
               pathname: '/mypage/edit',
               query: {
-                username: username
+                username: name
               }}}
               >
             <Image src={Pencil} alt="edit-button" width={14} height={14}></Image>
