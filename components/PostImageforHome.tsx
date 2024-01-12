@@ -22,9 +22,7 @@ export default function PostImageforHome({imageUrl}: ImageUrlProp) {
           await getDownloadURL(reference).then((url) => {
             setImgurl(url)
           })
-          .catch((error) => {
-            console.log(error);
-          });
+          .catch(error => alert(error));
         }};
         
         getDownloadUrlfromImageName();

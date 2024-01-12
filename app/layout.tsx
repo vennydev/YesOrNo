@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import ThemeClient from '../components/ThemeClient';
 import RecoilRootProvider from '@/components/provider/RecoilRootProvider';
 import StyledComponentsRegistry from '../lib/registry';
-import Header from '@/components/Header';
 
 // export const metadata: Metadata = {
 //   title: '질문있어욘',
@@ -32,7 +31,6 @@ export default function RootLayout({
             <StyledComponentsRegistry>
               <ThemeClient>
                 <RecoilRootProvider>
-                  <Header></Header>
                   {children}      
                 </RecoilRootProvider>
               </ThemeClient>

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DefaultProfile, DimmedProfile, PostBg1, PostBg2 } from '../public/images';
 import Image from 'next/image';
 import styled from 'styled-components';
@@ -12,11 +12,9 @@ import firestore from '@/firebase/firestore';
 import { useSession } from 'next-auth/react';
 import ModalPortal from './modal/ModalPortal';
 import Modal from './Modal';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { clickEffectState, isCheckDeletionModalVisible } from '@/recoil/post/atom';
+import { useRecoilState } from 'recoil';
+import { isCheckDeletionModalVisible } from '@/recoil/post/atom';
 import { toastState } from '@/recoil/toast/atom';
-import dynamic from 'next/dynamic';
-import Circular from './loading/Circular';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = [PostBg1, PostBg2];
@@ -29,7 +27,7 @@ interface TotalCountType {
 interface PostCardPropsType {
   id?: string; 
   text:string;
-  username:string;
+  author:string | null;
   imageUrl?: any;
   expiredAt?: number | undefined;
   votingBtn: boolean;
@@ -49,7 +47,7 @@ interface PostCardPropsType {
 export default function PostCard ({
   id,
   text, 
-  username, 
+  author, 
   imageUrl, 
   expiredAt, 
   votingBtn, 
@@ -74,7 +72,7 @@ export default function PostCard ({
   const [hours, setHours] = useState(0);
   const [min, setMin] = useState(0);
   const [sec, setSec] = useState(0);
-  const {data: session, status} = useSession();
+  const {data: session} = useSession();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCheckDeletionModal, setIsCheckDeletionModal] = useRecoilState(isCheckDeletionModalVisible);
   const [toastInfo, setToastInfo] = useRecoilState(toastState);
@@ -312,7 +310,7 @@ useEffect(() => {
                 }
               </PostMetadataLeft>
               <PostMetadataRight>
-                <UserName $votingBtn={votingBtn}>{username}</UserName>
+                <UserName $votingBtn={votingBtn}>{author}</UserName>
                 <DeadLine $votingBtn={votingBtn}>
                   {isOver ? (
                       <>

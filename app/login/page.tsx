@@ -4,11 +4,9 @@ import Image from 'next/image';
 import { MainLogoTitle, MainLogoHand } from '@/public/images';
 import Link from 'next/link';
 import styled from "styled-components";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
-  const { data } = useSession();
-
   return (
       <LoginContainer>
         <LogoWrapper>
@@ -17,14 +15,12 @@ export default function Login() {
             <Image src={MainLogoTitle} alt='mainlogo-title' width={142.57} height={39.647}/>
           </Logo>
         </LogoWrapper>
-    
         <LoginBtnWrapper>
-          <LoginBtn onClick={() => signIn('kakao', { callbackUrl: '/' })}>카카오톡으로 로그인</LoginBtn>
+          <LoginBtn onClick={() => signIn('kakao', { callbackUrl: '/login/createname'} )}>카카오톡으로 로그인</LoginBtn>
           <Link href={'/'}>
             <PublicBtn>로그인없이 둘러볼게요.</PublicBtn>
           </Link>
         </LoginBtnWrapper>
-    
       </LoginContainer>
   )
 };
@@ -34,7 +30,7 @@ const LoginContainer = styled.div`
   }
 
   position: relative;
-  height: 100%;
+  height: 100vh;
   padding:0 20px;
   display: flex;
   flex-direction: column;
@@ -61,6 +57,7 @@ const LoginBtnWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap:16px;
   width: 100%;
   max-width: 335px;

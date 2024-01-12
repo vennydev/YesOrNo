@@ -3,14 +3,13 @@
 import styled from "styled-components";
 import Profile from '../../components/Profile';
 import { DefaultProfile, Pencil } from "@/public/images";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import firestore from "@/firebase/firestore";
 import MyPost from "@/components/MyPost";
 import { RecoilEnv, useRecoilValue } from "recoil";
-import Link from "next/link";
 import { toastState } from "@/recoil/toast/atom";
 import Toast from "@/components/Toast";
 
@@ -18,29 +17,31 @@ RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
 export default function Mypage() {
   const [isSelected, setIsSelected] = useState(0);
-  const {data: session } = useSession();
-  const username = session?.user?.name;
   const [myPostsArr, setMyPostsArr] = useState([]);
   const [votedPosts, setVotedPosts] = useState([]);
-  const toast = useRecoilValue(toastState);
 
-  async function getData() {
-    const userid = localStorage.getItem("userID");
-    const docRef = doc(firestore, "users", String(userid));
-    const docSnap = await getDoc(docRef);
-    setMyPostsArr(docSnap?.data()?.myPosts.reverse());
-    setVotedPosts(docSnap?.data()?.votedPosts.reverse());
-  };
+  const toast = useRecoilValue(toastState);
+  const user = typeof window !== 'undefined' && localStorage.getItem("user");
+  const username = typeof user === 'string' && JSON.parse(user).nickname;
   
   const handleSelectedTab = (index: number) => {
     setIsSelected(index);
   };
   
   useEffect(() => {
+      async function getData() {
+        const userid = localStorage.getItem("userID");
+        const docRef = doc(firestore, "users", String(userid));
+        const docSnap = await getDoc(docRef);
+        if(docSnap.data() === undefined){
+          return
+        }else{
+          setMyPostsArr(docSnap?.data()?.myPosts.reverse());
+          setVotedPosts(docSnap?.data()?.votedPosts.reverse());
+        }
+      };
       getData();
-  }, []);
-
-console.log('myPostsArr:', myPostsArr);
+  }, [username]);
 
   return (
     <MyPageSection>
@@ -66,10 +67,10 @@ console.log('myPostsArr:', myPostsArr);
       </TabWrapper>
       <MyPostsContainer>
         { isSelected === 0 ? (
-          myPostsArr.length > 0 && myPostsArr.map((id) => {
+          (myPostsArr.length > 0 && myPostsArr !== undefined) ? myPostsArr.map((id) => {
             return (<MyPost key={id} id={id}/>)
-          })
-        ) : <h1>준비중입니다.</h1>}
+          }) : <EmptySection>게시물이 없습니다.</EmptySection>
+        ) : <EmptySection>준비중입니다.</EmptySection>}
         <SignOutBtnWrapper>
           <button onClick={() => {
             signOut({ callbackUrl: '/' });
@@ -87,7 +88,8 @@ console.log('myPostsArr:', myPostsArr);
 }
 
 const MyPageSection = styled.div`
-  margin-top: 75px;
+  padding-top: 75px;
+  height:100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -95,6 +97,9 @@ const MyPageSection = styled.div`
 
 const UserInfoWrapper = styled.div`
   margin-bottom: 29px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `
 
 const UserIDWrapper = styled.div`
@@ -145,4 +150,10 @@ const SignOutBtnWrapper = styled.div`
 const StyledLinkToEdit = styled.div`
   padding: 0 4px;
 `;
+
+const EmptySection = styled.div`
+      height: 100%;
+    display: flex;
+    align-items: center;
+`
  

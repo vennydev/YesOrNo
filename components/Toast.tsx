@@ -1,6 +1,6 @@
 "use client"
 
-import { noToastMsg, yesToastMsg } from '@/constants/toast';
+import { noToastMsg, yesToastMsg } from '@/constants';
 import { toastState } from '@/recoil/toast/atom';
 import { useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';

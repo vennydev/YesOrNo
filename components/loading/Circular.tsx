@@ -3,7 +3,7 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import styled from 'styled-components';
 import LinearProgress from '@mui/material/LinearProgress';
-export default function Loading() {
+export default function Circular() {
   
   return (
     <SpinnerContainer>

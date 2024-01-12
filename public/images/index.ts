@@ -16,6 +16,8 @@ import PostBg1 from './post-bg1.png';
 import PostBg2 from './post-bg2.png';
 import Pencil from './Union.png';
 import CheckBox from './checkbox.png';
+import TextRemover from './text-remover.png';
+import LoadingIcon from './loading-icon.png';
 
 export { 
   cellular, 
@@ -35,5 +37,7 @@ export {
   PostBg1,
   PostBg2,
   Pencil,
-  CheckBox
+  CheckBox,
+  TextRemover,
+  LoadingIcon,
 }

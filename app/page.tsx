@@ -4,13 +4,14 @@ import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 import PostCard from '../components/PostCard';
 import firebasedb from '@/firebase/firebasedb';
-import { getFirestore, collection, getDocs, orderBy, query, updateDoc, doc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, orderBy, query, updateDoc, doc, where } from "firebase/firestore";
 import { useRecoilValue } from 'recoil';
 import { useSession } from 'next-auth/react';
 import Toast from '@/components/Toast';
 import { toastState } from '@/recoil/toast/atom';
-import Circular from '@/components/loading/Circular';
-import dynamic from 'next/dynamic';
+import firestore from '@/firebase/firestore';
+import { useRouter } from 'next/navigation';
+
 
 export interface PostsProps {
     text: string,
@@ -29,8 +30,10 @@ export default function Home () {
   const [selectedTab, setSelectedTab] = useState(1);
   const [openPosts, setOpenPosts] = useState<any>([]);
   const [closePosts, setClosePosts] = useState<any>([]);
+  const [newUser, setNewUser] = useState(false);
   const toast = useRecoilValue(toastState);
   const {data: session } = useSession();
+  const router = useRouter();
 
   const handleClick = (index: number) => {
     setSelectedTab(index);
@@ -73,6 +76,32 @@ export default function Home () {
     }
   }, [session])
 
+  // const checkExistedUserOrNot = async () => {
+  //   const userid = localStorage.getItem('userID');
+  //   console.log('userid: ', userid);
+  //   if(userid === null) return;
+  //   console.log('userid: ', userid);
+  //   const q = query(collection(firestore, 'users'), where("id", "==", userid));
+  //   const querySnapshot = await getDocs(q);
+
+  //   // console.log('q: ', q);
+  //   const queryArr = querySnapshot.docs.map(doc => {
+  //     return doc.id
+  //   });
+  //   console.log('queryArr: ', queryArr);
+  //   if(queryArr.length > 0){
+  //     console.log('가입된 유저', );
+  //     return 
+  //   }else{
+  //     console.log('신규 유저', );
+  //     router.push('/login/createname');
+  //   }
+  // } 
+
+  // useEffect(() => {
+  //   checkExistedUserOrNot();
+  // }, [])
+
   return (
     <HomeSection>
       <HomeContainer>
@@ -86,12 +115,12 @@ export default function Home () {
           {selectedTab === 1 
             ? (
               <>
-            {openPosts.length > 0 && openPosts.map((post: PostsProps, index :number) => {
+            {openPosts.length > 0 && openPosts.map((post: PostsProps, index: number) => {
               return (
                   <PostCard 
                     id={post.id}
                     text={post.text}
-                    username={post.author}
+                    author={post.author}
                     imageUrl={post.imageUrl} 
                     expiredAt={post.expiredAt}
                     votingBtn={true} 
@@ -104,14 +133,14 @@ export default function Home () {
               </>) 
             : (
             <>
-          {closePosts.length > 0  && closePosts.map((post: PostsProps, index :number) => {
+          {closePosts.length > 0  && closePosts.map((post: PostsProps, index:number) => {
             return (
                 <PostCard 
+                  id={post.id}
                   text={post.text} 
-                  username={post.author} 
+                  author={post.author} 
                   imageUrl={post.imageUrl} 
                   expiredAt={post.expiredAt}
-                  id={post.id}
                   votingBtn={true} 
                   isOver={post.isOver}
                   yesCount={post.yesUser.length} 
@@ -138,7 +167,7 @@ const HomeSection = styled.div`
 
 const HomeContainer = styled.div`
   width: 100%;
-  margin-top:75px;
+  margin-top:45px;
 `;
 
 const TabContainer = styled.div`

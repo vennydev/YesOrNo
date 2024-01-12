@@ -141,7 +141,6 @@ const BtnTitle = styled.span<{$isOver: boolean | undefined}>`
   font-family: 'MaruBuri';
   position: relative;
   z-index: -1000;
-  color:red;
   color: ${props => props.$isOver ? '#BFBFBF' : 'inherit'};
   `;
 

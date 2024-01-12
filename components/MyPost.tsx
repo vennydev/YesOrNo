@@ -21,7 +21,7 @@ export default function MyPost({ id }: MyPostPropsType) {
         const q = await getDoc(docRef);
         setPost(q.data());
       } catch(error) {
-        console.log('error: ', error);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+        alert(error)
       }
     }
     getMyPost(); 
@@ -34,7 +34,7 @@ export default function MyPost({ id }: MyPostPropsType) {
             text={post.text} 
             yesCount={post.yesUser.length} 
             noCount={post.noUser.length} 
-            username={post.author} 
+            author={post.author} 
             imageUrl={post.imageUrl} 
             expiredAt={post.expiredAt}
             votingBtn={true} 
@@ -48,5 +48,4 @@ export default function MyPost({ id }: MyPostPropsType) {
 };
 
 const MyPostContainer = styled.div`
-  margin-bottom: 1px;
 `

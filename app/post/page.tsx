@@ -1,6 +1,6 @@
 "use client" 
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ClearIcon } from '../../public/icons/index';
 import PostCard from '../../components/PostCard';
 import styled from 'styled-components';
@@ -13,7 +13,7 @@ import { addDoc, arrayUnion, collection, doc, getFirestore, serverTimestamp, upd
 import { useSession } from 'next-auth/react';
 import storage from '@/firebase/storage';
 import { useRouter } from 'next/navigation';
-import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
+import { useResetRecoilState } from 'recoil';
 import { selectedImgIndexState } from '@/recoil/post/atom';
 import firestore from '@/firebase/firestore';
 import Image from 'next/image';
@@ -22,15 +22,16 @@ const ONEDAY = 24*60*60*1000;
 
 export default function PostPage() {
   const [text, setText] = useState("");
-  // imageUrl: image download url을 가져와 이미지를 다운받아 preview에 보여줌
   const [imageUrl, setImageUrl] = useState<any>(PostBg1);
-  // file: 업로드한 이미지
   const [file, setFile] = useState<any>(PostBg1);
   const [editing, setEditing] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const {data: session} = useSession();
   const router = useRouter();
   const setIndex = useResetRecoilState(selectedImgIndexState);
+  
+    const user = typeof window !== 'undefined' && localStorage.getItem('user');
+    const nickname = typeof user === 'string' && JSON.parse(user).nickname;
 
   const handleEditing = () => {
     setEditing(true);
@@ -64,7 +65,7 @@ export default function PostPage() {
       e.target.value = '';
     }
   }catch(error) {
-    console.log(error);
+    alert(error);
   }
   };
 
@@ -102,12 +103,13 @@ export default function PostPage() {
       const splitUrl = url.split("/");
       const length = splitUrl.length;
       const fileName = splitUrl[length-1];
+
       toDataURL(url).then(dataUrl => {
         const imageFile = dataURLtoFile(dataUrl, fileName);
         const postsRef = ref(storage, `posts/${fileName}`);
         uploadBytes(postsRef, imageFile).then((snapshot) => {
           docData = { 
-            author: session?.user?.name,
+            author: nickname,
             text:text,
             createdAt: new Date().getTime(),
             expiredAt: new Date().getTime()+ONEDAY,
@@ -123,12 +125,12 @@ export default function PostPage() {
         setIndex();
         router.push('/');
       })
-     }).catch(error => console.log('기본 이미지 포함 데이터 객체 업로드 실패', error));
+     }).catch(error => alert(error));
     } else {
       const postsRef = ref(storage, `posts/${file.name}`);
       uploadBytes(postsRef, file).then((snapshot) => {
         docData = { 
-          author: session?.user?.name,
+          author: nickname,
           text:text,
           createdAt: new Date().getTime(),
           expiredAt: new Date().getTime()+ONEDAY,
@@ -143,7 +145,7 @@ export default function PostPage() {
         uploadToFireStore(docData);
         setIndex();
         router.push('/');
-      }).catch(error => console.log('업로드된 이미지 포함 데이터 객체 업로드 실패',error));
+      }).catch(error => alert(error));
     }
   };
 
@@ -167,7 +169,7 @@ return (
         <div>
           <PostCard 
             text='YES OR NO로 대답 할 수 있는 질문을 작성해주세요'
-            username={session?.user.name}
+            author={nickname}
             imageUrl={imageUrl}
             time='23년 11월 9일 투표 완료' 
             file={file}

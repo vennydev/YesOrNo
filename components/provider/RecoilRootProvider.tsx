@@ -12,7 +12,7 @@ export default function RecoilRootProvider({children} : {children: React.ReactNo
       <RecoilRoot>
         <AuthSessionProvider>
           {children}
-          {pathname !== '/login' && <Navigation/>}
+          {(pathname === '/' || pathname === '/post' || pathname === '/mypage') && <Navigation/>}
         </AuthSessionProvider>
       </RecoilRoot>
   )

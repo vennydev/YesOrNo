@@ -1,9 +1,9 @@
-// "use client"
+"use client"
 
-// import firebasedb from "@/firebase/firebasedb";
-// import firestore from "@/firebase/firestore";
-// import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
-// import { atom, selector } from "recoil";
+import firebasedb from "@/firebase/firebasedb";
+import firestore from "@/firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { atom, selector } from "recoil";
 
 // type postsFilterStateType = string;
 // type votedPostsArrayStateType = [];
@@ -18,10 +18,14 @@
 //   votedPosts: []
 // }
 
-// const postsFilterState = atom<postsFilterStateType>({
-//   key: 'postsFilterState',
-//   default: 'myPost'
-// })
+type usernameStateType = string;
+
+export const usernameState = atom<usernameStateType>({
+  key: 'usernameState',
+  default: ''
+});
+
+
 
 // const votedPostsArrayState = atom<votedPostsArrayStateType>({
 //   key: "votedPostsArrayState",
