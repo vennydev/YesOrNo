@@ -70,10 +70,14 @@ export default function Mypage() {
       </TabWrapper>
       <MyPostsContainer>
         { isSelected === 0 ? (
-          (myPostsArr.length > 0 && myPostsArr !== undefined) ? myPostsArr.map((id) => {
+          (myPostsArr.length > 0 && myPostsArr !== undefined) ? myPostsArr.map(id => {
             return (<MyPost key={id} id={id}/>)
           }) : <EmptySection>게시물이 없습니다.</EmptySection>
-        ) : <EmptySection>준비중입니다.</EmptySection>}
+        ) : (
+          (votedPosts.length > 0 && votedPosts !== undefined) ? votedPosts.map(id => {
+            return (<MyPost key={id} id={id}/>)
+          }) : <EmptySection>준비중입니다.</EmptySection>
+        ) }
         <SignOutBtnWrapper>
           <button onClick={() => {
             signOut({ callbackUrl: '/' });

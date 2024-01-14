@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import ColorCircle from './ColorCircle';
 import PostImageforHome from './PostImageforHome';
 import VotingBtn from './VotingBtn';
-import { arrayRemove, arrayUnion, doc, onSnapshot, updateDoc } from 'firebase/firestore';
+import { arrayRemove, arrayUnion, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { useSession } from 'next-auth/react';
 import ModalPortal from './modal/ModalPortal';
@@ -167,6 +167,12 @@ export default function PostCard ({
 
     const selectedOption = e.currentTarget.value;
     const postRef = doc(firestore, 'posts', String(id)); 
+    const userRef = doc(firestore, 'users', userid);
+
+    await updateDoc(userRef, {
+      votedPosts: arrayUnion(id),
+    });
+    
     if(voteStatus === "no response"){
       if(selectedOption === 'yes'){
          await updateDoc(postRef, {

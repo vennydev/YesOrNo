@@ -6,7 +6,6 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from 'next/navigation'
 import { collection, doc, getDoc, getDocs, query, updateDoc, where, writeBatch } from "firebase/firestore";
 import firestore from "@/firebase/firestore";
-import EditInput from '../../../components/edit/EditInput';
 import Image from "next/image";
 import { TextRemover } from "@/public/images";
 
@@ -17,28 +16,14 @@ export default function EditUserName() {
   const router = useRouter();
 
   const handleNameChange = ({target : { value }}: any) => {
-    console.log('value: ', value);
     setUsername(value);
   };
-
-  const removeName = () => {
-    setUsername('');
-  }
 
   const handleSubmit = async () => {
     const userid = localStorage.getItem("userID");
     const q = query(collection(firestore, "users"), where("nickname", "==", username));
     const querySnapshot = await getDocs(q);
     let isValidated = true;
-    // querySnapshot.forEach((doc) => {
-    //   console.log('doc.id: ', doc.id);
-    //     if(doc.id){
-    //       isValidated = false; 
-    //       return alert("이미 존재하는 이름입니다. 다른 이름을 사용해주세요.");
-    //     }else{
-    //       isValidated = true
-    //     } 
-    //   });
       if(isValidated){
         try {
           const userRef = doc(firestore, "users", String(userid));
