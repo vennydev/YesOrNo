@@ -105,7 +105,7 @@ export default function usePagination ( collectionName: string, limitCount: numb
   const onIntersect = useCallback(async ([entry]: any, observer: any) => {
     if(entry.isIntersecting && !loadingMore){
       setLoadingMore(true);
-      key && await loadMore(5);
+      key && await loadMore(2);
       setLoadingMore(false);
       observer.unobserve(entry.target);
     }
