@@ -5,46 +5,92 @@ import Profile from '../../components/Profile';
 import { DefaultProfile, Pencil } from "@/public/images";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { collection, doc, documentId, getDoc, getDocs, query, where } from "firebase/firestore";
 import firestore from "@/firebase/firestore";
-import MyPost from "@/components/MyPost";
-import { RecoilEnv, useRecoilValue } from "recoil";
+import { RecoilEnv, useRecoilState, useRecoilValue } from "recoil";
 import { toastState } from "@/recoil/toast/atom";
 import Toast from "@/components/Toast";
 import Link from 'next/link';
+import { loadingState } from "@/recoil";
+import CircularProgress from '@mui/joy/CircularProgress';
+import MyPost from "@/components/MyPost";
+import { myPostsArrayState, votedPostsArrayState } from "@/recoil/mypage/atom";
+import PostCard from "@/components/PostCard";
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
 export default function Mypage() {
   const [isSelected, setIsSelected] = useState(0);
-  const [myPostsArr, setMyPostsArr] = useState([]);
-  const [votedPosts, setVotedPosts] = useState([]);
   const [name, setName] = useState('');
-
+  const [isLoading, setIsLoading] = useState(false); 
+  const [myPostsArr, setMyPostsArr] = useRecoilState(myPostsArrayState);
+  const [votedPosts, setVotedPosts] = useRecoilState(votedPostsArrayState);
   const toast = useRecoilValue(toastState);
-  
-  
+  const a = useCallback(async () => {
+    setIsLoading(true);
+    try{
+      const userid = localStorage.getItem("userID");
+      const docRef = doc(firestore, "users", String(userid));
+      const docSnap = await getDoc(docRef);
+      Promise.all(
+          docSnap?.data()?.votedPosts.map(async (id: string) => {
+            const postRef = doc(firestore, "posts", id);
+            const docSnap = await getDoc(postRef);
+              if(!docSnap?.data()?.isDeleted){
+                return docSnap?.data()
+              }else{
+                return null
+              }
+          })
+        ).then(arr => {
+          const filterdVotedPosts = arr.filter(value => {return typeof value !== null && value});
+          setVotedPosts(filterdVotedPosts.reverse());
+          setIsLoading(false)
+        });
+    }catch(error){
+      console.log('error: ', error)
+    }
+  }, [setVotedPosts]);
+
+
+  const getData = useCallback(async () => {
+    setIsLoading(true)
+    try{
+      const userid = localStorage.getItem("userID");
+      const docRef = doc(firestore, "users", String(userid));
+      const docSnap = await getDoc(docRef);
+
+       Promise.all(
+        docSnap?.data()?.myPosts.map(async (id: string) => {
+          const postRef = doc(firestore, "posts", id);
+          const docSnap = await getDoc(postRef);
+          if(!docSnap?.data()?.isDeleted){
+            return docSnap?.data()
+          }else {
+            return null
+          }
+        })
+      ).then(arr => {
+        const filteredValue = arr.filter(value => { return typeof value !== null && value } );
+        setMyPostsArr(filteredValue.reverse());
+        setIsLoading(false)
+      });
+    }catch{
+      console.log('data fetching error in mypage')
+    }
+  }, [setMyPostsArr, setIsLoading]);
+
   const handleSelectedTab = (index: number) => {
     setIsSelected(index);
+    if(index === 1)a();
   };
-  
+
   useEffect(() => {
     const user = localStorage.getItem("user");
     const username = typeof user === 'string' && JSON.parse(user).nickname;
     setName(username);
-      async function getData() {
-        const userid = localStorage.getItem("userID");
-        const docRef = doc(firestore, "users", String(userid));
-        const docSnap = await getDoc(docRef);
-        if(docSnap.data() === undefined){
-          return
-        }else{
-          setMyPostsArr(docSnap?.data()?.myPosts.reverse());
-          setVotedPosts(docSnap?.data()?.votedPosts.reverse());
-        }
-      };
-      getData();
+    getData();
   }, []);
 
   return (
@@ -69,30 +115,69 @@ export default function Mypage() {
         <TabButton $focused={isSelected === 1} onClick={() => handleSelectedTab(1)}>참여한 투표</TabButton>
       </TabWrapper>
       <MyPostsContainer>
-        { isSelected === 0 ? (
-          (myPostsArr.length > 0 && myPostsArr !== undefined) ? myPostsArr.map(id => {
-            return (<MyPost key={id} id={id}/>)
-          }) : <EmptySection>게시물이 없습니다.</EmptySection>
-        ) : (
-          (votedPosts.length > 0 && votedPosts !== undefined) ? votedPosts.map(id => {
-            return (<MyPost key={id} id={id}/>)
-          }) : <EmptySection>준비중입니다.</EmptySection>
-        ) }
-        <SignOutBtnWrapper>
-          <button onClick={() => {
-            signOut({ callbackUrl: '/' });
-            localStorage.removeItem("userID");
-            }}>로그아웃</button>
-          {/* <Divider/> */}
-          <button onClick={()=> {
-            alert("곧 됩니다..!")
-          }}>탈퇴</button>
-        </SignOutBtnWrapper>
+        <MyPostWrapper>
+            { isSelected === 0 ? (
+              <>
+                {isLoading 
+                ? <LoadingWrapper><div><CircularProgress color="neutral"/> </div></LoadingWrapper> 
+                : (
+                  myPostsArr.length > 0 
+                  ? myPostsArr.map((post, index) => {
+                    return (
+                      <MyPost key={index} post={post} myPost/>
+                    )
+                  })
+                  : <EmptySection><EmptyText>내가 만든 투표가 없습니다. [질문하기]에서 투표게시글을 만들어보세요.</EmptyText></EmptySection>
+                  )
+                }
+              </>
+            )
+            : (
+              <>
+                {isLoading 
+                ? <LoadingWrapper><div><CircularProgress color="neutral"/></div></LoadingWrapper>
+                : (
+                votedPosts.length > 0 
+                  ? votedPosts.map((post, index) => {
+                    return (
+                      <PostCard
+                            id={post.id}
+                            text={post.text}
+                            author={post.author}
+                            imageUrl={post.imageUrl} 
+                            expiredAt={post.expiredAt}
+                            votingBtn={true} 
+                            yesCount={post.yesUser.length}
+                            noCount={post.noUser.length} 
+                            isDeleted={post.isDeleted}
+                            isParticipantCountPublic={post.isParticipantCountPublic}
+                            key={index}
+                      />
+                    )
+                  })
+                  : <EmptySection><EmptyText>참여한 투표가 없습니다. [홈]에서 다른 사람의 게시물에 투표를 해보세요.</EmptyText></EmptySection>
+                  )
+                }
+              </>
+            )
+          }
+        </MyPostWrapper>
+          <SignOutBtnWrapper>
+            <button onClick={() => {
+              signOut({ callbackUrl: '/' });
+              localStorage.removeItem("userID");
+              }}>로그아웃</button>
+            {/* <Divider/> */}
+            <button onClick={()=> {
+              alert("곧 됩니다..!")
+            }}>탈퇴</button>
+          </SignOutBtnWrapper>
       </MyPostsContainer>
       {toast.isShown && <Toast position='bottom'/>}
     </MyPageSection>
   )
-}
+};
+
 
 const MyPageSection = styled.div`
   padding-top: 75px;
@@ -144,6 +229,23 @@ const MyPostsContainer = styled.div`
   align-items: center;
 `;
 
+const MyPostWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const LoadingWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
 const SignOutBtnWrapper = styled.div`
   font-size: 11px;
   color: ${props => props.theme.color.main};
@@ -162,5 +264,8 @@ const EmptySection = styled.div`
       height: 100%;
     display: flex;
     align-items: center;
+`;
+
+const EmptyText = styled.span`
+  
 `
- 

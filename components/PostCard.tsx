@@ -42,6 +42,7 @@ interface PostCardPropsType {
   time?: string;
   isOver?: boolean;
   file?: any;
+  isDeleted?: boolean;
 }
 
 export default function PostCard ({
@@ -56,6 +57,7 @@ export default function PostCard ({
   noCount,
   isOver,
   file,
+  isDeleted,
   isParticipantCountPublic,
   setImageUrl, 
   setFile,

@@ -13,10 +13,11 @@ import { addDoc, arrayUnion, collection, doc, getFirestore, serverTimestamp, upd
 import { useSession } from 'next-auth/react';
 import storage from '@/firebase/storage';
 import { useRouter } from 'next/navigation';
-import { useResetRecoilState } from 'recoil';
+import { useRecoilState, useResetRecoilState, useSetRecoilState } from 'recoil';
 import { selectedImgIndexState } from '@/recoil/post/atom';
 import firestore from '@/firebase/firestore';
 import Image from 'next/image';
+import { myPostsArrayState } from '@/recoil/mypage/atom';
 
 const ONEDAY = 24*60*60*1000;
 
@@ -29,6 +30,7 @@ export default function PostPage() {
   const {data: session} = useSession();
   const router = useRouter();
   const setIndex = useResetRecoilState(selectedImgIndexState);
+  const [myPostsArr, setMyPostsArr] = useRecoilState(myPostsArrayState);
   
     const user = typeof window !== 'undefined' && localStorage.getItem('user');
     const nickname = typeof user === 'string' && JSON.parse(user).nickname;
@@ -107,7 +109,8 @@ export default function PostPage() {
       toDataURL(url).then(dataUrl => {
         const imageFile = dataURLtoFile(dataUrl, fileName);
         const postsRef = ref(storage, `posts/${fileName}`);
-        uploadBytes(postsRef, imageFile).then((snapshot) => {
+        uploadBytes(postsRef, imageFile).then((snapshot) => 
+        {
           docData = { 
             author: nickname,
             text:text,
@@ -119,6 +122,7 @@ export default function PostPage() {
             participatedUser: [],
             yesUser: [],
             noUser: [],
+            isDeleted: false,
             timestamp: serverTimestamp(),
           };
         uploadToFireStore(docData);
@@ -140,6 +144,7 @@ export default function PostPage() {
           participatedUser: [],
           yesUser: [],
           noUser: [],
+          isDeleted: false,
           timestamp: serverTimestamp(),
         };
         uploadToFireStore(docData);
@@ -153,9 +158,14 @@ export default function PostPage() {
     const db = getFirestore(firebasedb);
     const postRef = await addDoc(collection(db, 'posts'), data);
     const usersRef = doc(firestore, 'users', session?.user.id);
+    setMyPostsArr([data, ...myPostsArr]);
     await updateDoc(usersRef, {
       myPosts: arrayUnion(postRef.id)
-    })
+    });
+
+    await updateDoc(postRef, {
+      id: postRef.id
+    });
   };
 return (
     <PostSection>

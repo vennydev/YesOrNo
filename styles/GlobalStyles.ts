@@ -13,10 +13,6 @@ const GlobalStyles = createGlobalStyle`
       font-family: 'MaruBuri';
     }
 
-    html{
-      height: 100vh;
-    }
-
     button {
       color: black;
     }
@@ -32,7 +28,7 @@ const GlobalStyles = createGlobalStyle`
     body{
       line-height: 1;
       font-family: 'MaruBuri';
-        
+      height:100%;
     }
     
     ol, ul{

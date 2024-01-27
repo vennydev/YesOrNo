@@ -22,6 +22,7 @@ export interface PostsProps {
     isParticipantCountPublic: boolean,
     yesUser: string[],
     noUser: string[],
+    isDeleted: boolean,
     participatedUser: string[],
 }
 
@@ -29,7 +30,7 @@ export default function Home () {
   const [selectedTab, setSelectedTab] = useState(1);
   const toast = useRecoilValue(toastState);
   const {data: session } = useSession();
-  const INITIAL_FETCH_COUNT = 2;
+  const INITIAL_FETCH_COUNT = 5;
   const [target, setTarget] = useState<any>(null);
 
   const handleClick = (index: number) => {
@@ -49,7 +50,6 @@ export default function Home () {
       localStorage.setItem('userID', session?.user.id);
     }
   }, [session])
-
   return (
     <HomeSection>
       <HomeContainer>
@@ -74,6 +74,7 @@ export default function Home () {
                         votingBtn={true} 
                         yesCount={post.yesUser.length}
                         noCount={post.noUser.length} 
+                        isDeleted={post.isDeleted}
                         isParticipantCountPublic={post.isParticipantCountPublic}
                         key={index}
                         />
@@ -96,6 +97,7 @@ export default function Home () {
               isOver={post.isOver}
               yesCount={post.yesUser.length} 
               noCount={post.noUser.length}
+              isDeleted={post.isDeleted}
               isParticipantCountPublic={post.isParticipantCountPublic}
               key={index}
               />

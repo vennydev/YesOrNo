@@ -1,51 +1,56 @@
 "use client"
 
-import { useEffect, useState } from "react";
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { useCallback, useEffect, useState } from "react";
+import { doc, getDoc } from "firebase/firestore";
 import firestore from "@/firebase/firestore";
-import { useSession } from "next-auth/react";
-import { PostsProps } from "@/app/page";
 import PostCard from "./PostCard";
 import styled from "styled-components";
+import CancelIcon from '@mui/icons-material/Cancel';
+import ModalPortal from "./modal/ModalPortal";
+import { useModal } from "@/hooks/useModal";
+import { removePost } from "@/constants";
 
-interface MyPostPropsType {
-  id: string,
-}
-
-export default function MyPost({ id }: MyPostPropsType) {
-  const [post, setPost] = useState<any>(null);
-  useEffect(() => {
-    async function getMyPost() {
-      const docRef = doc(firestore, "posts", id);
-      try{
-        const q = await getDoc(docRef);
-        setPost(q.data());
-      } catch(error) {
-        alert(error)
-      }
-    }
-    getMyPost(); 
-  }, []);
+export default function MyPost({post, myPost}: any) {
+  const { Modal, isOpen, openModal, closeModal } = useModal();
 
   return (
     <MyPostContainer>
-      {post !== null &&
-          <PostCard 
-            text={post.text} 
-            yesCount={post.yesUser.length} 
-            noCount={post.noUser.length} 
-            author={post.author} 
-            imageUrl={post.imageUrl} 
-            expiredAt={post.expiredAt}
-            votingBtn={true} 
-            id={id} 
-            isOver={post.isOver}
-            isParticipantCountPublic={post.isParticipantCountPublic}
-            />
-      }
+          <PostWrapper>
+              <PostCard 
+                text={post.text} 
+                yesCount={post.yesUser.length} 
+                noCount={post.noUser.length} 
+                author={post.author} 
+                imageUrl={post.imageUrl} 
+                expiredAt={post.expiredAt}
+                votingBtn={true} 
+                id={post.id} 
+                isOver={post.isOver}
+                isParticipantCountPublic={post.isParticipantCountPublic}
+                />
+                {myPost && <RemoveBtn onClick={() => openModal()}><CancelIcon color="disabled" sx={{ fontSize: 30 }}/></RemoveBtn>}
+              </PostWrapper>
+          {isOpen && 
+            <ModalPortal>
+              <Modal text={removePost} close={closeModal} postId={post.id} performBtn></Modal>
+            </ModalPortal>
+          }
     </MyPostContainer>
   )
 };
 
 const MyPostContainer = styled.div`
-`
+`;
+
+const PostWrapper = styled.div`
+  position: relative;
+`;
+
+const RemoveBtn = styled.div`
+  position: absolute;
+  top:15px;
+  right:15px;
+  display:flex;
+  align-items: center;
+  cursor: pointer;
+`;

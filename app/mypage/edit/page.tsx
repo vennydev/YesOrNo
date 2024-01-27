@@ -62,14 +62,6 @@ export default function EditUserName() {
           </GoBack>
           <EditPageTitle>프로필 이름 변경</EditPageTitle>
         </Header>
-        {/* <EditInput 
-          purpose='edit' 
-          text='프로필 이름을 변경해주세요' 
-          username={username}
-          handleSubmit={handleSubmit} 
-          handleNameChange={handleNameChange} 
-          removeName={removeName}
-        /> */}
         <InputContainer>
           <NameLabel htmlFor="username">프로필 이름</NameLabel>  
           <InputWrapper>

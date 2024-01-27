@@ -20,7 +20,7 @@ const color = {
   pointColor: "#796EFF",
   yesBarColor: "#C3BEFD",
   noBarColor: "#FFB5C3",
-}
+};
 
 const theme = {
   device,

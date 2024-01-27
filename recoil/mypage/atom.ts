@@ -2,41 +2,27 @@
 
 import firebasedb from "@/firebase/firebasedb";
 import firestore from "@/firebase/firestore";
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { atom, selector } from "recoil";
 
-// type postsFilterStateType = string;
-// type votedPostsArrayStateType = [];
-// type myPostsArrayStateType = [];
-// type getUserIdType = string | null;
-
-// interface userObjectStateType {
-//   id: string,
-//   name: string,
-//   email: string,
-//   myPost: [],
-//   votedPosts: []
-// }
 
 type usernameStateType = string;
+type myPostsArrayStateType = any[];
+type votedPostsArrayStateType = any[];
 
 export const usernameState = atom<usernameStateType>({
   key: 'usernameState',
   default: ''
 });
 
+export const myPostsArrayState = atom<myPostsArrayStateType>({
+  key: "myPostsArrayState",
+  default: [],
+});
 
-
-// const votedPostsArrayState = atom<votedPostsArrayStateType>({
-//   key: "votedPostsArrayState",
-//   default: [],
-// });
-
-// const myPostsArrayState = atom<myPostsArrayStateType>({
-//   key: "myPostsArrayState",
-//   default: [],
-// });
-
+export const votedPostsArrayState = atom<votedPostsArrayStateType>({
+  key: "votedPostsArrayState",
+  default: [],
+});
 
 // // const filteredPostsListState = selector({
 // //   key: 'filteredPostsListState',
@@ -52,12 +38,3 @@ export const usernameState = atom<usernameStateType>({
 // //     }
 // //   }
 // // });
-
-// export {
-//   postsFilterState,
-//   votedPostsArrayState,
-//   myPostsArrayState,
-//   getUserId,
-//   myPostQuery,
-//   // filteredPostsListState,
-// }

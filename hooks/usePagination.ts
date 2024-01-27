@@ -33,6 +33,7 @@ export default function usePagination ( collectionName: string, limitCount: numb
         const postQueryRef = query(
           collection(firestore, collectionName),
           where('isOver', '==', false),
+          where('isDeleted', '==', false),
           orderBy("timestamp", "desc"), // 최신 작성순으로 정렬
           limit(limitCount),
         );
@@ -44,7 +45,6 @@ export default function usePagination ( collectionName: string, limitCount: numb
             ...doc.data()
           }
           ));
-          console.log('firstData: ', firstData);
           setData(firstData);
           setKey(snap.docs[snap.docs.length - 1]);
     
@@ -79,6 +79,7 @@ export default function usePagination ( collectionName: string, limitCount: numb
     const postQueryRef = query(
       collection(firestore, collectionName),
       where('isOver', '==', false),
+      where('isDeleted', '==', false),
       orderBy("timestamp", "desc"),
       startAfter(key),
       limit(loadCount)
@@ -105,7 +106,7 @@ export default function usePagination ( collectionName: string, limitCount: numb
   const onIntersect = useCallback(async ([entry]: any, observer: any) => {
     if(entry.isIntersecting && !loadingMore){
       setLoadingMore(true);
-      key && await loadMore(2);
+      key && await loadMore(3);
       setLoadingMore(false);
       observer.unobserve(entry.target);
     }
