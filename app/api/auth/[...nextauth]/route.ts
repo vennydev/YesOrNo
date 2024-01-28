@@ -32,6 +32,10 @@ const handler = NextAuth({
               myPosts: [],
               votedPosts: []
             });
+
+            await setDoc(doc(firestore, 'likes', user.id), {
+              likes: []
+            });
           }
           return true
         } else {

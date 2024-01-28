@@ -59,7 +59,7 @@ const StyledImage = styled(Image)`
   width: 100%;
   height: 100%;
   object-fit: contain;
-`;
+  `;
 
 const StyledDefaultImage = styled(Image)`
   width: 100%;

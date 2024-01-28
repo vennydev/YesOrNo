@@ -18,6 +18,9 @@ import Pencil from './Union.png';
 import CheckBox from './checkbox.png';
 import TextRemover from './text-remover.png';
 import LoadingIcon from './loading-icon.png';
+import Comment from './Comment.png';
+import Like from './Like.png';
+import LikeEmpty from './Like-empty.png'
 
 export { 
   cellular, 
@@ -40,4 +43,7 @@ export {
   CheckBox,
   TextRemover,
   LoadingIcon,
+  Comment,
+  Like,
+  LikeEmpty
 }

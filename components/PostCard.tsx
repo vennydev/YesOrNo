@@ -15,6 +15,7 @@ import Modal from './Modal';
 import { useRecoilState } from 'recoil';
 import { isCheckDeletionModalVisible } from '@/recoil/post/atom';
 import { toastState } from '@/recoil/toast/atom';
+import LikeCommentContainer from './LikeCommentContainer';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = [PostBg1, PostBg2];
@@ -308,8 +309,9 @@ useEffect(() => {
   }, [expiredAt]);
 
   return (
-      <PostContainer>
-          <PostWrapper $votingBtn={votingBtn}>
+      <PostContainer $votingBtn={votingBtn}>
+          <PostWrapper>
+            <PostTop $votingBtn={votingBtn}>
               <PostMetadata>
               <PostMetadataLeft>
                 {votingBtn 
@@ -346,22 +348,21 @@ useEffect(() => {
               </Text>
             </PostQuestion> )
             : divideText()}
-          {votingBtn 
-              ?  (
-                <>
-                <VotingBtn 
-                  handleVotesCount={handleVotesCount} 
-                  percentage={percentageOfYes} 
-                  voteStatus={voteStatus}
-                  totalParticipantsCount={totalParticipantsCount}
-                  isParticipantCountPublic={isParticipantCountPublic}
-                  isOver={isOver}
-                  setOnEffect={setOnEffect}
-                  onEffect={onEffect}
-                  />
-              </> )
-            : (
-              <>
+          {votingBtn && (
+            <VotingBtn 
+              handleVotesCount={handleVotesCount} 
+              percentage={percentageOfYes} 
+              voteStatus={voteStatus}
+              totalParticipantsCount={totalParticipantsCount}
+              isParticipantCountPublic={isParticipantCountPublic}
+              isOver={isOver}
+              setOnEffect={setOnEffect}
+              onEffect={onEffect}
+              />)}
+            </PostTop>
+          {votingBtn && <LikeCommentContainer postID={id}/>} 
+          </PostWrapper>
+          {!votingBtn && (
                 <BgSelectorWrapper>
                   {imageArr.map((image, index) => {
                     return (
@@ -373,10 +374,7 @@ useEffect(() => {
                       )
                     })}
                 </BgSelectorWrapper>
-              </>
-            )
-          }
-          </PostWrapper>
+          )}
         {isModalVisible && 
           <ModalPortal>
             <Modal type="login" closeModal={closeLoginModal}/>
@@ -391,9 +389,9 @@ useEffect(() => {
   )
 };
 
-const PostContainer = styled.div`
+const PostContainer = styled.div<{$votingBtn : boolean}>`
   width: 335px;
-  height: 478px;
+  height: ${props => props.$votingBtn ? "584px" : "478px"};
   border-radius: 20px;
   border: ${(props) => `1px solid ${props.theme.color.mainBorderColor}`};
   margin-top: 16px;
@@ -405,14 +403,20 @@ const PostContainer = styled.div`
   overflow: hidden
 `;
 
-const PostWrapper = styled.div<{$votingBtn? : boolean;}>`
+const PostWrapper = styled.div`
   height: 100%;
   width: 100%;
+  `; 
+  
+  const PostTop = styled.div<{$votingBtn? : boolean}>`
   display: flex;
   flex-direction: column;
   align-items:center;
-  justify-content: ${props => props.$votingBtn ? "space-between" : "flex-start"} ;
-`; 
+  width:100%;
+  height: ${props => props.$votingBtn ? "80%" : "100%"};
+  justify-content: ${props => props.$votingBtn ? "space-between" : "flex-start"};
+  position: relative;
+`
 
 const PostMetadata = styled.div`
   align-self: flex-start;
@@ -499,6 +503,7 @@ const BgSelectorWrapper = styled.ul`
   border-top: ${(props) => `1px solid ${props.theme.color.mainFontColor}`};
   position: absolute;
   bottom:0;
+  left:0;
   padding:16px;
   margin:0;
   width: 100%;

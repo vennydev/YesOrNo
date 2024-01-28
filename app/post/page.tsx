@@ -122,6 +122,7 @@ export default function PostPage() {
             participatedUser: [],
             yesUser: [],
             noUser: [],
+            likes: 0,
             isDeleted: false,
             timestamp: serverTimestamp(),
           };
@@ -144,6 +145,7 @@ export default function PostPage() {
           participatedUser: [],
           yesUser: [],
           noUser: [],
+          likes: 0,
           isDeleted: false,
           timestamp: serverTimestamp(),
         };
