@@ -24,6 +24,7 @@ export interface PostsProps {
     isParticipantCountPublic: boolean,
     yesUser: string[],
     noUser: string[],
+    likes?: number,
     isDeleted: boolean,
     participatedUser: string[],
 }

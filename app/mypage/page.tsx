@@ -149,6 +149,7 @@ export default function Mypage() {
                             votingBtn={true} 
                             yesCount={post.yesUser.length}
                             noCount={post.noUser.length} 
+                            likes={post.likes}
                             isDeleted={post.isDeleted}
                             isParticipantCountPublic={post.isParticipantCountPublic}
                             key={index}

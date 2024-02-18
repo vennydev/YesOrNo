@@ -12,8 +12,7 @@ import { commentsArray, showCommentBoxState } from '@/recoil';
 import CommentBox from './CommentBox';
 
 interface LikeCommentContainerPropsType {
-  postID: string;
-  likes: number;
+  postID?: string;
 }
 
 export interface commentsType {
@@ -37,6 +36,7 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
   const userid = getItem("userID");
 
   const renderCommentBox = () => {
+    typeof postID === 'string' &&  
     setShowCommentBox({
       postId: postID,
       isShown: true

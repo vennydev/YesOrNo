@@ -17,7 +17,7 @@ import { commentsType } from './LikeCommentContainer';
 interface CommnetBoxPropsType {
   comments: commentsType[];
   setComments: (value: commentsType[]) => void;
-  postID: string;
+  postID?: string;
   setShowCommentBox: (value: setShowCommentBoxType) => void;
 }
 
