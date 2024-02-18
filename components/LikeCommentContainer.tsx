@@ -7,16 +7,27 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { arrayUnion, collection, doc, getDoc, increment, query, setDoc, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { getItem } from '@/utils/localStorage';
+import CommentBox from './CommentBox';
+import { useRecoilState } from 'recoil';
+import { showCommentBoxState } from '@/recoil';
 
 interface LikeCommentContainerPropsType {
   postID: string | undefined;
 }
 
 export default function LikeCommentContainer(props: LikeCommentContainerPropsType) {
-  const [ likesCount, setLikesCount ] = useState(0);
-  const [ liked, setLiked ] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
+  const [commentText, setCommentText] = useState("");
+  const [showCommentBox, setShowCommentBox] = useRecoilState(showCommentBoxState);
+  const [liked, setLiked] = useState(false);
+
   const { postID } = props;
   const userid = getItem("userID");
+
+  const renderCommentBox = () => {
+    console.log('render comment', );
+    setShowCommentBox(!showCommentBox);
+  }
   
   const likedStatus = useCallback(async() => {
     const likesRef = doc(firestore, "likes", String(userid));
@@ -35,8 +46,6 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
     const count = postSnap.exists() && postSnap.data().likes;
     setLikesCount(count);
   }, []);
-
-
 
   const handleLike = useCallback(async () => {
     const postRef = doc(firestore, "posts", String(postID));
@@ -86,13 +95,13 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
           <div>{likesCount}</div>
         </IconsWrapper>
         <IconsWrapper>
-          <Icon>
+          <Icon onClick={renderCommentBox}>
             <Image src={Comment} width={24} height={24} alt='comment-bubble'></Image>
           </Icon>
           <div>0</div>
         </IconsWrapper>
       </LikeCommentIcons>
-      <CommentWrapper>
+      <CommentWrapper onClick={renderCommentBox}>
         <LatestComment>
           <Username>마일로앞발</Username>
           <span>야식은 못참지;;</span>

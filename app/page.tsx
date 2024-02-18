@@ -10,6 +10,8 @@ import { useRouter } from 'next/navigation';
 import usePagination from '@/hooks/usePagination';
 import CircularProgress from '@mui/joy/CircularProgress';
 import { useRecoilValue } from 'recoil';
+import { showCommentBoxState } from '@/recoil';
+import CommentBox from '@/components/CommentBox';
 
 
 export interface PostsProps {
@@ -32,6 +34,8 @@ export default function Home () {
   const {data: session } = useSession();
   const INITIAL_FETCH_COUNT = 5;
   const [target, setTarget] = useState<any>(null);
+  const showCommentBox= useRecoilValue(showCommentBoxState);
+
 
   const handleClick = (index: number) => {
     setSelectedTab(index);
@@ -44,7 +48,7 @@ export default function Home () {
     loadingMore,
     noMore,
   } = usePagination('posts', INITIAL_FETCH_COUNT, target);
-
+console.log('closedPosts: ', closedPosts);
   useEffect(() => {
     if(session){
       localStorage.setItem('userID', session?.user.id);
@@ -108,6 +112,7 @@ export default function Home () {
           </PostContainer>
       </HomeContainer>
       {toast.isShown && <Toast position='bottom'/>}
+      {showCommentBox && <CommentBox/>}
     </HomeSection>
   )
 };
