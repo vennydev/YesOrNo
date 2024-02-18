@@ -9,7 +9,7 @@ import ImageUploader from '../../components/ImageUploader';
 import imageCompression from 'browser-image-compression';
 import { ref, uploadBytes } from 'firebase/storage';
 import firebasedb from '@/firebase/firebasedb';
-import { addDoc, arrayUnion, collection, doc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { addDoc, arrayUnion, collection, doc, getFirestore, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
 import { useSession } from 'next-auth/react';
 import storage from '@/firebase/storage';
 import { useRouter } from 'next/navigation';
@@ -161,6 +161,10 @@ export default function PostPage() {
     const postRef = await addDoc(collection(db, 'posts'), data);
     const usersRef = doc(firestore, 'users', session?.user.id);
     setMyPostsArr([data, ...myPostsArr]);
+
+    await setDoc(doc(db, "comments", postRef.id), {comments: []});
+    await setDoc(doc(db, "likes", postRef.id), {likes: []});
+    
     await updateDoc(usersRef, {
       myPosts: arrayUnion(postRef.id)
     });

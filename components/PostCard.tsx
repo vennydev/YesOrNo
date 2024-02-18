@@ -26,7 +26,7 @@ interface TotalCountType {
 }
 
 interface PostCardPropsType {
-  id?: string; 
+  id: string; 
   text:string;
   author:string | null;
   imageUrl?: any;
@@ -35,6 +35,7 @@ interface PostCardPropsType {
   editing?: boolean;
   yesCount?: number | undefined; 
   noCount?: number | undefined;
+  likes: number;
   isParticipantCountPublic?: boolean;
   setImageUrl?: React.Dispatch<React.SetStateAction<any>>;
   setFile?: (value: any) => void;
@@ -56,6 +57,7 @@ export default function PostCard ({
   editing, 
   yesCount,
   noCount,
+  likes,
   isOver,
   file,
   isDeleted,
@@ -360,7 +362,7 @@ useEffect(() => {
               onEffect={onEffect}
               />)}
             </PostTop>
-          {votingBtn && <LikeCommentContainer postID={id}/>} 
+          {votingBtn && <LikeCommentContainer postID={id} likes={likes}/>} 
           </PostWrapper>
           {!votingBtn && (
                 <BgSelectorWrapper>

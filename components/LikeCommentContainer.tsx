@@ -7,38 +7,52 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { arrayUnion, collection, doc, getDoc, increment, query, setDoc, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { getItem } from '@/utils/localStorage';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { commentsArray, showCommentBoxState } from '@/recoil';
 import CommentBox from './CommentBox';
-import { useRecoilState } from 'recoil';
-import { showCommentBoxState } from '@/recoil';
 
 interface LikeCommentContainerPropsType {
-  postID: string | undefined;
+  postID: string;
+  likes: number;
+}
+
+export interface commentsType {
+  author: string,
+  userid: string,
+  text: string,
+  createdAt: number,
+  commentid: string,
 }
 
 export default function LikeCommentContainer(props: LikeCommentContainerPropsType) {
-  const [likesCount, setLikesCount] = useState(0);
-  const [commentText, setCommentText] = useState("");
-  const [showCommentBox, setShowCommentBox] = useRecoilState(showCommentBoxState);
-  const [liked, setLiked] = useState(false);
-
   const { postID } = props;
+  const [comments, setComments] = useState<commentsType[]>([]);
+  const [likesCount, setLikesCount] = useState(0);
+  const [showCommentBox, setShowCommentBox] = useState({
+    postId: "",
+    isShown: false,
+  });
+  const [liked, setLiked] = useState(false);
+  
   const userid = getItem("userID");
 
   const renderCommentBox = () => {
-    console.log('render comment', );
-    setShowCommentBox(!showCommentBox);
-  }
+    setShowCommentBox({
+      postId: postID,
+      isShown: true
+    });
+  };
   
   const likedStatus = useCallback(async() => {
-    const likesRef = doc(firestore, "likes", String(userid));
+    const likesRef = doc(firestore, "likes", String(postID));
     const likesSnap = await getDoc(likesRef);
     if(likesSnap.exists()){
       const likesArr = likesSnap.data().likes;
-      likesArr.includes(postID) ? setLiked(true) : setLiked(false);
+      likesArr.includes(userid) ? setLiked(true) : setLiked(false);
     }else{
       console.log('cannot find likes arr for this user')
     }
-  }, [userid, postID]);
+  }, [postID, userid]);
   
   const getLikesCount = useCallback(async() => {
     const postRef = doc(firestore, "posts", String(postID));
@@ -49,21 +63,23 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
 
   const handleLike = useCallback(async () => {
     const postRef = doc(firestore, "posts", String(postID));
-    const likesRef = doc(firestore, "likes", String(userid));
+    const likesRef = doc(firestore, "likes", String(postID));
     const likesSnap = await getDoc(likesRef);
     const likesArr = likesSnap?.data()?.likes;
     
     if(liked){
       setLiked(false);
       setLikesCount(likesCount - 1);
+      
       await updateDoc(postRef, {
         likes: increment(-1)
       });
-      const filteredLikesArr = likesArr.filter((id: string) => id !== postID);
+      const filteredLikesArr = likesArr.filter((id: string) => id !== userid);
       
       await updateDoc(likesRef, {
-          likes: filteredLikesArr
-        });
+        likes: filteredLikesArr
+      });
+
     }else{
       setLiked(true);
       setLikesCount(likesCount + 1);
@@ -73,17 +89,31 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
       });
               
       await updateDoc(likesRef, {
-        likes: arrayUnion(postID)
+        likes: arrayUnion(userid)
       });
-    }}, [postID, userid, liked, likesCount])
+    }}, [userid, postID, liked, likesCount])
 
     useEffect(() => {
       likedStatus();
-    }, [])
+    }, []);
     
     useEffect(() => {
-      getLikesCount()
-    }, [])
+      getLikesCount();
+    }, []);
+
+    const getComments = async () => {
+      const docRef = doc(firestore, "comments", String(postID));
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setComments(docSnap.data().comments);
+      }else{
+        console.log("no comments")
+      } 
+    };
+
+    useEffect(() => {
+      getComments();
+    }, []);
 
   return (
     <StyledLikeCommentContainer>
@@ -98,7 +128,7 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
           <Icon onClick={renderCommentBox}>
             <Image src={Comment} width={24} height={24} alt='comment-bubble'></Image>
           </Icon>
-          <div>0</div>
+          <div>{comments.length}</div>
         </IconsWrapper>
       </LikeCommentIcons>
       <CommentWrapper onClick={renderCommentBox}>
@@ -108,6 +138,7 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
         </LatestComment>
         <CommentInput placeholder='댓글을 입력해주세요.'></CommentInput>
       </CommentWrapper>
+      {showCommentBox.isShown && <CommentBox comments={comments} setComments={setComments} postID={postID} setShowCommentBox={setShowCommentBox}/>}
     </StyledLikeCommentContainer>
   )
 };

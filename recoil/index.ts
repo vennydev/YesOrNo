@@ -1,7 +1,17 @@
 import { atom } from "recoil";
 
 type loadingStatePropsType = boolean;
-type showCommentBoxStateType = boolean;
+interface showCommentBoxStateType {
+  postId?: string,
+  isShown: boolean,
+};
+interface commentsArrayType {
+  author: string,
+  userid: string,
+  text: string,
+  createdAt: number,
+  commentid: string,
+}
 
 export const loadingState = atom<loadingStatePropsType>({
   key: 'loadingState',
@@ -10,5 +20,13 @@ export const loadingState = atom<loadingStatePropsType>({
 
 export const showCommentBoxState = atom<showCommentBoxStateType>({
   key: 'showCommentBoxState',
-  default: false,
+  default: {
+    postId: "",
+    isShown: false,
+  },
+})
+
+export const commentsArray = atom<commentsArrayType[]>({
+  key: 'commentsArray',
+  default: [],
 })

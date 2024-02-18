@@ -36,7 +36,6 @@ export default function Home () {
   const [target, setTarget] = useState<any>(null);
   const showCommentBox= useRecoilValue(showCommentBoxState);
 
-
   const handleClick = (index: number) => {
     setSelectedTab(index);
   };
@@ -48,7 +47,7 @@ export default function Home () {
     loadingMore,
     noMore,
   } = usePagination('posts', INITIAL_FETCH_COUNT, target);
-console.log('closedPosts: ', closedPosts);
+
   useEffect(() => {
     if(session){
       localStorage.setItem('userID', session?.user.id);
@@ -78,6 +77,7 @@ console.log('closedPosts: ', closedPosts);
                         votingBtn={true} 
                         yesCount={post.yesUser.length}
                         noCount={post.noUser.length} 
+                        likes={post.likes}
                         isDeleted={post.isDeleted}
                         isParticipantCountPublic={post.isParticipantCountPublic}
                         key={index}
@@ -101,6 +101,7 @@ console.log('closedPosts: ', closedPosts);
               isOver={post.isOver}
               yesCount={post.yesUser.length} 
               noCount={post.noUser.length}
+              likes={post.likes}
               isDeleted={post.isDeleted}
               isParticipantCountPublic={post.isParticipantCountPublic}
               key={index}
@@ -112,7 +113,6 @@ console.log('closedPosts: ', closedPosts);
           </PostContainer>
       </HomeContainer>
       {toast.isShown && <Toast position='bottom'/>}
-      {showCommentBox && <CommentBox/>}
     </HomeSection>
   )
 };
