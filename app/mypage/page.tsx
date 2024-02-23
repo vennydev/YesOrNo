@@ -10,7 +10,7 @@ import { collection, doc, documentId, getDoc, getDocs, query, where } from "fire
 import firestore from "@/firebase/firestore";
 import { RecoilEnv, useRecoilState, useRecoilValue } from "recoil";
 import { toastState } from "@/recoil/toast/atom";
-import Toast from "@/components/Toast";
+import Toast from "@/components/toast/Toast";
 import Link from 'next/link';
 import { loadingState } from "@/recoil";
 import CircularProgress from '@mui/joy/CircularProgress';

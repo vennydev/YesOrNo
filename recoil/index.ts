@@ -13,6 +13,11 @@ interface commentsArrayType {
   commentid: string,
 }
 
+interface toastVisibleStateType {
+  message: string,
+  isShown: boolean,
+}
+
 export const loadingState = atom<loadingStatePropsType>({
   key: 'loadingState',
   default: true,
@@ -30,3 +35,11 @@ export const commentsArray = atom<commentsArrayType[]>({
   key: 'commentsArray',
   default: [],
 })
+
+export const toastVisibleState = atom<toastVisibleStateType>({
+  key: 'toastVisibleState',
+  default: {
+    message: '',
+    isShown: false,
+  },
+});

@@ -1,8 +1,8 @@
 "use client"
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { showCommentBoxState } from "@/recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { showCommentBoxState, toastVisibleState } from "@/recoil";
 import '../css/commentBox.css';
 import { useEffect, useState } from 'react';
 import Profile from '../components/Profile';
@@ -13,6 +13,9 @@ import uuid from 'react-uuid';
 import { addDoc, arrayUnion, collection, deleteField, doc, getDoc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { commentsType } from './LikeCommentContainer';
+import CommentToast from './toast/components/commentToast';
+import { createPortal } from 'react-dom';
+import { apply_comment, delete_comment } from '@/constants';
 
 interface CommnetBoxPropsType {
   comments: commentsType[];
@@ -29,8 +32,11 @@ interface setShowCommentBoxType {
 export default function CommentBox(prop: CommnetBoxPropsType) {
   const { comments, setComments, postID, setShowCommentBox} = prop;
   const [animation, setAnimation] = useState(false);
+  const [ toast, setToast ] = useRecoilState(toastVisibleState);
+  const [ deleteToast, setDeleteToast ] = useState(false);
+
   const [text, setText] = useState('');
-  
+
   const userid = getItem('user');
 
   const hideCommentBox = () => {
@@ -57,7 +63,13 @@ export default function CommentBox(prop: CommnetBoxPropsType) {
     };
     setComments([...comments, commentObj]);
     setText('');
+    setToast({
+      message: apply_comment,
+      isShown: true,
+    });
+    
     uploadToFireStore(commentObj);
+    showToast('create');
   };
 
   const uploadToFireStore = async (data: object) => {
@@ -70,13 +82,22 @@ export default function CommentBox(prop: CommnetBoxPropsType) {
   const deleteComment = async (id: string) => {
     const filteredCommentsList = comments.filter(comment => comment.commentid !== id);
     setComments(filteredCommentsList);
-
+    setToast({
+      message: delete_comment,
+      isShown: true,
+    });
     const commentRef = doc(firestore, 'comments', String(postID));
     await updateDoc(commentRef, {
       comments: filteredCommentsList
     });
   };
 
+  const showToast = (type: string) => {
+    return createPortal(
+      <CommentToast text={type === 'create' ? apply_comment : delete_comment}/>,
+      document.body
+    )
+  };
   
   useEffect(() => {
     setAnimation(true);
@@ -137,6 +158,10 @@ export default function CommentBox(prop: CommnetBoxPropsType) {
           </div>
         </div>
       </div>
+      {toast.isShown && createPortal(
+    <CommentToast text={toast.message}/>,
+    document.body
+  )}
       <div className="commentBox-bg"/>
     </div>
   )

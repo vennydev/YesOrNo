@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from "styled-components";
 import PostCard from '../components/PostCard';
 import { useSession } from 'next-auth/react';
-import Toast from '@/components/Toast';
+import Toast from '@/components/toast/Toast';
 import { toastState } from '@/recoil/toast/atom';
 import { useRouter } from 'next/navigation';
 import usePagination from '@/hooks/usePagination';

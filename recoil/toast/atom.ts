@@ -8,6 +8,10 @@ interface ToastType {
   voteResult: string;
 }
 
+type ToastVisibleType = {
+  isShown: false,
+}
+
 export const toastState = atom<ToastType>({
   key: 'toast',
   default: {
@@ -16,3 +20,12 @@ export const toastState = atom<ToastType>({
     voteResult: '',
   },
 }); 
+
+// export const toastState = atom<ToastVisibleType  >({
+//   key: 'toast',
+//   default: {
+//     isShown: false,
+//     id: '',
+//     voteResult: '',
+//   },
+// }); 
