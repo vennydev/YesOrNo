@@ -11,7 +11,8 @@ import usePagination from '@/hooks/usePagination';
 import CircularProgress from '@mui/joy/CircularProgress';
 import { useRecoilValue } from 'recoil';
 import { showCommentBoxState } from '@/recoil';
-import CommentBox from '@/components/CommentBox';
+import CommentBox from '@/components/slideBox/SlideBox';
+import ContentHeaderView from '../components/ContentHeaderView';
 
 
 export interface PostsProps {
@@ -63,6 +64,7 @@ export default function Home () {
             <TabButton $isSelected={selectedTab === 2 ? "selected" : null} onClick={() => handleClick(2)}>마감</TabButton>
           </TabWrapper>
         </TabContainer>
+        <ContentHeaderView totalPostCount={1000} />
         <PostContainer>
           {selectedTab === 1 
             ? (

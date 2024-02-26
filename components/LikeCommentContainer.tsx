@@ -9,7 +9,7 @@ import firestore from '@/firebase/firestore';
 import { getItem } from '@/utils/localStorage';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { commentsArray, showCommentBoxState } from '@/recoil';
-import CommentBox from './CommentBox';
+import CommentBox from './slideBox/component/CommentBox';
 
 interface LikeCommentContainerPropsType {
   postID?: string;

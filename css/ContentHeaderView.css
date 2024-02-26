@@ -1,0 +1,29 @@
+.contentHeaderView {
+  display:flex;
+  justify-content: space-between;
+  height: 18px;
+  margin-top: 11px;
+  margin-bottom: 6px;
+  color: var(--dim-bright-gray);
+  font-family: MaruBuri;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.contentHeaderSubView-module_btn {
+  display:flex;
+  align-items: center;
+}
+
+.chevron-icon {
+  display: flex;
+  align-items: center;
+  transition:.3s ease-in-out;
+  cursor: pointer;
+}
+
+.opened {
+  transform: rotate(180deg);
+}

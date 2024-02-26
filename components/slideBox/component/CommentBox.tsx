@@ -3,21 +3,22 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { showCommentBoxState, toastVisibleState } from "@/recoil";
-import '../css/commentBox.css';
+import './commentBox.css';
 import { useEffect, useState } from 'react';
-import Profile from '../components/Profile';
+import Profile from '../../Profile';
 import { DefaultProfile } from '@/public/images';
 import { getItem } from '@/utils/localStorage';
 import ClearIcon from '@mui/icons-material/Clear';
 import uuid from 'react-uuid';
 import { addDoc, arrayUnion, collection, deleteField, doc, getDoc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
-import { commentsType } from './LikeCommentContainer';
-import CommentToast from './toast/components/commentToast';
+import { commentsType } from '../../LikeCommentContainer';
+import CommentToast from '../../toast/components/commentToast';
 import { createPortal } from 'react-dom';
 import { apply_comment, delete_comment } from '@/constants';
+import SlideBox from '../SlideBox';
 
-interface CommnetBoxPropsType {
+interface CommentBoxPropsType {
   comments: commentsType[];
   setComments: (value: commentsType[]) => void;
   postID?: string;
@@ -29,7 +30,7 @@ interface setShowCommentBoxType {
   isShown: boolean;
 }
 
-export default function CommentBox(prop: CommnetBoxPropsType) {
+export default function CommentBox(prop: CommentBoxPropsType) {
   const { comments, setComments, postID, setShowCommentBox} = prop;
   const [animation, setAnimation] = useState(false);
   const [ toast, setToast ] = useRecoilState(toastVisibleState);
@@ -102,67 +103,65 @@ export default function CommentBox(prop: CommnetBoxPropsType) {
   useEffect(() => {
     setAnimation(true);
   }, [])
-
   return (
-    <div className={`commentBox-container`}>
+    <SlideBox>
       <div className={`${animation ? "comment-wrapper modal-enter-active" : ""}`}>
-        <div className="comment-header">
-          <div className="arrowBack" onClick={hideCommentBox}>
-            <ArrowBackIcon/>
-          </div>
-          <div className="title">댓글</div> 
+      <div className="comment-header">
+        <div className="arrowBack" onClick={hideCommentBox}>
+          <ArrowBackIcon/>
         </div>
-        {/* 비었을 때 메시지 */}
-        <div className="comment-section">
-          <div className='comment-list-with-input'>
-            <ul className="comment-list">
-            {comments.length > 0 ? comments.map((comment, index) => {
-              return (
-                  <li key={uuid()} className='comment-item'>
-                    <Profile image={DefaultProfile.src} alt={"default profile"} width={36} height={36}/>
-                    <div className='metaInfo'>
-                      <div className='metaInfo_top'>
-                        <div className='meta_author'>
-                          {comment.author}
-                        </div>
-                        <div className='timestamp'>
-                           <div className='dot'></div>
-                           <span className='timestamp_text'>
-                            지금
-                           </span>
-                        </div>
+        <div className="title">댓글</div> 
+      </div>
+      {/* 비었을 때 메시지 */}
+      <div className="comment-section">
+        <div className='comment-list-with-input'>
+          <ul className="comment-list">
+          {comments.length > 0 ? comments.map((comment, index) => {
+            return (
+                <li key={uuid()} className='comment-item'>
+                  <Profile image={DefaultProfile.src} alt={"default profile"} width={36} height={36}/>
+                  <div className='metaInfo'>
+                    <div className='metaInfo_top'>
+                      <div className='meta_author'>
+                        {comment.author}
                       </div>
-                      <div className='meta_text'>
-                        {comment.text}
+                      <div className='timestamp'>
+                         <div className='dot'></div>
+                         <span className='timestamp_text'>
+                          지금
+                         </span>
                       </div>
-                      {userid.id === comment.userid && (
-                        <div className='remove-btn'>
-                          <ClearIcon sx={{ color: '#8C8C8C', cursor: 'pointer'}} onClick={() => deleteComment(comment.commentid)}/>
-                        </div>
-                      )}
                     </div>
-                  </li>
-              )
-            }) : (
-              <div className='comment-empty-text'>
-                <h2>댓글을 달아주세요</h2>
-              </div>)}
-            </ul>
-            <div className="comment-input-wrapper">
-              <Profile image={DefaultProfile.src} alt={"default profile"} width={44} height={44} />
-              <div className='input-wrapper'>
-                <input type="text" value={text} placeholder="댓글을 입력해주세요." className="comment-input" onChange={(e) => handleChange(e.target.value)}/>
-                {text !== "" && <button onClick={handleSubmit} className='submit-button'>등록</button> }
-              </div>
+                    <div className='meta_text'>
+                      {comment.text}
+                    </div>
+                    {userid.id === comment.userid && (
+                      <div className='remove-btn'>
+                        <ClearIcon sx={{ color: '#8C8C8C', cursor: 'pointer'}} onClick={() => deleteComment(comment.commentid)}/>
+                      </div>
+                    )}
+                  </div>
+                </li>
+            )
+          }) : (
+            <div className='comment-empty-text'>
+              <h2>댓글을 달아주세요</h2>
+            </div>)}
+          </ul>
+          <div className="comment-input-wrapper">
+            <Profile image={DefaultProfile.src} alt={"default profile"} width={44} height={44} />
+            <div className='input-wrapper'>
+              <input type="text" value={text} placeholder="댓글을 입력해주세요." className="comment-input" onChange={(e) => handleChange(e.target.value)}/>
+              {text !== "" && <button onClick={handleSubmit} className='submit-button'>등록</button> }
             </div>
           </div>
         </div>
       </div>
-      {toast.isShown && createPortal(
-    <CommentToast text={toast.message}/>,
-    document.body
-  )}
-      <div className="commentBox-bg"/>
     </div>
+    {toast.isShown && createPortal(
+      <CommentToast text={toast.message}/>,
+      document.body
+    )}
+    </SlideBox>
   )
-};
+}
