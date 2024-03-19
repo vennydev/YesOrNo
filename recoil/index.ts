@@ -1,4 +1,5 @@
 import { atom } from "recoil";
+import { v1 } from "uuid";
 
 type loadingStatePropsType = boolean;
 interface showCommentBoxStateType {
@@ -19,12 +20,12 @@ interface toastVisibleStateType {
 }
 
 export const loadingState = atom<loadingStatePropsType>({
-  key: 'loadingState',
+  key: `loadingState ${v1}`,
   default: true,
 });
 
 export const showCommentBoxState = atom<showCommentBoxStateType>({
-  key: 'showCommentBoxState',
+  key: `showCommentBoxState ${v1}`,
   default: {
     postId: "",
     isShown: false,
@@ -32,12 +33,12 @@ export const showCommentBoxState = atom<showCommentBoxStateType>({
 })
 
 export const commentsArray = atom<commentsArrayType[]>({
-  key: 'commentsArray',
+  key: `commentsArray ${v1}`,
   default: [],
 })
 
 export const toastVisibleState = atom<toastVisibleStateType>({
-  key: 'toastVisibleState',
+  key: `toastVisibleState ${v1}`,
   default: {
     message: '',
     isShown: false,

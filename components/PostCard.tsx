@@ -396,7 +396,7 @@ const PostContainer = styled.div<{$votingBtn : boolean}>`
   height: ${props => props.$votingBtn ? "584px" : "478px"};
   border-radius: 20px;
   border: ${(props) => `1px solid ${props.theme.color.mainBorderColor}`};
-  padding: 20px;
+  padding: 20px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -424,6 +424,7 @@ const PostMetadata = styled.div`
   display: flex;
   align-items: center;
   gap:6px;
+  padding: 0 20px;
 `;
 
 const PostMetadataLeft = styled.div`

@@ -14,14 +14,13 @@ export default function FilterBox(prop: FilterBoxPropType) {
   const [ filterType, setFilterType] = useRecoilState(filterTypeState);
   const filterArray = ['최신순', '투표안한순(마감임박순)', '좋아요순'];
 
-  const updateFilter = (e) => {
+  const updateFilter = (e :any) => {
     if(e.target.nodeName === "BUTTON"){
       const value = e.target.value;
       setFilterType(value);
       setShowFilterBox(false);
     }
   }
-console.log('filterType: ', filterType);
   useEffect(() => {
     setAnimation(true);
   }, []);

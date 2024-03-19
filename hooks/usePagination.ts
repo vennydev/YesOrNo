@@ -14,65 +14,67 @@ import {
 import { useEffect, useState, useCallback } from "react";
 
 export default function usePagination ( collectionName: string, limitCount: number, target: any) {
-  const [data, setData] = useState<any[]>([]); // 불러온 문서들 상태
+  const [data, setData] = useState<any>([]); // 불러온 문서들 상태
   const [closedPosts, setClosedPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false); // 로딩 상태 
   const [loadingMore, setLoadingMore] = useState(false); // 추가 요청시 로딩 상태
   const [key, setKey] = useState<any>(null); // 마지막으로 불러온 스냅샷 상태
   const [noMore, setNoMore] = useState(false); // 불러올 데이터가 없을 떄 보여줄 flag
-
+console.log('data:', );
   const getFirstPage = useCallback(async () => {
-      async function updateToClosedData(id: string){
-        const postRef = doc(firestore, "posts", id);
-        await updateDoc(postRef, {
-          isOver: true
-        });
-      };
-
-      async function getData() {
-        const postQueryRef = query(
-          collection(firestore, collectionName),
-          where('isOver', '==', false),
-          where('isDeleted', '==', false),
-          orderBy("timestamp", "desc"), // 최신 작성순으로 정렬
-          limit(limitCount),
-        );
-        try{
-          setLoading(true);
-          const snap = await getDocs(postQueryRef);
-          const firstData = snap.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }
-          ));
-          setData(firstData);
-          setKey(snap.docs[snap.docs.length - 1]);
-    
-        } catch(error) {
-          console.log('error', error);
-        }
-        setLoading(false);
-      }
-
     const postsRef = collection(firestore, "posts");
+
+    async function updateToClosedData(id: string){
+      const postRef = doc(firestore, "posts", id);
+      await updateDoc(postRef, {
+        isOver: true
+      });
+    };
+
+    async function getData() {
+      const postQueryRef = query(
+        collection(firestore, collectionName),
+        where('isOver', '==', false),
+        where('isDeleted', '==', false),
+        orderBy("timestamp", "desc"),
+        limit(limitCount),
+      );
+      try{
+        const snap = await getDocs(postQueryRef);
+        const firstData = snap.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }
+        ));
+        // setData(firstData);  // update 333
+        // setKey(snap.docs[snap.docs.length - 1]);  // update 444
+      } catch(error) {
+        console.log('error', error);
+      }
+    };
+
     await getDocs(query(postsRef, orderBy("timestamp", "desc")))
       .then((value) => {
         const closedArr: any = [];
-        value.forEach(async (doc) => {
+        value.forEach(async(doc) => {
           let currentTime = new Date().getTime();
           if(!doc.data().isOver){
             if(doc.data().expiredAt < currentTime) {
-              updateToClosedData(doc.id);
+              await updateToClosedData(doc.id);
             }
           } else {
             closedArr.push({...doc.data(), id: doc.id});
           }
         });
-        setClosedPosts(closedArr);
-      }).then(() => {
-        getData();
+        // setClosedPosts(closedArr); // update 222
       })
-  }, [collectionName, limitCount, ]);
+      .then(async() => {
+        setLoading(true);
+        await getData();
+        setLoading(false);
+      })
+      .catch((error) => console.log(error))
+  }, [collectionName, limitCount]);
 
   // 다음 페이지 요청 함수
   const loadMore = useCallback(async (loadCount: number) => {
@@ -114,6 +116,7 @@ export default function usePagination ( collectionName: string, limitCount: numb
 
   useEffect(() => {
     getFirstPage();
+    console.log('get first pages data!', );
   }, [])
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from "styled-components";
 import PostCard from '../components/PostCard';
 import { useSession } from 'next-auth/react';
@@ -9,10 +9,13 @@ import { toastState } from '@/recoil/toast/atom';
 import { useRouter } from 'next/navigation';
 import usePagination from '@/hooks/usePagination';
 import CircularProgress from '@mui/joy/CircularProgress';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { showCommentBoxState } from '@/recoil';
 import CommentBox from '@/components/slideBox/SlideBox';
 import ContentHeaderView from '../components/ContentHeaderView';
+import { collection, doc, getDocs, orderBy, query, updateDoc, where } from 'firebase/firestore';
+import firestore from '@/firebase/firestore';
+import { filterTypeState, filteredClosedPostListState, filteredOpenPostListState, postClosedListState, postListState } from '@/recoil/home';
 
 
 export interface PostsProps {
@@ -31,46 +34,112 @@ export interface PostsProps {
 }
 
 export default function Home () {
-  const [selectedTab, setSelectedTab] = useState(1);
+  const [selectedTab, setSelectedTab] = useState(0);
   const toast = useRecoilValue(toastState);
   const {data: session } = useSession();
   const INITIAL_FETCH_COUNT = 5;
   const [target, setTarget] = useState<any>(null);
-  const showCommentBox= useRecoilValue(showCommentBoxState);
-
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useRecoilState(postListState);
+  const [closedData, setClosedData] = useRecoilState(postClosedListState);
+  const filteredOpenPosts = useRecoilValue(filteredOpenPostListState);
+  const filteredClosePosts = useRecoilValue(filteredClosedPostListState);
   const handleClick = (index: number) => {
     setSelectedTab(index);
   };
 
-  const {
-    data,     
-    closedPosts,
-    loading,
-    loadingMore,
-    noMore,
-  } = usePagination('posts', INITIAL_FETCH_COUNT, target);
+  // 무한 스크롤링 참고 코드
+  // const {
+  //   data,     
+  //   closedPosts,
+  //   loading,
+  //   loadingMore,
+  //   noMore,
+  // } = usePagination('posts', INITIAL_FETCH_COUNT, target);
+  // console.log('loading:', loading);
 
   useEffect(() => {
     if(session){
       localStorage.setItem('userID', session?.user.id);
     }
-  }, [session])
+  }, []);
+
+  async function updateDocs(id: string){
+    const postRef = doc(firestore, "posts", id);
+    await updateDoc(postRef, {
+      isOver: true
+    });
+  };
+
+  const updateCloseData = useCallback(async () => {
+      const postsRef = collection(firestore, "posts");
+      let currentTime = new Date().getTime();
+      const q = query(postsRef, 
+        where('isOver', '==', false),
+        where('isDeleted', '==', false),
+        where("expiredAt", "<=", currentTime));
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach(async(doc) => {
+        await updateDocs(doc.id)
+      });
+  }, []);
+
+  const getFirstData = useCallback(async () => {
+    const postsRef = collection(firestore, "posts");
+  
+    const openPostsQuery = query(postsRef, 
+      where('isDeleted', '==', false),
+      where('isOver', '==', false),
+      orderBy("timestamp", "desc"));
+
+    const closedPostsQuery = query(postsRef, 
+      where('isDeleted', '==', false),
+      where('isOver', '==', true),
+      orderBy("timestamp", "desc"));
+  
+    const openSnap = await getDocs(openPostsQuery);
+    const closeSnap = await getDocs(closedPostsQuery);
+  
+    const openData: any = [];
+    const closeData: any = [];
+    openSnap.forEach(post => openData.push({...post.data(), id: post.id}));
+    closeSnap.forEach(post => closeData.push({...post.data(), id: post.id}));
+    setData({list: openData});
+    setClosedData({list: closeData});
+  }, [])
+
+  const getData = useCallback(async () => {
+    try{
+      await updateCloseData();
+      await getFirstData();
+      setLoading(false);
+    }catch(error){
+      console.log(error)
+    }
+  }, [])
+
+  useEffect(() => {
+      setLoading(true);
+      getData()
+  }, []);
+
   return (
     <HomeSection>
       <HomeContainer>
         <TabContainer>
           <TabWrapper>
-            <TabButton $isSelected={selectedTab === 1 ? "selected" : null} onClick={() => handleClick(1)}>진행중</TabButton>
-            <TabButton $isSelected={selectedTab === 2 ? "selected" : null} onClick={() => handleClick(2)}>마감</TabButton>
+            <TabButton $isSelected={selectedTab === 0 ? "selected" : null} onClick={() => handleClick(0)}>진행중</TabButton>
+            <TabButton $isSelected={selectedTab === 1 ? "selected" : null} onClick={() => handleClick(1)}>마감</TabButton>
           </TabWrapper>
         </TabContainer>
         <ContentHeaderView totalPostCount={1000} />
         <PostContainer>
-          {selectedTab === 1 
+          {/* {filteredPosts.map(a => <h1 key={a.id}>{a.text}</h1>)} */}
+          {selectedTab === 0
             ? (
               <>
-                {data.length > 0 && data.map((post: any, index: number) => {
-                  return (
+                {data.list.length > 0 && filteredOpenPosts?.map((post: any) => {
+                    return (
                       <PostCard 
                         id={post.id}
                         text={post.text}
@@ -83,16 +152,18 @@ export default function Home () {
                         likes={post.likes}
                         isDeleted={post.isDeleted}
                         isParticipantCountPublic={post.isParticipantCountPublic}
-                        key={index}
+                        key={post.id}
                         />
-                        )})}
-                {loadingMore && (<CircularWrapper><CircularProgress color="neutral" size="sm"/></CircularWrapper>)}
-                {data.length >= INITIAL_FETCH_COUNT && <ObserverRef ref={setTarget}></ObserverRef>}
-                {noMore && <NoMorePostNoti>더 이상 불러올 게시물이 없습니다.</NoMorePostNoti>}
+                    )
+                        })}
+                        {loading && (<CircularWrapper><CircularProgress color="neutral" size="sm"/></CircularWrapper>)}
+                {/* {loadingMore && (<CircularWrapper><CircularProgress color="neutral" size="sm"/></CircularWrapper>)} */}
+                {/* {data.length >= INITIAL_FETCH_COUNT && <ObserverRef ref={setTarget}></ObserverRef>} */}
+                {/* {noMore && <NoMorePostNoti>더 이상 불러올 게시물이 없습니다.</NoMorePostNoti>} */}
               </>
             ) : (
               <>
-          {closedPosts.length > 0  && closedPosts.map((post: PostsProps, index:number) => {
+          {closedData.list.length > 0  && filteredClosePosts?.map((post: PostsProps, index:number) => {
             return (
               <PostCard 
               id={post.id}
@@ -107,7 +178,7 @@ export default function Home () {
               likes={post.likes}
               isDeleted={post.isDeleted}
               isParticipantCountPublic={post.isParticipantCountPublic}
-              key={index}
+              key={post.id}
               />
               )})}
             </>
@@ -174,3 +245,4 @@ const ObserverRef = styled.div`
 const CircularWrapper = styled.div`
   margin-top: 20px;
 `
+
