@@ -26,7 +26,7 @@ export default function FilterBox(prop: FilterBoxPropType) {
   }, []);
 
   return (
-    <SlideBox>
+    <SlideBox setShowFilterBox={setShowFilterBox}>
       <div className={`${animation ? "comment-wrapper modal-enter-active" : ""}`}>
         <div className="button-wrapper" onClick={(e) => updateFilter(e)}>
           <button className={`filter-button ${filterType === 'latest' ? 'selected' : ''}`} value="latest">
@@ -34,7 +34,7 @@ export default function FilterBox(prop: FilterBoxPropType) {
           </button>
           <div className="divider"></div>
           <button className={`filter-button ${filterType === 'out-of-date' ? 'selected' : ''}`} value="out-of-date">
-            투표안한순(마감임박순)
+            오래된순
           </button>
           <div className="divider"></div>
           <button className={`filter-button ${filterType === 'likes' ? 'selected' : ''}`} value="likes">

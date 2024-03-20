@@ -44,6 +44,8 @@ export default function Home () {
   const [closedData, setClosedData] = useRecoilState(postClosedListState);
   const filteredOpenPosts = useRecoilValue(filteredOpenPostListState);
   const filteredClosePosts = useRecoilValue(filteredClosedPostListState);
+  const [totalCount, setTotalCount] = useState(data.list.length);
+
   const handleClick = (index: number) => {
     setSelectedTab(index);
   };
@@ -105,9 +107,10 @@ export default function Home () {
     openSnap.forEach(post => openData.push({...post.data(), id: post.id}));
     closeSnap.forEach(post => closeData.push({...post.data(), id: post.id}));
     setData({list: openData});
+    setTotalCount(openData.length);
     setClosedData({list: closeData});
   }, [])
-
+  
   const getData = useCallback(async () => {
     try{
       await updateCloseData();
@@ -116,7 +119,19 @@ export default function Home () {
     }catch(error){
       console.log(error)
     }
-  }, [])
+  }, []);
+
+  // const setTotalCount = useCallback(() => {
+
+  // }, [])
+
+  useEffect(() => {
+    if(selectedTab === 0){
+      setTotalCount(data.list.length);
+    }else if(selectedTab === 1){
+      setTotalCount(closedData.list.length);
+    }
+  }, [selectedTab])
 
   useEffect(() => {
       setLoading(true);
@@ -132,7 +147,7 @@ export default function Home () {
             <TabButton $isSelected={selectedTab === 1 ? "selected" : null} onClick={() => handleClick(1)}>마감</TabButton>
           </TabWrapper>
         </TabContainer>
-        <ContentHeaderView totalPostCount={1000} />
+        <ContentHeaderView totalPostCount={totalCount} />
         <PostContainer>
           {/* {filteredPosts.map(a => <h1 key={a.id}>{a.text}</h1>)} */}
           {selectedTab === 0

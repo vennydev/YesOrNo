@@ -17,4 +17,5 @@
   background-color:black;
   z-index: 1001;
   opacity: 0.6;
+  cursor: pointer;
 }

@@ -11,6 +11,7 @@ interface ContentHeaderViewType {
 }
 
 export default function ContentHeaderView({totalPostCount}: ContentHeaderViewType) {
+  console.log('totalPostCount: ', totalPostCount);
   const filterType = useRecoilValue(filterTypeState);
   const [showFilterBox, setShowFilterBox] = useState(false);
 
