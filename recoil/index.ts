@@ -2,6 +2,8 @@ import { atom } from "recoil";
 import { v1 } from "uuid";
 
 type loadingStatePropsType = boolean;
+type usernameStateType = string;
+
 interface showCommentBoxStateType {
   postId?: string,
   isShown: boolean,
@@ -18,6 +20,7 @@ interface toastVisibleStateType {
   message: string,
   isShown: boolean,
 }
+
 
 export const loadingState = atom<loadingStatePropsType>({
   key: `loadingState ${v1}`,
@@ -44,3 +47,8 @@ export const toastVisibleState = atom<toastVisibleStateType>({
     isShown: false,
   },
 });
+
+export const usernameState = atom<usernameStateType>({
+  key: `usernameState ${v1}`,
+  default: '',
+})

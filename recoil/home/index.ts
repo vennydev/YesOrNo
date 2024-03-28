@@ -13,6 +13,11 @@ interface postClosedListStateType {
   list: any[]
 }
 
+interface firstCommentStateType {
+  text: string,
+  username: string,
+}
+
 export const filterTypeState = atom<filterTypeStateType>({
   key: `filterTypeState ${v1}`,
   default: 'latest'
@@ -49,7 +54,7 @@ export const filteredOpenPostListState = selector({
     });
 
 export const filteredClosedPostListState = selector({
-  key: `filteredClosedPostListState`,
+  key: `filteredClosedPostListState ${v1}`,
   get: ({get}) => {
     const filter = get(filterTypeState);
     const closePostList = get(postClosedListState).list;
@@ -67,3 +72,11 @@ export const filteredClosedPostListState = selector({
         return sortedArr
       }},
     });
+
+export const firstCommentState = atom<firstCommentStateType>({
+  key: `firstComment ${v1}`,
+  default: {
+    text : '',
+    username: '',
+  }
+})

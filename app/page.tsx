@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from "styled-components";
 import PostCard from '../components/PostCard';
 import { useSession } from 'next-auth/react';
@@ -109,8 +109,8 @@ export default function Home () {
     setData({list: openData});
     setTotalCount(openData.length);
     setClosedData({list: closeData});
-  }, [])
-  
+  }, []);
+
   const getData = useCallback(async () => {
     try{
       await updateCloseData();
@@ -122,7 +122,6 @@ export default function Home () {
   }, []);
 
   // const setTotalCount = useCallback(() => {
-
   // }, [])
 
   useEffect(() => {
@@ -135,7 +134,7 @@ export default function Home () {
 
   useEffect(() => {
       setLoading(true);
-      getData()
+      getData();
   }, []);
 
   return (

@@ -1,6 +1,6 @@
 "use client" 
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ClearIcon } from '../../public/icons/index';
 import PostCard from '../../components/PostCard';
 import styled from 'styled-components';
@@ -18,11 +18,12 @@ import { selectedImgIndexState } from '@/recoil/post/atom';
 import firestore from '@/firebase/firestore';
 import Image from 'next/image';
 import { myPostsArrayState } from '@/recoil/mypage/atom';
+import { usernameState } from '@/recoil';
 
 const ONEDAY = 24*60*60*1000;
 
 export default function PostPage() {
-  const [text, setText] = useState("");
+  const [text, setText] = useState("YES OR NO로 대답 할 수 있는 질문을 작성해주세요");
   const [imageUrl, setImageUrl] = useState<any>(PostBg1);
   const [file, setFile] = useState<any>(PostBg1);
   const [editing, setEditing] = useState(false);
@@ -31,9 +32,7 @@ export default function PostPage() {
   const router = useRouter();
   const setIndex = useResetRecoilState(selectedImgIndexState);
   const [myPostsArr, setMyPostsArr] = useRecoilState(myPostsArrayState);
-  
-    const user = typeof window !== 'undefined' && localStorage.getItem('user');
-    const nickname = typeof user === 'string' && JSON.parse(user).nickname;
+  const [nickname, setNickname] = useRecoilState(usernameState);
 
   const handleEditing = () => {
     setEditing(true);
@@ -173,6 +172,13 @@ export default function PostPage() {
       id: postRef.id
     });
   };
+
+  useEffect(() => {
+    const user = localStorage.getItem('user');
+    const nickname = typeof user === 'string' && JSON.parse(user).nickname;
+    setNickname(nickname);
+  }, [])
+
 return (
     <PostSection>
       <PostContainer>
@@ -184,7 +190,7 @@ return (
 
         <div>
           <PostCard 
-            text='YES OR NO로 대답 할 수 있는 질문을 작성해주세요'
+            text={text}
             author={nickname}
             imageUrl={imageUrl}
             time='23년 11월 9일 투표 완료' 

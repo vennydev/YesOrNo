@@ -7,9 +7,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { arrayUnion, collection, doc, getDoc, increment, query, setDoc, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { getItem } from '@/utils/localStorage';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { commentsArray, showCommentBoxState } from '@/recoil';
 import CommentBox from './slideBox/component/CommentBox';
+import { firstCommentState } from '@/recoil/home';
 
 interface LikeCommentContainerPropsType {
   postID?: string;
@@ -23,24 +24,27 @@ export interface commentsType {
   commentid: string,
 }
 
+export interface firstCommentType {
+  text: string,
+  username: string,
+}
+
 export default function LikeCommentContainer(props: LikeCommentContainerPropsType) {
   const { postID } = props;
   const [comments, setComments] = useState<commentsType[]>([]);
   const [likesCount, setLikesCount] = useState(0);
-  const [showCommentBox, setShowCommentBox] = useState({
-    postId: "",
-    isShown: false,
-  });
+  const [showCommentBox, setShowCommentBox] = useState(false);
   const [liked, setLiked] = useState(false);
+  const [ firstComment, setFirstComment] = useState({
+    text : '',
+    username: '',
+  })
   
   const userid = getItem("userID");
 
   const renderCommentBox = () => {
     typeof postID === 'string' &&  
-    setShowCommentBox({
-      postId: postID,
-      isShown: true
-    });
+    setShowCommentBox(true);
   };
   
   const likedStatus = useCallback(async() => {
@@ -105,7 +109,15 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
       const docRef = doc(firestore, "comments", String(postID));
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setComments(docSnap.data().comments);
+        const commentsList = docSnap.data().comments.reverse();
+        setComments(commentsList);
+        if(typeof commentsList[0] !== 'undefined'){
+          const firstComment = commentsList[0];
+          setFirstComment({
+            text : firstComment.text,
+            username: firstComment.author,
+          })
+        }
       }else{
         console.log("no comments")
       } 
@@ -132,13 +144,15 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
         </IconsWrapper>
       </LikeCommentIcons>
       <CommentWrapper onClick={renderCommentBox}>
-        <LatestComment>
-          <Username>마일로앞발</Username>
-          <span>야식은 못참지;;</span>
-        </LatestComment>
-        <CommentInput placeholder='댓글을 입력해주세요.'></CommentInput>
+        {firstComment.text !== '' ? (
+          <LatestComment>
+            <Username>{firstComment.username}</Username>
+            <span>{firstComment.text}</span>
+          </LatestComment>
+        ): (<NoCommentText>댓글이 없습니다</NoCommentText>)}
+        <CommentInput placeholder='댓글을 입력해주세요.' disabled={showCommentBox ? true : false}></CommentInput>
       </CommentWrapper>
-      {showCommentBox.isShown && <CommentBox comments={comments} setComments={setComments} postID={postID} setShowCommentBox={setShowCommentBox}/>}
+      {showCommentBox && <CommentBox comments={comments} setComments={setComments} postID={postID} setShowCommentBox={setShowCommentBox} setFirstComment={setFirstComment}/>}
     </StyledLikeCommentContainer>
   )
 };
@@ -171,6 +185,8 @@ const Icon = styled.div`
 `
 
 const CommentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 const LatestComment = styled.div`
@@ -183,6 +199,10 @@ const LatestComment = styled.div`
 const Username = styled.span`
   font-weight: 600;
 `;
+
+const NoCommentText = styled.span`
+  margin-bottom: 6px;
+`
 
 const CommentInput = styled.input`
   all:unset;

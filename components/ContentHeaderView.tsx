@@ -11,7 +11,6 @@ interface ContentHeaderViewType {
 }
 
 export default function ContentHeaderView({totalPostCount}: ContentHeaderViewType) {
-  console.log('totalPostCount: ', totalPostCount);
   const filterType = useRecoilValue(filterTypeState);
   const [showFilterBox, setShowFilterBox] = useState(false);
 
@@ -20,15 +19,11 @@ export default function ContentHeaderView({totalPostCount}: ContentHeaderViewTyp
       case 'latest':
         return '최신순'
       case 'out-of-date':
-        return '투표안한순'
+        return '오래된순'
       case 'likes':
         return '좋아요순'
     }
   }
-
-  useEffect(() => {
-    setShowFilterBox(false);
-  }, [])
 
   return (
     <div className="contentHeaderView">

@@ -236,6 +236,7 @@ const MyPostWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 16px;
 `;
 
 const LoadingWrapper = styled.div`

@@ -12,7 +12,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import uuid from 'react-uuid';
 import { addDoc, arrayUnion, collection, deleteField, doc, getDoc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
-import { commentsType } from '../../LikeCommentContainer';
+import { commentsType, firstCommentType } from '../../LikeCommentContainer';
 import CommentToast from '../../toast/components/commentToast';
 import { createPortal } from 'react-dom';
 import { apply_comment, delete_comment } from '@/constants';
@@ -22,29 +22,21 @@ interface CommentBoxPropsType {
   comments: commentsType[];
   setComments: (value: commentsType[]) => void;
   postID?: string;
-  setShowCommentBox: (value: setShowCommentBoxType) => void;
-}
-
-interface setShowCommentBoxType {
-  postId: string;
-  isShown: boolean;
+  setShowCommentBox: (value: boolean) => void;
+  setFirstComment: (value: firstCommentType) => void;
 }
 
 export default function CommentBox(prop: CommentBoxPropsType) {
-  const { comments, setComments, postID, setShowCommentBox} = prop;
-  const [animation, setAnimation] = useState(false);
+  const { comments, setComments, postID, setShowCommentBox, setFirstComment} = prop;
+  const [ animation, setAnimation ] = useState(false);
   const [ toast, setToast ] = useRecoilState(toastVisibleState);
-  const [ deleteToast, setDeleteToast ] = useState(false);
 
   const [text, setText] = useState('');
 
   const userid = getItem('user');
 
   const hideCommentBox = () => {
-    setShowCommentBox({
-      postId: "",
-      isShown: false
-    });
+    setShowCommentBox(false);
     setAnimation(false);
   };
 
@@ -62,11 +54,15 @@ export default function CommentBox(prop: CommentBoxPropsType) {
       createdAt: new Date().getTime(),
       commentid: uuid(),
     };
-    setComments([...comments, commentObj]);
+    setComments([commentObj, ...comments]);
     setText('');
     setToast({
       message: apply_comment,
       isShown: true,
+    });
+    setFirstComment({
+      text: commentObj.text,
+      username: nickname
     });
     
     uploadToFireStore(commentObj);
@@ -104,7 +100,7 @@ export default function CommentBox(prop: CommentBoxPropsType) {
     setAnimation(true);
   }, [])
   return (
-    <SlideBox>
+    <SlideBox setShowBox={setShowCommentBox}>
       <div className={`${animation ? "comment-wrapper modal-enter-active" : ""}`}>
       <div className="comment-header">
         <div className="arrowBack" onClick={hideCommentBox}>
@@ -116,7 +112,7 @@ export default function CommentBox(prop: CommentBoxPropsType) {
       <div className="comment-section">
         <div className='comment-list-with-input'>
           <ul className="comment-list">
-          {comments.length > 0 ? comments.map((comment, index) => {
+          {comments.length > 0 ? comments.map((comment) => {
             return (
                 <li key={uuid()} className='comment-item'>
                   <Profile image={DefaultProfile.src} alt={"default profile"} width={36} height={36}/>

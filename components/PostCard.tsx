@@ -12,10 +12,11 @@ import firestore from '@/firebase/firestore';
 import { useSession } from 'next-auth/react';
 import ModalPortal from './modal/ModalPortal';
 import Modal from './Modal';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { isCheckDeletionModalVisible } from '@/recoil/post/atom';
 import { toastState } from '@/recoil/toast/atom';
 import LikeCommentContainer from './LikeCommentContainer';
+import { firstCommentState } from '@/recoil/home';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = [PostBg1, PostBg2];
@@ -83,9 +84,11 @@ export default function PostCard ({
   const [toastInfo, setToastInfo] = useRecoilState(toastState);
   const [endTime, setEndTime] = useState('');
   const [onEffect, setOnEffect] = useState(false);
-  
+<<<<<<< HEAD
+=======
+  const firstComment = useRecoilValue(firstCommentState);
+>>>>>>> ac98290febcd104ae9ace7575c8f256959bb555b
   const userid = session?.user.id;
-
   const closeLoginModal = () => {
     setIsModalVisible(false);
   };
@@ -131,16 +134,20 @@ export default function PostCard ({
 
   const postImageforPost = () => {
     if(imageUrl === undefined) return;
-    if(imageUrl.src){
+    if(imageUrl.src.includes("bg1")){
       return (
-        <StyledDefaultImage src={imageUrl}  alt="default-image" width={0} height={0}/>
+        <StyledDefaultImageBg1 src={imageUrl}  alt="default-image" width={0} height={0}/>
       )
-    } else {
+    }else if(imageUrl.src.includes("bg2")){
+      return (
+        <StyledDefaultImageBg2 src={imageUrl}  alt="default-image" width={0} height={0}/>
+      )    
+    }else{
       return (
         <StyledImage src={imageUrl} alt="uploaded-image" width={0} height={0}/>
       )
     }
-  };
+    }
 
   const postImageforHome = () => {
     return ( <PostImageforHome imageUrl={imageUrl}/> )
@@ -313,13 +320,8 @@ useEffect(() => {
   return (
       <PostContainer $votingBtn={votingBtn}>
           <PostWrapper>
-          <>
-            {votingBtn 
-              ? postImageforHome()
-              : postImageforPost()
-            }
-            </>
             <PostTop $votingBtn={votingBtn}>
+              {votingBtn ? postImageforHome() : postImageforPost()}
               <PostMetadata>
               <PostMetadataLeft>
                 {votingBtn 
@@ -342,7 +344,7 @@ useEffect(() => {
                   </DeadLine>
               </PostMetadataRight>  
               </PostMetadata>
-          {votingBtn 
+          {votingBtn
           ? ( <PostQuestion>
               <Text>
                 {text}
@@ -451,13 +453,6 @@ const PostQuestion = styled.div`
   overflow: scroll;
 `;
 
-const Text = styled.span`
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 28px;
-  word-wrap: break-word;
-`;
-
 const PostQuestionInput = styled.textarea`
   height: 100%;
   width:295px;
@@ -476,14 +471,23 @@ const PostQuestionInput = styled.textarea`
   }
 `;
 
-const StyledDefaultImage = styled(Image)`
+const StyledDefaultImageBg1 = styled(Image)`
   width: 100%;
-  height: 100%;
+  height: 223px;
+  z-index: -1000;
   position: absolute;
   left:0;
-  top:0;
-  z-index: -1000;
+  bottom:0;
 `;
+
+const StyledDefaultImageBg2 = styled(Image)`
+  width: 100%;
+  height: 100%;
+  z-index: -1000;
+  position: absolute;
+  left:0;
+  bottom:0;
+`
 
 const StyledImage = styled(Image)`
   width: 100%;
@@ -507,6 +511,13 @@ const BgSelectorWrapper = styled.ul`
   padding:16px;
   margin:0;
   width: 100%;
+`;
+
+const Text = styled.div`
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 28px;
+  word-wrap: break-word;
 `;
 
 const DividedText = styled.div<{$image? : string}>`

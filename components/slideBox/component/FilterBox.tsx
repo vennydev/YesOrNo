@@ -12,7 +12,6 @@ export default function FilterBox(prop: FilterBoxPropType) {
   const {setShowFilterBox} = prop;
   const [animation, setAnimation] = useState(false);
   const [ filterType, setFilterType] = useRecoilState(filterTypeState);
-  const filterArray = ['최신순', '투표안한순(마감임박순)', '좋아요순'];
 
   const updateFilter = (e :any) => {
     if(e.target.nodeName === "BUTTON"){
@@ -26,7 +25,7 @@ export default function FilterBox(prop: FilterBoxPropType) {
   }, []);
 
   return (
-    <SlideBox setShowFilterBox={setShowFilterBox}>
+    <SlideBox setShowBox={setShowFilterBox}>
       <div className={`${animation ? "comment-wrapper modal-enter-active" : ""}`}>
         <div className="button-wrapper" onClick={(e) => updateFilter(e)}>
           <button className={`filter-button ${filterType === 'latest' ? 'selected' : ''}`} value="latest">

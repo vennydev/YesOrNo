@@ -26,6 +26,7 @@ export default function ImageUploader({handleImage}: ImageUploaderProps) {
         accept='image/*' 
         ref={fileInput} 
         onChange={(e: React.FormEvent<HTMLInputElement>) => {
+          console.log('e: ', e);
           handleImage(e);
           setSelectedImgIndex(null);
         }} 

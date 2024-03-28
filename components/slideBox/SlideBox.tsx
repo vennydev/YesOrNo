@@ -2,9 +2,9 @@
 
 import './slideBox.css';
 
-export default function SlideBox({children, setShowFilterBox}: any) {
+export default function SlideBox({children, setShowBox}: any) {
   const closeModal = () => {
-    setShowFilterBox(false);
+    setShowBox(false);
   };
 
   return (
