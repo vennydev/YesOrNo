@@ -84,10 +84,6 @@ export default function PostCard ({
   const [toastInfo, setToastInfo] = useRecoilState(toastState);
   const [endTime, setEndTime] = useState('');
   const [onEffect, setOnEffect] = useState(false);
-<<<<<<< HEAD
-=======
-  const firstComment = useRecoilValue(firstCommentState);
->>>>>>> ac98290febcd104ae9ace7575c8f256959bb555b
   const userid = session?.user.id;
   const closeLoginModal = () => {
     setIsModalVisible(false);
