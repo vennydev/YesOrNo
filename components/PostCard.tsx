@@ -117,7 +117,7 @@ export default function PostCard ({
     return (
       <DividedText onClick={handleEditing} $image={imageUrl.src}>
         {editing ? (
-            <PostQuestionInput autoFocus name="textarea" maxLength={67} onChange={(e) => handleText?.(e.target.value)}/>
+            <PostQuestionInput autoFocus name="textarea" maxLength={68} onChange={(e) => handleText?.(e.target.value)}/>
         ) : (
           <>
             <div>{topText}</div>
@@ -515,7 +515,7 @@ const BgSelectorWrapper = styled.ul`
 const Text = styled.div`
   font-size: 16px;
   font-weight: 600;
-  line-height: 28px;
+  line-height: 22px;
   word-wrap: break-word;
 `;
 
