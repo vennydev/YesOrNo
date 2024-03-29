@@ -13,6 +13,7 @@ interface ImageUploaderProps {
 export default function ImageUploader({handleImage}: ImageUploaderProps) {
   const fileInput = useRef<HTMLInputElement>(null);
   const setSelectedImgIndex = useSetRecoilState(selectedImgIndexState);
+
   return (
     <>
       <ImageUploadBtn htmlFor="input-file">
@@ -26,7 +27,6 @@ export default function ImageUploader({handleImage}: ImageUploaderProps) {
         accept='image/*' 
         ref={fileInput} 
         onChange={(e: React.FormEvent<HTMLInputElement>) => {
-          console.log('e: ', e);
           handleImage(e);
           setSelectedImgIndex(null);
         }} 

@@ -117,7 +117,7 @@ export default function PostCard ({
     return (
       <DividedText onClick={handleEditing} $image={imageUrl.src}>
         {editing ? (
-            <PostQuestionInput autoFocus name="textarea" onChange={(e) => handleText?.(e.target.value)}/>
+            <PostQuestionInput autoFocus name="textarea" maxLength={67} onChange={(e) => handleText?.(e.target.value)}/>
         ) : (
           <>
             <div>{topText}</div>
@@ -130,20 +130,22 @@ export default function PostCard ({
 
   const postImageforPost = () => {
     if(imageUrl === undefined) return;
-    if(imageUrl.src.includes("bg1")){
-      return (
-        <StyledDefaultImageBg1 src={imageUrl}  alt="default-image" width={0} height={0}/>
-      )
-    }else if(imageUrl.src.includes("bg2")){
-      return (
-        <StyledDefaultImageBg2 src={imageUrl}  alt="default-image" width={0} height={0}/>
-      )    
+    if(imageUrl.src){
+      if(imageUrl.src.includes("bg1")){
+        return (
+          <StyledDefaultImageBg1 src={imageUrl}  alt="default-image" width={0} height={0}/>
+        )
+      }else if(imageUrl.src.includes("bg2")){
+        return (
+          <StyledDefaultImageBg2 src={imageUrl}  alt="default-image" width={0} height={0}/>
+        )    
+      }
     }else{
       return (
         <StyledImage src={imageUrl} alt="uploaded-image" width={0} height={0}/>
       )
     }
-    }
+  };
 
   const postImageforHome = () => {
     return ( <PostImageforHome imageUrl={imageUrl}/> )
@@ -315,51 +317,52 @@ useEffect(() => {
 
   return (
       <PostContainer $votingBtn={votingBtn}>
+        {!votingBtn && postImageforPost()}
           <PostWrapper>
             <PostTop $votingBtn={votingBtn}>
-              {votingBtn ? postImageforHome() : postImageforPost()}
               <PostMetadata>
-              <PostMetadataLeft>
-                {votingBtn 
-                  ? (<Image src={DefaultProfile} alt='profile-example' width={40} height={40} priority />)
-                  : (<Image src={DimmedProfile} alt='profile-example' width={40} height={40} priority />) 
-                }
-              </PostMetadataLeft>
-              <PostMetadataRight>
-                <UserName $votingBtn={votingBtn}>{author}</UserName>
-                <DeadLine $votingBtn={votingBtn}>
-                  {isOver ? (
-                      <>
-                        {endTime} 투표 완료
-                      </>
-                    ) : (
-                      <>
-                        {addZero(hours)} : {addZero(min)} : {addZero(sec)}
-                      </>
-                    )}
-                  </DeadLine>
-              </PostMetadataRight>  
+                <PostMetadataLeft>
+                  {votingBtn 
+                    ? (<Image src={DefaultProfile} alt='profile-example' width={40} height={40} priority />)
+                    : (<Image src={DimmedProfile} alt='profile-example' width={40} height={40} priority />) 
+                  }
+                </PostMetadataLeft>
+                <PostMetadataRight>
+                  <UserName $votingBtn={votingBtn}>{author}</UserName>
+                  <DeadLine $votingBtn={votingBtn}>
+                    {isOver ? (
+                        <>
+                          {endTime} 투표 완료
+                        </>
+                      ) : (
+                        <>
+                          {addZero(hours)} : {addZero(min)} : {addZero(sec)}
+                        </>
+                      )}
+                    </DeadLine>
+                </PostMetadataRight>  
               </PostMetadata>
-          {votingBtn
-          ? ( <PostQuestion>
-              <Text>
-                {text}
-              </Text>
-            </PostQuestion> )
-            : divideText()}
-          {votingBtn && (
-            <VotingBtn 
-              handleVotesCount={handleVotesCount} 
-              percentage={percentageOfYes} 
-              voteStatus={voteStatus}
-              totalParticipantsCount={totalParticipantsCount}
-              isParticipantCountPublic={isParticipantCountPublic}
-              isOver={isOver}
-              setOnEffect={setOnEffect}
-              onEffect={onEffect}
+              {votingBtn && postImageforHome()}
+              {votingBtn
+              ? ( <PostQuestion>
+                  <Text>
+                    {text}
+                  </Text>
+                </PostQuestion> )
+                : divideText()}
+              {votingBtn && (
+                <VotingBtn 
+                  handleVotesCount={handleVotesCount} 
+                  percentage={percentageOfYes} 
+                  voteStatus={voteStatus}
+                  totalParticipantsCount={totalParticipantsCount}
+                  isParticipantCountPublic={isParticipantCountPublic}
+                  isOver={isOver}
+                  setOnEffect={setOnEffect}
+                  onEffect={onEffect}
               />)}
             </PostTop>
-          {votingBtn && <LikeCommentContainer postID={id}/>} 
+            {votingBtn && <LikeCommentContainer postID={id}/>} 
           </PostWrapper>
           {!votingBtn && (
                 <BgSelectorWrapper>
@@ -446,19 +449,19 @@ const PostQuestion = styled.div`
   height:81px;
   text-align: center;
   padding: 0 30px;
-  overflow: scroll;
+  overflow:hidden;
 `;
 
 const PostQuestionInput = styled.textarea`
   height: 100%;
   width:295px;
-  padding:10px 29px;
+  padding:0px 29px;
   resize: none;
   text-align: center;
-  font-size: 16px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 600;
-  line-height: 28px; 
+  line-height: 24px; 
   border: none;
   overflow: hidden;
   font-family: 'MaruBuri';
@@ -491,7 +494,7 @@ const StyledImage = styled(Image)`
   z-index: -1000;
   border-radius: 14px;
   border: 1px solid #000;
-  margin-top: 20px;
+  margin-top: 16px;
   object-fit: contain;
 `;
 
@@ -519,8 +522,8 @@ const Text = styled.div`
 const DividedText = styled.div<{$image? : string}>`
   text-align: center;
   margin-top: ${props => props.$image ? "104px" : "14px"};
-  font-size: 16px;
-  line-height: 28px; 
+  line-height: 28px;
   width:100%;
+  height: 91px;
   color: ${props => `${props.theme.color.dimFontColor}}`};
 `;

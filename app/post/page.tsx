@@ -39,25 +39,29 @@ export default function PostPage() {
   };
 
   const handleText = (value: string) => {
-    setText(value);
+    if(text.length < 68){
+      setText(value);
+    }else{
+      return
+    }
   };
 
   const handleImage = async (e: any) => {
-    const file = e.target.files;
-    if(!file) {return};
+  const file = e.target.files;
+  if(!file) {return};
 
   const imageFile = file[0];
   const options = {
     maxSizeMB: 2.0,
     maxWidthOrHeight: 500,
   };
-  
+
   try{
     const compressedFile = await imageCompression(imageFile, options);
     const convert = new File([compressedFile], imageFile.name, {
       type: `${imageFile.type}`
     });
-    
+
     setFile(convert);
     const reader = new FileReader();
     reader.readAsDataURL(convert);
