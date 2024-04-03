@@ -147,6 +147,30 @@ export default function PostCard ({
     }
   };
 
+  const postDefaultImageforPost = () => {
+    if(imageUrl === undefined) return;
+    if(imageUrl.src){
+      if(imageUrl.src.includes("bg1")){
+        return (
+          <StyledDefaultImageBg1 src={imageUrl}  alt="default-image" width={0} height={0}/>
+        )
+      }else if(imageUrl.src.includes("bg2")){
+        return (
+          <StyledDefaultImageBg2 src={imageUrl}  alt="default-image" width={0} height={0}/>
+        )    
+      }
+    }
+  };
+  
+  const postUploadedImageforPost = () => {
+    if(imageUrl === undefined) return;
+    if(!imageUrl.src){
+      return (
+        <StyledImage src={imageUrl} alt="uploaded-image" width={0} height={0}/>
+      )
+    }
+  }
+
   const postImageforHome = () => {
     return ( <PostImageforHome imageUrl={imageUrl}/> )
   };
@@ -317,7 +341,7 @@ useEffect(() => {
 
   return (
       <PostContainer $votingBtn={votingBtn}>
-        {!votingBtn && postImageforPost()}
+        {!votingBtn && postDefaultImageforPost()}
           <PostWrapper>
             <PostTop $votingBtn={votingBtn}>
               <PostMetadata>
@@ -342,6 +366,7 @@ useEffect(() => {
                     </DeadLine>
                 </PostMetadataRight>  
               </PostMetadata>
+              {!votingBtn && postUploadedImageforPost()}
               {votingBtn && postImageforHome()}
               {votingBtn
               ? ( <PostQuestion>

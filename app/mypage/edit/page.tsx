@@ -2,7 +2,7 @@
 
 import styled from "styled-components";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from 'next/navigation'
 import { collection, doc, getDoc, getDocs, query, updateDoc, where, writeBatch } from "firebase/firestore";
 import firestore from "@/firebase/firestore";

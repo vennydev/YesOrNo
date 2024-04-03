@@ -43,7 +43,6 @@ export default function PostPage() {
   };
   
   useEffect(() => {
-    console.log('text', text.length);
     if(text.length > 68){
       alert("68글자 이상 입력 불가");
       text.substring(0, text.length);
