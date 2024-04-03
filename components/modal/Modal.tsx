@@ -42,8 +42,10 @@ export default function Modal(props: ModalProps ) {
     <ModalContainer onClick={close}>
       <ModalWrapper>
         <ModalMsg>{divideText()}</ModalMsg>
-        {performBtn && <NaviToLoginPageBtn onClick={removePost}>삭제</NaviToLoginPageBtn>}
-        <CloseBtn onClick={close}>취소</CloseBtn>
+        <BtnWrapper>
+          <CloseBtn onClick={close}>취소</CloseBtn>
+          {performBtn && <NaviToLoginPageBtn onClick={removePost}>삭제</NaviToLoginPageBtn>}
+        </BtnWrapper>
       </ModalWrapper>
       <TransparentBg/>
     </ModalContainer>
@@ -70,6 +72,12 @@ const TransparentBg = styled.div`
   opacity: 0.6;
 `;
 
+const BtnWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  gap: 11px;
+`
+
 const ModalWrapper = styled.div`
   padding: 0px 20px 20px 20px;
   width: 335px;
@@ -86,7 +94,7 @@ const ModalWrapper = styled.div`
 
 const NaviToLoginPageBtn = styled.button`
   display: flex;
-  width: 295px;
+  width:50%;
   height: 54px;
   justify-content: center;
   align-items: center;
@@ -108,5 +116,7 @@ const ModalMsg = styled.p`
 `;
 
 const CloseBtn = styled.button`
-
+  border-radius: 8px;
+  border: 1px solid #262626;
+  width: 50%;
 `;

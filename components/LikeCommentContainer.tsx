@@ -134,13 +134,13 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
           <Icon onClick={handleLike}>
             <Image src={liked ? Like : LikeEmpty} width={24} height={24} alt='like'></Image>
           </Icon>
-          <div>{likesCount}</div>
+          <Count>{likesCount}</Count>
         </IconsWrapper>
         <IconsWrapper>
           <Icon onClick={renderCommentBox}>
             <Image src={Comment} width={24} height={24} alt='comment-bubble'></Image>
           </Icon>
-          <div>{comments.length}</div>
+          <Count>{comments.length}</Count>
         </IconsWrapper>
       </LikeCommentIcons>
       <CommentWrapper onClick={renderCommentBox}>
@@ -170,7 +170,7 @@ const StyledLikeCommentContainer = styled.div`
 const LikeCommentIcons = styled.div`
   display: flex;
   align-items: center;
-  gap:14px;
+  gap:6px;
 `;
 
 const IconsWrapper = styled.div`
@@ -181,7 +181,13 @@ const IconsWrapper = styled.div`
 `;
 
 const Icon = styled.div`
+  display: flex;
+  align-items: center;
   cursor: pointer;
+`
+
+const Count = styled.div`
+  min-width: 18px;
 `
 
 const CommentWrapper = styled.div`
