@@ -16,7 +16,6 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { isCheckDeletionModalVisible } from '@/recoil/post/atom';
 import { toastState } from '@/recoil/toast/atom';
 import LikeCommentContainer from './LikeCommentContainer';
-import { firstCommentState } from '@/recoil/home';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = [PostBg1, PostBg2];
@@ -77,7 +76,6 @@ export default function PostCard ({
   const [totalParticipantsCount, setTotalParticipantsCount] = useState(0);
   const [hours, setHours] = useState(0);
   const [min, setMin] = useState(0);
-  const [sec, setSec] = useState(0);
   const {data: session} = useSession();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isCheckDeletionModal, setIsCheckDeletionModal] = useRecoilState(isCheckDeletionModalVisible);
@@ -98,11 +96,9 @@ export default function PostCard ({
     let diffMilleSec =  expiredTime - currentTime;
     let totalMin = Math.floor((diffMilleSec / (1000*60)));
     let hourRemaining = Math.floor(totalMin / 60);
-    let minRemaining = Math.floor(totalMin%60);
-    let secRemaining = Math.floor((diffMilleSec / 1000) % 60 );
+    let minRemaining = Math.floor(totalMin % 60);
     setHours(hourRemaining);
     setMin(minRemaining)
-    setSec(secRemaining);
   };
 
   const selectBgImage = (e: any, img: any) => {
@@ -126,25 +122,6 @@ export default function PostCard ({
         )}
       </DividedText>
     )
-  };
-
-  const postImageforPost = () => {
-    if(imageUrl === undefined) return;
-    if(imageUrl.src){
-      if(imageUrl.src.includes("bg1")){
-        return (
-          <StyledDefaultImageBg1 src={imageUrl}  alt="default-image" width={0} height={0}/>
-        )
-      }else if(imageUrl.src.includes("bg2")){
-        return (
-          <StyledDefaultImageBg2 src={imageUrl}  alt="default-image" width={0} height={0}/>
-        )    
-      }
-    }else{
-      return (
-        <StyledImage src={imageUrl} alt="uploaded-image" width={0} height={0}/>
-      )
-    }
   };
 
   const postDefaultImageforPost = () => {
@@ -304,39 +281,13 @@ export default function PostCard ({
   }, [expiredAt]);
 
   useEffect(() => {
-    if (hours === 0 && min === 0 && sec === 0) return;
-
-    let interval: any;
-    // interval = setInterval(() => {
-    //   if(sec > 0) {
-    //     setSec(prev => prev - 1);
-    //   }else if(sec === 0 && min > 0){
-    //     setMin(prev => prev - 1);
-    //     if (min !== 0) {
-    //       setSec(59);
-    //     }
-    //   }else if(sec === 0 && min === 0){
-    //     setHours(prev => prev - 1);
-    //     if(hours > 0) {
-    //       setMin(59);
-    //       setSec(59);
-    //     }
-    //     if(hours === 0){
-    //       clearInterval(interval)
-    //     }
-    //   }
-    // }, 1000);
-    return () => clearInterval(interval)
-}, [hours, min, sec]);
-
-useEffect(() => {
-  if(typeof expiredAt === 'number') {
-      const endTime = new Date(expiredAt);
-      const year = endTime.getFullYear();
-      const month = endTime.getMonth() + 1;
-      const day = endTime.getDate();
-      setEndTime(`${year}년 ${month}월 ${day}일`)
-    }
+    if(typeof expiredAt === 'number') {
+        const endTime = new Date(expiredAt);
+        const year = endTime.getFullYear();
+        const month = endTime.getMonth() + 1;
+        const day = endTime.getDate();
+        setEndTime(`${year}년 ${month}월 ${day}일`)
+      };
   }, [expiredAt]);
 
   return (
@@ -360,7 +311,7 @@ useEffect(() => {
                         </>
                       ) : (
                         <>
-                          {addZero(hours)} : {addZero(min)} : {addZero(sec)}
+                          {addZero(hours)}시간 {addZero(min)}분 남음
                         </>
                       )}
                     </DeadLine>
