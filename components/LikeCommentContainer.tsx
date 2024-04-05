@@ -3,14 +3,11 @@
 import styled from 'styled-components';
 import Image from 'next/image'
 import { Comment, Like, LikeEmpty } from '@/public/images';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { arrayUnion, collection, doc, getDoc, increment, query, setDoc, updateDoc } from 'firebase/firestore';
+import { useCallback, useEffect, useState } from 'react';
+import { arrayUnion, doc, getDoc, increment, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { getItem } from '@/utils/localStorage';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { commentsArray, showCommentBoxState } from '@/recoil';
 import CommentBox from './slideBox/component/CommentBox';
-import { firstCommentState } from '@/recoil/home';
 
 interface LikeCommentContainerPropsType {
   postID?: string;

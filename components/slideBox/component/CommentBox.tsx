@@ -1,8 +1,8 @@
 "use client"
 
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { showCommentBoxState, toastVisibleState } from "@/recoil";
+import { useRecoilState } from "recoil";
+import { toastVisibleState } from "@/recoil";
 import './commentBox.css';
 import { useEffect, useState } from 'react';
 import Profile from '../../Profile';
@@ -10,13 +10,14 @@ import { DefaultProfile } from '@/public/images';
 import { getItem } from '@/utils/localStorage';
 import ClearIcon from '@mui/icons-material/Clear';
 import uuid from 'react-uuid';
-import { addDoc, arrayUnion, collection, deleteField, doc, getDoc, getFirestore, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { commentsType, firstCommentType } from '../../LikeCommentContainer';
 import CommentToast from '../../toast/components/commentToast';
 import { createPortal } from 'react-dom';
 import { apply_comment, delete_comment } from '@/constants';
 import SlideBox from '../SlideBox';
+import { commentTime } from '@/utils/commentTime';
 
 interface CommentBoxPropsType {
   comments: commentsType[];
@@ -30,7 +31,6 @@ export default function CommentBox(prop: CommentBoxPropsType) {
   const { comments, setComments, postID, setShowCommentBox, setFirstComment} = prop;
   const [ animation, setAnimation ] = useState(false);
   const [ toast, setToast ] = useRecoilState(toastVisibleState);
-
   const [text, setText] = useState('');
 
   const userid = getItem('user');
@@ -95,10 +95,11 @@ export default function CommentBox(prop: CommentBoxPropsType) {
       document.body
     )
   };
-  
+
   useEffect(() => {
     setAnimation(true);
-  }, [])
+  }, []);
+
   return (
     <SlideBox setShowBox={setShowCommentBox}>
       <div className={`${animation ? "comment-wrapper modal-enter-active" : ""}`}>
@@ -122,10 +123,10 @@ export default function CommentBox(prop: CommentBoxPropsType) {
                         {comment.author}
                       </div>
                       <div className='timestamp'>
-                         <div className='dot'></div>
-                         <span className='timestamp_text'>
-                          지금
-                         </span>
+                        <div className='dot'></div>
+                        <span className='timestamp_text'>
+                          {commentTime(comment.createdAt)}
+                        </span>
                       </div>
                     </div>
                     <div className='meta_text'>
