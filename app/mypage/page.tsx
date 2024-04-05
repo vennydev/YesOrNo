@@ -6,7 +6,7 @@ import { DefaultProfile, Pencil } from "@/public/images";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { collection, doc, documentId, getDoc, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import firestore from "@/firebase/firestore";
 import { RecoilEnv, useRecoilState, useRecoilValue } from "recoil";
 import { toastState } from "@/recoil/toast/atom";
@@ -17,6 +17,8 @@ import CircularProgress from '@mui/joy/CircularProgress';
 import MyPost from "@/components/MyPost";
 import { myPostsArrayState, votedPostsArrayState } from "@/recoil/mypage/atom";
 import PostCard from "@/components/PostCard";
+import { getUsername } from "@/utils/userInfo";
+import { getItem } from "@/utils/localStorage";
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
@@ -27,6 +29,9 @@ export default function Mypage() {
   const [myPostsArr, setMyPostsArr] = useRecoilState(myPostsArrayState);
   const [votedPosts, setVotedPosts] = useRecoilState(votedPostsArrayState);
   const toast = useRecoilValue(toastState);
+
+  // username 받아오는 util 함수 + asynchronous + 한번 호출 
+
   const a = useCallback(async () => {
     setIsLoading(true);
     try{
@@ -87,10 +92,18 @@ export default function Mypage() {
   };
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    const username = typeof user === 'string' && JSON.parse(user).nickname;
-    setName(username);
     getData();
+  }, []);
+
+  const getUsername2 = async () => {
+    console.log('userid ', getItem('userID'));
+    const q = query(collection(firestore, "users"), where("id", "==", String(getItem('userID'))));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => setName(doc.data().nickname));
+  };
+
+  useEffect(() => {
+    getUsername2();
   }, []);
 
   return (

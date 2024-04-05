@@ -21,8 +21,6 @@ export default function EditUserName() {
 
   const handleSubmit = async () => {
     const userid = localStorage.getItem("userID");
-    const q = query(collection(firestore, "users"), where("nickname", "==", username));
-    const querySnapshot = await getDocs(q);
     let isValidated = true;
       if(isValidated){
         try {
