@@ -2,7 +2,6 @@ import firestore from "@/firebase/firestore";
 import { doc, setDoc, collection, getDocs } from "firebase/firestore";
 import NextAuth from "next-auth/next";
 import KakaoProvider from "next-auth/providers/kakao";
-import { redirect } from "next/navigation";
 
 const handler = NextAuth({
   providers: [
@@ -20,13 +19,13 @@ const handler = NextAuth({
       querySnapshot.forEach((doc) => {
         if(doc.id === user.id){
           signedInUser = true;
+          return
         }});
         
         if (isAllowedToSignIn) {
           if(!signedInUser){
             await setDoc(doc(firestore, 'users', user.id), {
               id: user.id,
-              name: user.name,
               nickname: "",
               email: user.email,
               myPosts: [],

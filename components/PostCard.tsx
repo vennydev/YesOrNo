@@ -18,7 +18,7 @@ import { toastState } from '@/recoil/toast/atom';
 import LikeCommentContainer from './LikeCommentContainer';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
-const imageArr = [PostBg1, PostBg2];
+const imageArr = ['no image', PostBg1, PostBg2];
 
 interface TotalCountType {
   yesTotal: number | undefined,
@@ -102,9 +102,10 @@ export default function PostCard ({
   };
 
   const selectBgImage = (e: any, img: any) => {
-    e && e.stopPropagation();
-    setImageUrl?.(img);
-    setFile?.(img);
+    console.log('e: ', e, img);
+    // e && e.stopPropagation();
+    // setImageUrl?.(img);
+    // setFile?.(img);
   };
 
   const divideText = () => {

@@ -9,7 +9,7 @@ import ImageUploader from '../../components/ImageUploader';
 import imageCompression from 'browser-image-compression';
 import { ref, uploadBytes } from 'firebase/storage';
 import firebasedb from '@/firebase/firebasedb';
-import { addDoc, arrayUnion, collection, doc, getFirestore, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore';
+import { addDoc, arrayUnion, collection, doc, getDocs, getFirestore, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
 import { useSession } from 'next-auth/react';
 import storage from '@/firebase/storage';
 import { useRouter } from 'next/navigation';
@@ -19,6 +19,8 @@ import firestore from '@/firebase/firestore';
 import Image from 'next/image';
 import { myPostsArrayState } from '@/recoil/mypage/atom';
 import { usernameState } from '@/recoil';
+import useGetNickname from '@/hooks/useGetNickname';
+import { getItem } from '@/utils/localStorage';
 
 const ONEDAY = 24*60*60*1000;
 
@@ -32,7 +34,7 @@ export default function PostPage() {
   const router = useRouter();
   const setIndex = useResetRecoilState(selectedImgIndexState);
   const [myPostsArr, setMyPostsArr] = useRecoilState(myPostsArrayState);
-  const [nickname, setNickname] = useRecoilState(usernameState);
+  const [nickname, setNickname] = useState(localStorage.getItem('username'));
 
   const handleEditing = () => {
     setEditing(true);
@@ -181,11 +183,16 @@ export default function PostPage() {
     });
   };
 
-  useEffect(() => {
-    const user = localStorage.getItem('user');
-    const nickname = typeof user === 'string' && JSON.parse(user).nickname;
-    setNickname(nickname);
-  }, [])
+  // const getUsername = async () => {
+  //   const id = localStorage.getItem('userID');
+  //   const q = query(collection(firestore, "users"), where("id", "==", id));
+  //   const querySnapshot = await getDocs(q);
+  //   querySnapshot.forEach((doc) => setNickname(doc.data().nickname));
+  // };
+
+  // useEffect(() => {
+  //   getUsername();
+  // }, [])
 
 return (
     <PostSection>

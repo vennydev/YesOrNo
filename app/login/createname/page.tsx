@@ -9,6 +9,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import firestore from "@/firebase/firestore";
 import { useRouter } from "next/navigation";
 import Loading from "@/components/loading/Loading";
+import useRandomNameGenerator from "@/hooks/useRandomNameGenerator";
 
 export default function CreateUserName() {
   const [isLoading, setIsLoading] = useState(true);
@@ -19,7 +20,10 @@ export default function CreateUserName() {
     const userRef = collection(firestore, "users");
     const q = query(userRef, where("id", "==", userid));
     const querySnapshot = await getDocs(q);
-    try {
+    if(querySnapshot.empty){
+      console.log('useRandomNameGenerator: ', useRandomNameGenerator);
+      setIsLoading(false);
+    }else{
       querySnapshot.forEach(doc => {
         if(doc.data().nickname !== ''){
           router.push("/");
@@ -27,15 +31,14 @@ export default function CreateUserName() {
         };
         setIsLoading(false);
       });
-    } catch (error) {
-      alert(error)
     }
     }
     
     useEffect(() => {
       const userid = session.data?.user.id;
+      console.log('userid: ', userid);
       userid && checkIsNewUser(userid);
-  }, [session])
+    }, [session]);
 
   return (
     <>

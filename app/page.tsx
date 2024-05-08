@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from "styled-components";
 import PostCard from '../components/PostCard';
-import { useSession } from 'next-auth/react';
+import { getSession, useSession } from 'next-auth/react';
 import Toast from '@/components/toast/Toast';
 import { toastState } from '@/recoil/toast/atom';
 import { useRouter } from 'next/navigation';
@@ -16,7 +16,6 @@ import ContentHeaderView from '../components/ContentHeaderView';
 import { collection, doc, getDocs, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { filterTypeState, filteredClosedPostListState, filteredOpenPostListState, postClosedListState, postListState } from '@/recoil/home';
-
 
 export interface PostsProps {
     text: string,
@@ -121,8 +120,17 @@ export default function Home () {
     }
   }, []);
 
-  // const setTotalCount = useCallback(() => {
-  // }, [])
+  const setUsername = async () => {
+    const id = localStorage.getItem('userID');
+    const q = query(collection(firestore, "users"), where("id", "==", id));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => localStorage.setItem('username', doc.data().nickname));
+  };
+
+  const checkSessionExist = async () => {
+    const session = await getSession();
+    !!session && setUsername();
+  };
 
   useEffect(() => {
     if(selectedTab === 0){
@@ -135,6 +143,7 @@ export default function Home () {
   useEffect(() => {
       setLoading(true);
       getData();
+      checkSessionExist();
   }, []);
 
   return (
@@ -259,4 +268,3 @@ const ObserverRef = styled.div`
 const CircularWrapper = styled.div`
   margin-top: 20px;
 `
-

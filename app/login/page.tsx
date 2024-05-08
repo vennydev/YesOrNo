@@ -18,7 +18,7 @@ export default function Login() {
         <LoginBtnWrapper>
           <LoginBtn onClick={() => signIn('kakao', { callbackUrl: '/login/createname'} )}>카카오톡으로 로그인</LoginBtn>
           <Link href={'/'}>
-            <PublicBtn>로그인없이 둘러볼게요.</PublicBtn>
+            <PublicBtn>로그인 없이 둘러볼게요.</PublicBtn>
           </Link>
         </LoginBtnWrapper>
       </LoginContainer>
