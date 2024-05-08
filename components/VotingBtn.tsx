@@ -189,17 +189,15 @@ const Bar = styled.div<{$percentage: number}>`
 const YesBar = styled(Bar)<{$percentage: number}>`
   left:0;
   background-color: ${props => props.theme.color.yesBarColor};
-  border-top-right-radius:${props => props.$percentage === 50 ? '0px' : '12px'};
-  border-bottom-right-radius:${props => props.$percentage === 50 ? '0px' : '12px'};
-  border-right: ${props => props.$percentage ? `1px solid ${props.theme.color.mainBorderColor}` : 'none'};
+  border-top-right-radius:${props => props.$percentage === 50 ? '0px' : '11px'};
+  border-bottom-right-radius:${props => props.$percentage === 50 ? '0px' : '11px'};
 `;
 
 const NoBar = styled(Bar)<{$percentage: number}>`
   right:0;
   background-color: ${props => props.theme.color.noBarColor};
-  border-top-left-radius:${props => props.$percentage === 50 ? '0px' : '12px'};
-  border-bottom-left-radius:${props => props.$percentage === 50 ? '0px' : '12px'};
-  border-left: ${props => props.$percentage !== 50 ? `1px solid ${props.theme.color.mainBorderColor}` : 'none'};
+  border-top-left-radius:${props => props.$percentage === 50 ? '0px' : '11px'};
+  border-bottom-left-radius:${props => props.$percentage === 50 ? '0px' : '11px'};
 `;
 
 const Divider = styled.div`

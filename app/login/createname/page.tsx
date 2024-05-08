@@ -15,13 +15,13 @@ export default function CreateUserName() {
   const [isLoading, setIsLoading] = useState(true);
   const session = useSession();
   const router = useRouter();
-  
+  const [randomname, setRandomname] = useState(useRandomNameGenerator());
+
   const checkIsNewUser = async (userid: string) => {
     const userRef = collection(firestore, "users");
     const q = query(userRef, where("id", "==", userid));
     const querySnapshot = await getDocs(q);
     if(querySnapshot.empty){
-      console.log('useRandomNameGenerator: ', useRandomNameGenerator);
       setIsLoading(false);
     }else{
       querySnapshot.forEach(doc => {
@@ -32,20 +32,20 @@ export default function CreateUserName() {
         setIsLoading(false);
       });
     }
-    }
-    
-    useEffect(() => {
-      const userid = session.data?.user.id;
-      console.log('userid: ', userid);
-      userid && checkIsNewUser(userid);
-    }, [session]);
+  };
+
+  useEffect(() => {
+    const userid = session.data?.user.id;
+    console.log('userid: ', userid);
+    userid && checkIsNewUser(userid);
+  }, [session]);
 
   return (
     <>
     {isLoading ? <Loading/> : (
       <CreateUserNameCOntainer>
         <EditWrapper>
-          <EditInput text={createUserNameText}/>
+          <EditInput text={createUserNameText} randomname={randomname}/>
         </EditWrapper>
       </CreateUserNameCOntainer>
     )

@@ -41,15 +41,13 @@ export default function EditUserName() {
               })
             })
           }
-    
-          // localStorage.setItem("user", JSON.stringify({id: userid, nickname: username}));
-          localStorage.setItem("username", username);
+          localStorage.setItem("username", String(username));
           router.push('/mypage');
         } catch (error) {
           console.log('error: ', error);
         }
       }
-  }
+  };
 
   return (
     <MyPageSection>

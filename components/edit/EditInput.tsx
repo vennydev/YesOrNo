@@ -3,21 +3,23 @@
 import styled from "styled-components";
 import { TextRemover } from "@/public/images";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { doc, updateDoc } from "firebase/firestore";
 import firestore from "@/firebase/firestore";
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react';
+import useRandomNameGenerator from "@/hooks/useRandomNameGenerator";
 
 interface EditInputPropsType {
   text: string;
+  randomname: string;
 }
 
-export default function EditInput({text}: EditInputPropsType) {
+export default function EditInput({text, randomname}: EditInputPropsType) {
   const searchParams = useSearchParams();
   const nameParam = searchParams.get('username');
-  const [username, setUsername] = useState(nameParam);
+  const [username, setUsername] = useState('');
   
   const router = useRouter();
   const pathname = usePathname();
@@ -28,7 +30,6 @@ export default function EditInput({text}: EditInputPropsType) {
   const handleNameChange = ({target : { value }}: any) => {
     setUsername(value);
   };
-
   const handleSubmit = async () => {
     const userRef = doc(firestore, "users", String(userid));
     try {
@@ -44,15 +45,21 @@ export default function EditInput({text}: EditInputPropsType) {
     }
   };
 
+  useEffect(() => {
+      !!nameParam ? setUsername(nameParam): setUsername(randomname!);
+  }, [])
+
   return (
     <ModifyWrapper>
       <InputContainer>
         <NameLabel htmlFor="username" $currentPath={currentPath}>{text}</NameLabel>  
         <InputWrapper>
           <NameInput type="text" id='username' value={username || ''} onChange={(e) => handleNameChange(e)} placeholder={'프로필 이름을 변경해주세요'}/>
+            {currentPath === 'edit-name' ? (
             <DeleteText onClick={() => setUsername('')}>
               <Image src={TextRemover} alt="delete-text" width={24} height={24}/>
             </DeleteText>
+            ) : null}
         </InputWrapper>
         <SubmitBtn $username={username} onClick={() => handleSubmit()}>완료</SubmitBtn>
       </InputContainer>

@@ -19,7 +19,6 @@ import firestore from '@/firebase/firestore';
 import Image from 'next/image';
 import { myPostsArrayState } from '@/recoil/mypage/atom';
 import { usernameState } from '@/recoil';
-import useGetNickname from '@/hooks/useGetNickname';
 import { getItem } from '@/utils/localStorage';
 
 const ONEDAY = 24*60*60*1000;
@@ -34,7 +33,7 @@ export default function PostPage() {
   const router = useRouter();
   const setIndex = useResetRecoilState(selectedImgIndexState);
   const [myPostsArr, setMyPostsArr] = useRecoilState(myPostsArrayState);
-  const [nickname, setNickname] = useState(localStorage.getItem('username'));
+  const [nickname, setNickname] = useState('');
 
   const handleEditing = () => {
     setEditing(true);
@@ -183,16 +182,10 @@ export default function PostPage() {
     });
   };
 
-  // const getUsername = async () => {
-  //   const id = localStorage.getItem('userID');
-  //   const q = query(collection(firestore, "users"), where("id", "==", id));
-  //   const querySnapshot = await getDocs(q);
-  //   querySnapshot.forEach((doc) => setNickname(doc.data().nickname));
-  // };
-
-  // useEffect(() => {
-  //   getUsername();
-  // }, [])
+  useEffect(() => {
+    const username = localStorage.getItem('username');
+    typeof username === 'string' && setNickname(localStorage.getItem('username')!);
+  }, []);
 
 return (
     <PostSection>

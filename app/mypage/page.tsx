@@ -175,6 +175,7 @@ export default function Mypage() {
             <button onClick={() => {
               signOut({ callbackUrl: '/' });
               localStorage.removeItem("user");
+              localStorage.removeItem("username");
               }}>로그아웃</button>
             {/* <Divider/> */}
             <button onClick={()=> {
