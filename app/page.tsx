@@ -16,6 +16,7 @@ import ContentHeaderView from '../components/ContentHeaderView';
 import { collection, doc, getDocs, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { filterTypeState, filteredClosedPostListState, filteredOpenPostListState, postClosedListState, postListState } from '@/recoil/home';
+import { emptyData_comment } from '@/constants';
 
 export interface PostsProps {
     text: string,
@@ -44,6 +45,8 @@ export default function Home () {
   const filteredOpenPosts = useRecoilValue(filteredOpenPostListState);
   const filteredClosePosts = useRecoilValue(filteredClosedPostListState);
   const [totalCount, setTotalCount] = useState(data.list.length);
+  const router = useRouter();
+
 
   const handleClick = (index: number) => {
     setSelectedTab(index);
@@ -146,6 +149,7 @@ export default function Home () {
       checkSessionExist();
   }, []);
 
+  console.log('data.list.length: ', data.list.length);
   return (
     <HomeSection>
       <HomeContainer>
@@ -161,7 +165,7 @@ export default function Home () {
           {selectedTab === 0
             ? (
               <>
-                {data.list.length > 0 && filteredOpenPosts?.map((post: any) => {
+                {data.list.length > 0 ? filteredOpenPosts?.map((post: any) => {
                     return (
                       <PostCard 
                         id={post.id}
@@ -178,8 +182,17 @@ export default function Home () {
                         key={post.id}
                         />
                     )
-                        })}
+                        }) : (
+                          <EmptyDataSign>
+                            <EmptyDataComment>
+                              {emptyData_comment}
+                            </EmptyDataComment>
+                            <GotoPostBtn onClick={() => router.push('/post')}>질문하러가기</GotoPostBtn>
+
+                          </EmptyDataSign>)
+                        }
                         {loading && (<CircularWrapper><CircularProgress color="neutral" size="sm"/></CircularWrapper>)}
+                        {}
                 {/* {loadingMore && (<CircularWrapper><CircularProgress color="neutral" size="sm"/></CircularWrapper>)} */}
                 {/* {data.length >= INITIAL_FETCH_COUNT && <ObserverRef ref={setTarget}></ObserverRef>} */}
                 {/* {noMore && <NoMorePostNoti>더 이상 불러올 게시물이 없습니다.</NoMorePostNoti>} */}
@@ -267,4 +280,35 @@ const ObserverRef = styled.div`
 
 const CircularWrapper = styled.div`
   margin-top: 20px;
+`
+
+const EmptyDataSign = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  gap: 20px;
+`
+
+const EmptyDataComment = styled.div`
+color: #000;
+text-align: center;
+font-family: MaruBuri;
+font-size: 16px;
+font-style: normal;
+font-weight: 600;
+line-height: 28px;
+white-space:pre-wrap
+`
+
+const GotoPostBtn = styled.button`
+  display: flex;
+  padding: 6px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  border: 1px solid #000;
+  width:80px;
+  box-sizing: content-box;
 `

@@ -287,7 +287,8 @@ export default function PostCard ({
         const year = endTime.getFullYear();
         const month = endTime.getMonth() + 1;
         const day = endTime.getDate();
-        setEndTime(`${year}년 ${month}월 ${day}일`)
+        const newYear = String(year).substring(2);
+        setEndTime(`${newYear}년 ${month}월 ${day}일`)
       };
   }, [expiredAt]);
 
