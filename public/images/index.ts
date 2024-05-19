@@ -20,7 +20,9 @@ import TextRemover from './text-remover.png';
 import LoadingIcon from './loading-icon.png';
 import Comment from './Comment.png';
 import Like from './Like.png';
-import LikeEmpty from './Like-empty.png'
+import LikeEmpty from './Like-empty.png';
+import IconX from './ic_X.png';
+import ProfileDim from './Profile-dim.png';
 
 export { 
   cellular, 
@@ -45,5 +47,7 @@ export {
   LoadingIcon,
   Comment,
   Like,
-  LikeEmpty
+  LikeEmpty,
+  IconX,
+  ProfileDim,
 }

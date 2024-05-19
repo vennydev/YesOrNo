@@ -123,7 +123,6 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
     useEffect(() => {
       getComments();
     }, []);
-
   return (
     <StyledLikeCommentContainer>
       <LikeCommentIcons>
@@ -141,7 +140,7 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
         </IconsWrapper>
       </LikeCommentIcons>
       <CommentWrapper onClick={renderCommentBox}>
-        {firstComment.text !== '' ? (
+        {comments.length > 0 ? (
           <LatestComment>
             <Username>{firstComment.username}</Username>
             <span>{firstComment.text}</span>

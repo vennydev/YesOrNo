@@ -17,6 +17,10 @@ const GlobalStyles = createGlobalStyle`
       color: black;
     }
 
+    html, body {
+      height: 100%;
+    }
+    
     html, body, div, span, h1, h2, h3, h4, h5, h6, p, 
     a, dl, dt, dd, ol, ul, li, form, label, table{
         margin: 0;
@@ -28,7 +32,6 @@ const GlobalStyles = createGlobalStyle`
     body{
       line-height: 1;
       font-family: 'MaruBuri';
-      height:100%;
     }
     
     ol, ul{

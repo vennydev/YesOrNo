@@ -9,6 +9,8 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import ModalPortal from "./modal/ModalPortal";
 import { useModal } from "@/hooks/useModal";
 import { removePost } from "@/constants";
+import Image from "next/image";
+import { IconX } from "@/public/images";
 
 export default function MyPost({post, myPost}: any) {
   const { Modal, isOpen, openModal, closeModal } = useModal();
@@ -28,7 +30,11 @@ export default function MyPost({post, myPost}: any) {
                 isOver={post.isOver}
                 isParticipantCountPublic={post.isParticipantCountPublic}
                 />
-                {myPost && <RemoveBtn onClick={() => openModal()}><CancelIcon color="disabled" sx={{ fontSize: 30 }}/></RemoveBtn>}
+                {myPost && (
+                  <RemoveBtn onClick={() => openModal()}>
+                    <Image alt='x-icon' src={IconX} width={10} height={10}></Image>
+                  </RemoveBtn>
+                )}
               </PostWrapper>
           {isOpen && 
             <ModalPortal>
@@ -48,9 +54,12 @@ const PostWrapper = styled.div`
 
 const RemoveBtn = styled.div`
   position: absolute;
-  top:15px;
-  right:15px;
+  top:20px;
+  right:20px;
   display:flex;
   align-items: center;
+  justify-content:center;
+  width:20px;
+  height:20px;
   cursor: pointer;
 `;

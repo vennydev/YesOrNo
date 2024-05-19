@@ -17,6 +17,9 @@ import MyPost from "@/components/MyPost";
 import { myPostsArrayState, votedPostsArrayState } from "@/recoil/mypage/atom";
 import PostCard from "@/components/PostCard";
 import { getItem } from "@/utils/localStorage";
+import { emptyMyPost_comment } from "@/constants";
+import EmptyContent from "@/components/EmptyContent";
+import { emptyVotedPost_comment } from "../../constants";
 
 RecoilEnv.RECOIL_DUPLICATE_ATOM_KEY_CHECKING_ENABLED = false;
 
@@ -27,7 +30,7 @@ export default function Mypage() {
   const [myPostsArr, setMyPostsArr] = useRecoilState(myPostsArrayState);
   const [votedPosts, setVotedPosts] = useRecoilState(votedPostsArrayState);
   const toast = useRecoilValue(toastState);
-
+console.log('myPostsArr: ', myPostsArr);
   const a = useCallback(async () => {
     setIsLoading(true);
     try{
@@ -122,8 +125,9 @@ export default function Mypage() {
         <TabButton $focused={isSelected === 0} onClick={() => handleSelectedTab(0)}>내가 만든 투표</TabButton>
         <TabButton $focused={isSelected === 1} onClick={() => handleSelectedTab(1)}>참여한 투표</TabButton>
       </TabWrapper>
-      <MyPostsContainer>
+      <MyPostsContainer $myPostsArrlength={myPostsArr.length}>
         <MyPostWrapper>
+          {/* 게시물 삭제 시 empty content 보이고 새로고침이 된다 */}
             { isSelected === 0 ? (
               <>
                 {isLoading 
@@ -132,13 +136,18 @@ export default function Mypage() {
                   myPostsArr.length > 0 
                   ? myPostsArr.map((post, index) => {
                     return (
+
                       <MyPost key={index} post={post} myPost/>
                     )
                   })
-                  : <EmptySection><EmptyText>내가 만든 투표가 없습니다. [질문하기]에서 투표게시글을 만들어보세요.</EmptyText></EmptySection>
+                  : (
+                    <EmptyContent content={emptyMyPost_comment} url='/post' btnTitle='질문하러가기'/>
+                  )
                   )
                 }
               </>
+              // 데이터 없을 떄 height 100%
+              // 데이터 있을 떄 height x
             )
             : (
               <>
@@ -164,7 +173,9 @@ export default function Mypage() {
                       />
                     )
                   })
-                  : <EmptySection><EmptyText>참여한 투표가 없습니다. [홈]에서 다른 사람의 게시물에 투표를 해보세요.</EmptyText></EmptySection>
+                  : (
+                    <EmptyContent content={emptyVotedPost_comment} url='/' btnTitle='홈으로'/>
+                  )
                   )
                 }
               </>
@@ -172,15 +183,15 @@ export default function Mypage() {
           }
         </MyPostWrapper>
           <SignOutBtnWrapper>
-            <button onClick={() => {
+            <SignOutBtn onClick={() => {
               signOut({ callbackUrl: '/' });
               localStorage.removeItem("user");
               localStorage.removeItem("username");
-              }}>로그아웃</button>
-            {/* <Divider/> */}
-            <button onClick={()=> {
+              }}>로그아웃</SignOutBtn>
+              <Divider>|</Divider>
+            <SignOutBtn onClick={()=> {
               alert("곧 됩니다..!")
-            }}>탈퇴</button>
+            }}>탈퇴</SignOutBtn>
           </SignOutBtnWrapper>
       </MyPostsContainer>
       {toast.isShown && <Toast position='bottom'/>}
@@ -198,7 +209,7 @@ const MyPageSection = styled.div`
 `;
 
 const UserInfoWrapper = styled.div`
-  margin-bottom: 29px;
+  margin-bottom: 21px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -224,16 +235,19 @@ const TabWrapper = styled.div`
 const TabButton = styled.button<{$focused: boolean}>`
   width: 50%;
   text-align: center;
-  padding-bottom: 10px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: ${props => props.$focused === true ?  600 : 400};
   border-bottom: ${props => props.$focused === true ?  `1px solid ${props.theme.color.mainBorderColor}` : `1px solid ${props.theme.color.dimBorderColor}`};
+  color: ${props => props.$focused === true ? 'black' : '#8C8C8C'};
   cursor: pointer;
 `;
 
 
-const MyPostsContainer = styled.div`
+const MyPostsContainer = styled.div<{$myPostsArrlength: number}>`
   padding: 25px 20px;
-  height: 100%;
   width: 100%;
+  height: ${(props) => props.$myPostsArrlength > 0 ? 'auto' : '100%'};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -245,6 +259,7 @@ const MyPostWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  position:relative;
   gap: 16px;
 `;
 
@@ -265,18 +280,19 @@ const SignOutBtnWrapper = styled.div`
   display:flex;
   align-items: center;
   justify-content: center;
+  gap: 14px;
 `;
 
 const StyledLinkToEdit = styled(Link)`
   padding: 0 4px;
 `;
 
-const EmptySection = styled.div`
-      height: 100%;
-    display: flex;
-    align-items: center;
+const SignOutBtn = styled.button`
+  color: var(--dim-bright-gray);
+  font-weight:600;
 `;
 
-const EmptyText = styled.span`
-  
-`
+const Divider = styled.div`
+  color: var(--dim-bright-gray);
+  font-weight:600;
+`;

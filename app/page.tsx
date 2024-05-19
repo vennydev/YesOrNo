@@ -6,7 +6,6 @@ import PostCard from '../components/PostCard';
 import { getSession, useSession } from 'next-auth/react';
 import Toast from '@/components/toast/Toast';
 import { toastState } from '@/recoil/toast/atom';
-import { useRouter } from 'next/navigation';
 import usePagination from '@/hooks/usePagination';
 import CircularProgress from '@mui/joy/CircularProgress';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -17,6 +16,7 @@ import { collection, doc, getDocs, orderBy, query, updateDoc, where } from 'fire
 import firestore from '@/firebase/firestore';
 import { filterTypeState, filteredClosedPostListState, filteredOpenPostListState, postClosedListState, postListState } from '@/recoil/home';
 import { emptyData_comment } from '@/constants';
+import EmptyContent from '@/components/EmptyContent';
 
 export interface PostsProps {
     text: string,
@@ -39,13 +39,12 @@ export default function Home () {
   const {data: session } = useSession();
   const INITIAL_FETCH_COUNT = 5;
   const [target, setTarget] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useRecoilState(postListState);
   const [closedData, setClosedData] = useRecoilState(postClosedListState);
   const filteredOpenPosts = useRecoilValue(filteredOpenPostListState);
   const filteredClosePosts = useRecoilValue(filteredClosedPostListState);
   const [totalCount, setTotalCount] = useState(data.list.length);
-  const router = useRouter();
 
 
   const handleClick = (index: number) => {
@@ -149,7 +148,6 @@ export default function Home () {
       checkSessionExist();
   }, []);
 
-  console.log('data.list.length: ', data.list.length);
   return (
     <HomeSection>
       <HomeContainer>
@@ -161,66 +159,74 @@ export default function Home () {
         </TabContainer>
         <ContentHeaderView totalPostCount={totalCount} />
         <PostContainer>
-          {/* {filteredPosts.map(a => <h1 key={a.id}>{a.text}</h1>)} */}
-          {selectedTab === 0
-            ? (
-              <>
-                {data.list.length > 0 ? filteredOpenPosts?.map((post: any) => {
-                    return (
-                      <PostCard 
-                        id={post.id}
-                        text={post.text}
-                        author={post.author}
-                        imageUrl={post.imageUrl} 
-                        expiredAt={post.expiredAt}
-                        votingBtn={true} 
-                        yesCount={post.yesUser.length}
-                        noCount={post.noUser.length} 
-                        likes={post.likes}
-                        isDeleted={post.isDeleted}
-                        isParticipantCountPublic={post.isParticipantCountPublic}
-                        key={post.id}
-                        />
-                    )
-                        }) : (
-                          <EmptyDataSign>
-                            <EmptyDataComment>
-                              {emptyData_comment}
-                            </EmptyDataComment>
-                            <GotoPostBtn onClick={() => router.push('/post')}>질문하러가기</GotoPostBtn>
-
-                          </EmptyDataSign>)
+            {/* {filteredPosts.map(a => <h1 key={a.id}>{a.text}</h1>)} */}
+            {selectedTab === 0
+              ? (
+                <>
+                  {loading ? (<CircularWrapper><CircularProgress color="neutral" size="sm"/></CircularWrapper>) :
+                   (
+                    data.list.length > 0 ? (
+                      <PostCardWrapper>
+                        {
+                          filteredOpenPosts?.map((post: any) => {
+                            return (
+                                <PostCard 
+                                  key={post.id}
+                                  id={post.id}
+                                  text={post.text}
+                                  author={post.author}
+                                  imageUrl={post.imageUrl} 
+                                  expiredAt={post.expiredAt}
+                                  votingBtn={true} 
+                                  yesCount={post.yesUser.length}
+                                  noCount={post.noUser.length} 
+                                  likes={post.likes}
+                                  isDeleted={post.isDeleted}
+                                  isParticipantCountPublic={post.isParticipantCountPublic}
+                                  />
+                            )
+                          }) 
                         }
-                        {loading && (<CircularWrapper><CircularProgress color="neutral" size="sm"/></CircularWrapper>)}
-                        {}
-                {/* {loadingMore && (<CircularWrapper><CircularProgress color="neutral" size="sm"/></CircularWrapper>)} */}
-                {/* {data.length >= INITIAL_FETCH_COUNT && <ObserverRef ref={setTarget}></ObserverRef>} */}
-                {/* {noMore && <NoMorePostNoti>더 이상 불러올 게시물이 없습니다.</NoMorePostNoti>} */}
-              </>
-            ) : (
-              <>
-          {closedData.list.length > 0  && filteredClosePosts?.map((post: PostsProps, index:number) => {
-            return (
-              <PostCard 
-              id={post.id}
-              text={post.text} 
-              author={post.author} 
-              imageUrl={post.imageUrl} 
-              expiredAt={post.expiredAt}
-              votingBtn={true} 
-              isOver={post.isOver}
-              yesCount={post.yesUser.length} 
-              noCount={post.noUser.length}
-              likes={post.likes}
-              isDeleted={post.isDeleted}
-              isParticipantCountPublic={post.isParticipantCountPublic}
-              key={post.id}
-              />
-              )})}
-            </>
+                      </PostCardWrapper>
+                    )
+                      : (
+                          <EmptyContent content={emptyData_comment} url='/post' btnTitle='질문하러가기'/>
+                      )
+                  )}
+                  {/* {loadingMore && (<CircularWrapper><CircularProgress color="neutral" size="sm"/></CircularWrapper>)} */}
+                  {/* {data.length >= INITIAL_FETCH_COUNT && <ObserverRef ref={setTarget}></ObserverRef>} */}
+                  {/* {noMore && <NoMorePostNoti>더 이상 불러올 게시물이 없습니다.</NoMorePostNoti>} */}
+                </>
+              ) : (
+                <>
+            {closedData.list.length > 0  ? (
+              <PostCardWrapper>
+                {filteredClosePosts?.map((post: PostsProps, index:number) => {
+                  return (
+                    <PostCard 
+                    id={post.id}
+                    text={post.text} 
+                    author={post.author} 
+                    imageUrl={post.imageUrl} 
+                    expiredAt={post.expiredAt}
+                    votingBtn={true} 
+                    isOver={post.isOver}
+                    yesCount={post.yesUser.length} 
+                    noCount={post.noUser.length}
+                    likes={post.likes}
+                    isDeleted={post.isDeleted}
+                    isParticipantCountPublic={post.isParticipantCountPublic}
+                    key={post.id}
+                    />
+                    )})}
+              </PostCardWrapper>
+            ) :  (
+              <EmptyContent content='게시물이 없습니다'/>
           )
-        }
-          </PostContainer>
+              }
+              </>
+            )}
+        </PostContainer>
       </HomeContainer>
       {toast.isShown && <Toast position='bottom'/>}
     </HomeSection>
@@ -230,12 +236,13 @@ export default function Home () {
 const HomeSection = styled.div`
   display: flex;
   align-items: center;
-  padding:0 20px;
+  padding:20px;
+  height: 100%;
 `;
 
 const HomeContainer = styled.div`
   width: 100%;
-  margin-top:45px;
+  height:100%;
 `;
 
 const TabContainer = styled.div`
@@ -258,15 +265,20 @@ const TabButton = styled.div<{$isSelected?: any}>`
 `;
 
 const PostContainer = styled.div`
+  height: 100%;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top:16px;
+`;
+  
+const PostCardWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 16px;
   padding-bottom: 100px;
-  position: relative;
-`;
-
+`
 const NoMorePostNoti = styled.div`
   margin-top: 20px;
   margin-bottom: 40px;
@@ -279,36 +291,7 @@ const ObserverRef = styled.div`
 `;
 
 const CircularWrapper = styled.div`
-  margin-top: 20px;
-`
+  position: absolute;
+  top:33%;
+`;
 
-const EmptyDataSign = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 auto;
-  gap: 20px;
-`
-
-const EmptyDataComment = styled.div`
-color: #000;
-text-align: center;
-font-family: MaruBuri;
-font-size: 16px;
-font-style: normal;
-font-weight: 600;
-line-height: 28px;
-white-space:pre-wrap
-`
-
-const GotoPostBtn = styled.button`
-  display: flex;
-  padding: 6px 12px;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  border-radius: 8px;
-  border: 1px solid #000;
-  width:80px;
-  box-sizing: content-box;
-`

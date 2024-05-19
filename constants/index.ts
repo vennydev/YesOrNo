@@ -5,6 +5,9 @@ const removePost = '질문을 삭제하시겠습니까?';
 const delete_comment = '댓글이 삭제되었습니다.';
 const apply_comment = '댓글이 등록되었습니다.';
 const emptyData_comment='진행중인 질문이 없어요\n질문을 등록해보세요!';
+const emptyMyPost_comment= '내가 만든 질문이 없습니다.\n질문게시글을 만들어보세요.';
+const emptyVotedPost_comment='아직 참여한 투표가 없어요!\n투표에 참여해보세요 ~.~';
+const emptyComment_comment='아직 댓글이 없습니다.\n첫 댓글을 등록해보세요!';
 
 const personalities = ["재미있는", "로맨틱한", "유능한", "친절한", "수줍은", "징징대는", "단호한", "칠칠맞은", "엉뚱한", "고집센"];
 const colors = ["빨강", "주황", "노랑", "초록", "파랑", "보라", "분홍", "갈색", "흰색", "검정"];
@@ -18,6 +21,9 @@ export {
   delete_comment,
   apply_comment,
   emptyData_comment,
+  emptyMyPost_comment,
+  emptyVotedPost_comment,
+  emptyComment_comment,
   personalities,
   colors,
   animals,

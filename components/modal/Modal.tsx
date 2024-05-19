@@ -17,6 +17,7 @@ interface ModalProps {
 
 export default function Modal(props: ModalProps ) {
   const { text, close, performBtn, postId } = props;
+  const [myPostsArr, setMyPostsArr] = useRecoilState(myPostsArrayState);
   
   const removePost = useCallback(async() => {
     try{
@@ -24,7 +25,11 @@ export default function Modal(props: ModalProps ) {
         await updateDoc(docRef, {
           isDeleted: true,
         });
-        location.reload();
+        console.log('myPostsArr: ', myPostsArr);
+        const newArr = myPostsArr.filter(post => {
+          return post.id != postId
+        });
+        setMyPostsArr(newArr);
       }catch(error){
         console.log('error: ', error)
       }

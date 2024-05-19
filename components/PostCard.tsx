@@ -20,6 +20,11 @@ import LikeCommentContainer from './LikeCommentContainer';
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = ['no image', PostBg1, PostBg2];
 
+type MetaType = {
+  votingBtn?: boolean,
+  isOver?: boolean,
+}
+
 interface TotalCountType {
   yesTotal: number | undefined,
   noTotal: number | undefined,
@@ -102,7 +107,6 @@ export default function PostCard ({
   };
 
   const selectBgImage = (e: any, img: any) => {
-    console.log('e: ', e, img);
     // e && e.stopPropagation();
     // setImageUrl?.(img);
     // setFile?.(img);
@@ -274,7 +278,7 @@ export default function PostCard ({
   }, [totalCount.yesTotal, totalCount.noTotal]);
 
   const addZero = (time: number) => {
-    return time.toString().padStart(2, '0')
+    return time.toString().padStart(2, '0');
   };
 
   useEffect(() => {
@@ -291,7 +295,6 @@ export default function PostCard ({
         setEndTime(`${newYear}년 ${month}월 ${day}일`)
       };
   }, [expiredAt]);
-
   return (
       <PostContainer $votingBtn={votingBtn}>
         {!votingBtn && postDefaultImageforPost()}
@@ -300,13 +303,15 @@ export default function PostCard ({
               <PostMetadata>
                 <PostMetadataLeft>
                   {votingBtn 
-                    ? (<Image src={DefaultProfile} alt='profile-example' width={40} height={40} priority />)
-                    : (<Image src={DimmedProfile} alt='profile-example' width={40} height={40} priority />) 
+                    ? (isOver ? 
+                      <Image src={DimmedProfile} alt='profile-example' width={40} height={40} priority /> : 
+                      <Image src={DefaultProfile} alt='profile-example' width={40} height={40} priority />)
+                    : <Image src={DimmedProfile} alt='profile-example' width={40} height={40} priority />
                   }
                 </PostMetadataLeft>
                 <PostMetadataRight>
-                  <UserName $votingBtn={votingBtn}>{author}</UserName>
-                  <DeadLine $votingBtn={votingBtn}>
+                  <UserName votingBtn={votingBtn} isOver={isOver}>{author}</UserName>
+                  <DeadLine votingBtn={votingBtn} isOver={isOver}>
                     {isOver ? (
                         <>
                           {endTime} 투표 완료
@@ -338,7 +343,7 @@ export default function PostCard ({
                   isOver={isOver}
                   setOnEffect={setOnEffect}
                   onEffect={onEffect}
-              />)}
+                />)}
             </PostTop>
             {votingBtn && <LikeCommentContainer postID={id}/>} 
           </PostWrapper>
@@ -373,7 +378,7 @@ const PostContainer = styled.div<{$votingBtn : boolean}>`
   width: 335px;
   height: ${props => props.$votingBtn ? "584px" : "478px"};
   border-radius: 20px;
-  border: ${(props) => `1px solid ${props.theme.color.mainBorderColor}`};
+  border: 0.8px solid #8C8C8C;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -413,13 +418,13 @@ const PostMetadataRight = styled.div`
   font-size: 11px;
 `;
 
-const UserName = styled.div<{$votingBtn? : boolean}>`
+const UserName = styled.div<MetaType>`
   margin-bottom: 3px;
-  color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.dimFontColor}}`};
+  color: ${props => props.votingBtn ? (props.isOver ? '#BFBFBF': 'inherit')  : `${props.theme.color.dimFontColor}`};
 `;
 
-const DeadLine = styled.div<{$votingBtn? : boolean}>`
-  color: ${props => props.$votingBtn ? "inherit" : `${props.theme.color.dimFontColor}}`};
+const DeadLine = styled.div<MetaType>`
+  color: ${props => props.votingBtn ? (props.isOver ? '#BFBFBF': 'inherit')  : `${props.theme.color.dimFontColor}`};
 `;
 
 const PostQuestion = styled.div`

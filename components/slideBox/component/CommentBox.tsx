@@ -18,6 +18,7 @@ import { createPortal } from 'react-dom';
 import { apply_comment, delete_comment } from '@/constants';
 import SlideBox from '../SlideBox';
 import { commentTime } from '@/utils/commentTime';
+import { emptyComment_comment } from '../../../constants';
 
 interface CommentBoxPropsType {
   comments: commentsType[];
@@ -33,20 +34,14 @@ export default function CommentBox(prop: CommentBoxPropsType) {
   const [ toast, setToast ] = useRecoilState(toastVisibleState);
   const [text, setText] = useState('');
 
-  const userid = getItem('user');
-
-  const hideCommentBox = () => {
-    setShowCommentBox(false);
-    setAnimation(false);
-  };
+  const userid = getItem('userID');
 
   const handleChange = (value: string) => {
     setText(value);
   };
 
   const handleSubmit = () => {
-    const nickname = getItem("user").nickname;
-    const userid = getItem("user").id;
+    const nickname = getItem("username");
     const commentObj = {
       author: nickname,
       userid: userid,
@@ -104,9 +99,6 @@ export default function CommentBox(prop: CommentBoxPropsType) {
     <SlideBox setShowBox={setShowCommentBox}>
       <div className={`${animation ? "comment-wrapper modal-enter-active" : ""}`}>
       <div className="comment-header">
-        <div className="arrowBack" onClick={hideCommentBox}>
-          <ArrowBackIcon/>
-        </div>
         <div className="title">댓글</div> 
       </div>
       {/* 비었을 때 메시지 */}
@@ -132,7 +124,7 @@ export default function CommentBox(prop: CommentBoxPropsType) {
                     <div className='meta_text'>
                       {comment.text}
                     </div>
-                    {userid.id === comment.userid && (
+                    {userid === comment.userid && (
                       <div className='remove-btn'>
                         <ClearIcon sx={{ color: '#8C8C8C', cursor: 'pointer'}} onClick={() => deleteComment(comment.commentid)}/>
                       </div>
@@ -142,7 +134,8 @@ export default function CommentBox(prop: CommentBoxPropsType) {
             )
           }) : (
             <div className='comment-empty-text'>
-              <h2>댓글을 달아주세요</h2>
+              <div>아직 댓글이 없습니다.</div>
+              <div>첫 댓글을 등록해보세요!</div>
             </div>)}
           </ul>
           <div className="comment-input-wrapper">

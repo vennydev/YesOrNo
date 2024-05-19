@@ -34,7 +34,7 @@ export default function PostPage() {
   const setIndex = useResetRecoilState(selectedImgIndexState);
   const [myPostsArr, setMyPostsArr] = useRecoilState(myPostsArrayState);
   const [nickname, setNickname] = useState('');
-
+console.log('myPostsArr: ', myPostsArr);
   const handleEditing = () => {
     setEditing(true);
   };
@@ -242,8 +242,7 @@ const ParticipantsInput = styled.input`
 const PostSection = styled.form`
   display: flex;
   justify-content: center;
-  margin-top:65px;
-  padding: 0 20px 99px 20px;
+  padding-top:21px;
 `;
 
 const PostContainer = styled.div`

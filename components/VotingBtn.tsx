@@ -103,11 +103,12 @@ const PostVoteWrapper = styled.div<{$isOver: boolean | undefined}>`
 `;
 
 const ParticiPatnsCount = styled.span`
-  font-size: 11px;
+  font-size: 10px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
   margin-bottom: 7px;
+  color: #BFBFBF;
 `;
 
 const BtnWrapper = styled.div`
