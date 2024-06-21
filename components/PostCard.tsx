@@ -6,7 +6,7 @@ import Image from 'next/image';
 import styled from 'styled-components';
 import ColorCircle from './ColorCircle';
 import PostImageforHome from './PostImageforHome';
-import VotingBtn from './VotingBtn';
+import VotingButton from './VotingBtn';
 import { arrayRemove, arrayUnion, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { useSession } from 'next-auth/react';
@@ -16,6 +16,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { isCheckDeletionModalVisible } from '@/recoil/post/atom';
 import { toastState } from '@/recoil/toast/atom';
 import LikeCommentContainer from './LikeCommentContainer';
+import firebase from 'firebase/compat/app';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = ['no image', PostBg1, PostBg2];
@@ -35,7 +36,8 @@ interface PostCardPropsType {
   text:string;
   author:string | null;
   imageUrl?: any;
-  expiredAt?: number | undefined;
+  expiredAt?: number;
+  createdAt?: number;
   votingBtn: boolean;
   editing?: boolean;
   yesCount?: number | undefined; 
@@ -58,6 +60,7 @@ export default function PostCard ({
   author, 
   imageUrl, 
   expiredAt, 
+  createdAt,
   votingBtn, 
   editing, 
   yesCount,
@@ -87,6 +90,8 @@ export default function PostCard ({
   const [toastInfo, setToastInfo] = useRecoilState(toastState);
   const [endTime, setEndTime] = useState('');
   const [onEffect, setOnEffect] = useState(false);
+  const [createdDate, setCreatedDate] = useState('');
+
   const userid = session?.user.id;
   const closeLoginModal = () => {
     setIsModalVisible(false);
@@ -94,7 +99,20 @@ export default function PostCard ({
 
   const closeDeleteModal = () => {
     setIsCheckDeletionModal(false);
-  }
+  };
+
+  const getCreatedDate = () => {
+    const currentTime = new Date();
+    const currentMonth = currentTime.getMonth() + 1;
+    const currentDate = currentTime.getDate();
+    const createdMonth = typeof createdAt === 'number' && new Date(createdAt).getMonth() + 1;
+    const createdDate = typeof createdAt === 'number' &&  new Date(createdAt).getDate();
+    if(currentMonth === createdMonth && currentDate === createdDate){
+      setCreatedDate('오늘');
+    }else{
+      setCreatedDate('어제');
+    }
+  };
 
   const getRemainingTime = (expiredTime: number) => {
     let currentTime = new Date().getTime();
@@ -151,7 +169,7 @@ export default function PostCard ({
         <StyledImage src={imageUrl} alt="uploaded-image" width={0} height={0}/>
       )
     }
-  }
+  };
 
   const postImageforHome = () => {
     return ( <PostImageforHome imageUrl={imageUrl}/> )
@@ -282,6 +300,7 @@ export default function PostCard ({
   };
 
   useEffect(() => {
+    getCreatedDate();
     typeof expiredAt === 'number' && getRemainingTime(expiredAt);
   }, [expiredAt]);
 
@@ -318,6 +337,8 @@ export default function PostCard ({
                         </>
                       ) : (
                         <>
+                          {createdDate} 
+                            <Dot/>
                           {addZero(hours)}시간 {addZero(min)}분 남음
                         </>
                       )}
@@ -334,7 +355,7 @@ export default function PostCard ({
                 </PostQuestion> )
                 : divideText()}
               {votingBtn && (
-                <VotingBtn 
+                <VotingButton 
                   handleVotesCount={handleVotesCount} 
                   percentage={percentageOfYes} 
                   voteStatus={voteStatus}
@@ -424,7 +445,9 @@ const UserName = styled.div<MetaType>`
 `;
 
 const DeadLine = styled.div<MetaType>`
-  color: ${props => props.votingBtn ? (props.isOver ? '#BFBFBF': 'inherit')  : `${props.theme.color.dimFontColor}`};
+  color: ${props => props.votingBtn ? (props.isOver ? '#BFBFBF': '#8C8C8C')  : `${props.theme.color.dimFontColor}`};
+  display:flex;
+  align-items: center;
 `;
 
 const PostQuestion = styled.div`
@@ -510,3 +533,11 @@ const DividedText = styled.div<{$image? : string}>`
   height: 91px;
   color: ${props => `${props.theme.color.dimFontColor}}`};
 `;
+
+const Dot = styled.div`
+  width: 2px;
+  height: 2px;
+  background-color: #8C8C8C;
+  border-radius: 50%;
+  margin: 0 6px;
+`

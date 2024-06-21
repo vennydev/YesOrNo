@@ -30,7 +30,6 @@ export default function Mypage() {
   const [myPostsArr, setMyPostsArr] = useRecoilState(myPostsArrayState);
   const [votedPosts, setVotedPosts] = useRecoilState(votedPostsArrayState);
   const toast = useRecoilValue(toastState);
-console.log('myPostsArr: ', myPostsArr);
   const a = useCallback(async () => {
     setIsLoading(true);
     try{

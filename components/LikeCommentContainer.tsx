@@ -2,12 +2,13 @@
 
 import styled from 'styled-components';
 import Image from 'next/image'
-import { Comment, Like, LikeEmpty } from '@/public/images';
+import { Comment, Like, LikeEmpty, ShareIcon } from '@/public/images';
 import { useCallback, useEffect, useState } from 'react';
 import { arrayUnion, doc, getDoc, increment, updateDoc } from 'firebase/firestore';
 import firestore from '@/firebase/firestore';
 import { getItem } from '@/utils/localStorage';
 import CommentBox from './slideBox/component/CommentBox';
+import ShareBox from './ShareBox';
 
 interface LikeCommentContainerPropsType {
   postID?: string;
@@ -35,7 +36,8 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
   const [ firstComment, setFirstComment] = useState({
     text : '',
     username: '',
-  })
+  });
+  const [showShareBox, setShowShareBox] = useState(false);
   
   const userid = getItem("userID");
 
@@ -94,6 +96,10 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
       });
     }}, [userid, postID, liked, likesCount])
 
+    const handleShare = () => {
+      setShowShareBox(true);
+    }
+
     useEffect(() => {
       likedStatus();
     }, []);
@@ -138,6 +144,11 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
           </Icon>
           <Count>{comments.length}</Count>
         </IconsWrapper>
+        <IconsWrapper>
+          <Icon onClick={handleShare}>
+            <Image src={ShareIcon} width={24} height={24} alt='share-icon'></Image>
+          </Icon>
+        </IconsWrapper>
       </LikeCommentIcons>
       <CommentWrapper onClick={renderCommentBox}>
         {comments.length > 0 ? (
@@ -149,6 +160,7 @@ export default function LikeCommentContainer(props: LikeCommentContainerPropsTyp
         <CommentInput placeholder='댓글을 입력해주세요.' disabled={showCommentBox ? true : false}></CommentInput>
       </CommentWrapper>
       {showCommentBox && <CommentBox comments={comments} setComments={setComments} postID={postID} setShowCommentBox={setShowCommentBox} setFirstComment={setFirstComment}/>}
+      {showShareBox && <ShareBox setShowCommentBox={setShowShareBox}/>}
     </StyledLikeCommentContainer>
   )
 };
@@ -183,7 +195,7 @@ const Icon = styled.div`
 `
 
 const Count = styled.div`
-  min-width: 18px;
+  min-width: 16px;
 `
 
 const CommentWrapper = styled.div`

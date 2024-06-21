@@ -36,7 +36,6 @@ export default function CreateUserName() {
 
   useEffect(() => {
     const userid = session.data?.user.id;
-    console.log('userid: ', userid);
     userid && checkIsNewUser(userid);
   }, [session]);
 

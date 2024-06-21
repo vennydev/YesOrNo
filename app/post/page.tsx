@@ -34,7 +34,6 @@ export default function PostPage() {
   const setIndex = useResetRecoilState(selectedImgIndexState);
   const [myPostsArr, setMyPostsArr] = useRecoilState(myPostsArrayState);
   const [nickname, setNickname] = useState('');
-console.log('myPostsArr: ', myPostsArr);
   const handleEditing = () => {
     setEditing(true);
   };
@@ -122,8 +121,8 @@ console.log('myPostsArr: ', myPostsArr);
           docData = { 
             author: nickname,
             text:text,
-            createdAt: new Date().getTime(),
-            expiredAt: new Date().getTime()+ONEDAY,
+            createdAt: Date.now(),
+            expiredAt: Date.now()+ONEDAY,
             imageUrl: snapshot.ref.name,
             isOver: false, 
             isParticipantCountPublic: isChecked,
@@ -145,8 +144,8 @@ console.log('myPostsArr: ', myPostsArr);
         docData = { 
           author: nickname,
           text:text,
-          createdAt: new Date().getTime(),
-          expiredAt: new Date().getTime()+ONEDAY,
+          createdAt: Date.now(),
+          expiredAt: Date.now()+ONEDAY,
           imageUrl: snapshot.ref.name,
           isOver: false,
           isParticipantCountPublic: isChecked,

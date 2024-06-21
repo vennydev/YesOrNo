@@ -20,7 +20,6 @@ export default function usePagination ( collectionName: string, limitCount: numb
   const [loadingMore, setLoadingMore] = useState(false); // 추가 요청시 로딩 상태
   const [key, setKey] = useState<any>(null); // 마지막으로 불러온 스냅샷 상태
   const [noMore, setNoMore] = useState(false); // 불러올 데이터가 없을 떄 보여줄 flag
-console.log('data:', );
   const getFirstPage = useCallback(async () => {
     const postsRef = collection(firestore, "posts");
 

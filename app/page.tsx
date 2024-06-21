@@ -22,6 +22,7 @@ export interface PostsProps {
     text: string,
     author: string,
     expiredAt: number,
+    createdAt: number,
     imageUrl: string, 
     isOver: boolean,
     id: string,
@@ -45,7 +46,6 @@ export default function Home () {
   const filteredOpenPosts = useRecoilValue(filteredOpenPostListState);
   const filteredClosePosts = useRecoilValue(filteredClosedPostListState);
   const [totalCount, setTotalCount] = useState(data.list.length);
-
 
   const handleClick = (index: number) => {
     setSelectedTab(index);
@@ -168,7 +168,7 @@ export default function Home () {
                     data.list.length > 0 ? (
                       <PostCardWrapper>
                         {
-                          filteredOpenPosts?.map((post: any) => {
+                          filteredOpenPosts?.map((post: PostsProps) => {
                             return (
                                 <PostCard 
                                   key={post.id}
@@ -177,6 +177,7 @@ export default function Home () {
                                   author={post.author}
                                   imageUrl={post.imageUrl} 
                                   expiredAt={post.expiredAt}
+                                  createdAt={post.createdAt}
                                   votingBtn={true} 
                                   yesCount={post.yesUser.length}
                                   noCount={post.noUser.length} 

@@ -25,7 +25,6 @@ export default function Modal(props: ModalProps ) {
         await updateDoc(docRef, {
           isDeleted: true,
         });
-        console.log('myPostsArr: ', myPostsArr);
         const newArr = myPostsArr.filter(post => {
           return post.id != postId
         });
