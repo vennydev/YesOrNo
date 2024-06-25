@@ -24,6 +24,7 @@ import LikeEmpty from './Like-empty.png';
 import IconX from './ic_X.png';
 import ProfileDim from './Profile-dim.png';
 import ShareIcon from './Share-icon.png';
+import iconX2 from './ic_X2.png';
 
 export { 
   cellular, 
@@ -50,6 +51,7 @@ export {
   Like,
   LikeEmpty,
   IconX,
+  iconX2,
   ProfileDim,
   ShareIcon,
 }

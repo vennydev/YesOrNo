@@ -161,7 +161,7 @@ export default function PostCard ({
       }
     }
   };
-  
+
   const postUploadedImageforPost = () => {
     if(imageUrl === undefined) return;
     if(!imageUrl.src){

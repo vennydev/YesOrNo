@@ -14,7 +14,7 @@ export default function Toast2({ children }: any) {
     return () => {
       clearInterval(timer);
     }
-  }, [toast, setToast])
+  }, [toast, setToast]);
 
   return (
     <ToastContainer>

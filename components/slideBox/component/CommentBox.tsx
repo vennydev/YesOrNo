@@ -95,6 +95,10 @@ export default function CommentBox(prop: CommentBoxPropsType) {
     setAnimation(true);
   }, []);
 
+  useEffect(() => {
+    setToast({...toast, isShown:  false});
+  }, [])
+
   return (
     <SlideBox setShowBox={setShowCommentBox}>
       <div className={`${animation ? "comment-wrapper modal-enter-active" : ""}`}>
