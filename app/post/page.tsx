@@ -18,14 +18,12 @@ import { selectedImgIndexState } from '@/recoil/post/atom';
 import firestore from '@/firebase/firestore';
 import Image from 'next/image';
 import { myPostsArrayState } from '@/recoil/mypage/atom';
-import { usernameState } from '@/recoil';
-import { getItem } from '@/utils/localStorage';
 
 const ONEDAY = 24*60*60*1000;
 
 export default function PostPage() {
   const [text, setText] = useState("YES OR NO로 대답 할 수 있는 질문을 작성해주세요");
-  const [imageUrl, setImageUrl] = useState<any>(PostBg1);
+  const [imageUrl, setImageUrl] = useState<any>('');
   const [file, setFile] = useState<any>(PostBg1);
   const [editing, setEditing] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -34,6 +32,7 @@ export default function PostPage() {
   const setIndex = useResetRecoilState(selectedImgIndexState);
   const [myPostsArr, setMyPostsArr] = useRecoilState(myPostsArrayState);
   const [nickname, setNickname] = useState('');
+  
   const handleEditing = () => {
     setEditing(true);
   };
@@ -190,7 +189,6 @@ return (
     <PostSection>
       <PostContainer>
         <ActionBtnWrapper>
-          <ClearIcon onClick={() => router.push("/")}/>
           <PageTitle>질문하기</PageTitle>
           <PostBtn onClick={handleUpload} $text={text}>등록</PostBtn>
         </ActionBtnWrapper>
@@ -252,7 +250,7 @@ flex-direction: column;
 const ActionBtnWrapper = styled.div`
   display: flex;
   width: 100%;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   margin-bottom: 21px;
 `;
@@ -260,10 +258,13 @@ const ActionBtnWrapper = styled.div`
 const PageTitle = styled.div`
   font-size: 16px;
   font-weight: 600;
+  width: 159px;
+  margin-right: 53px;
+  text-align: center;
 `;
 
 const PostBtn = styled.div<{$text: string}>`
-  color: ${props => props.$text !== "" ? 'black' : `${props.theme.color.dimFontColor}`};
+  color: ${props => props.$text !== "YES OR NO로 대답 할 수 있는 질문을 작성해주세요" ? '#796EFF' : `${props.theme.color.dimFontColor}`};
   letter-spacing: -0.3px;
   font-size: 16px;
   font-weight: 600;

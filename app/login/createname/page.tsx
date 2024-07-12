@@ -42,17 +42,17 @@ export default function CreateUserName() {
   return (
     <>
     {isLoading ? <Loading/> : (
-      <CreateUserNameCOntainer>
+      <CreateUserNameContainer>
         <EditWrapper>
           <EditInput text={createUserNameText} randomname={randomname}/>
         </EditWrapper>
-      </CreateUserNameCOntainer>
+      </CreateUserNameContainer>
     )
     }
     </>
 )};
 
-const CreateUserNameCOntainer = styled.div`
+const CreateUserNameContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;

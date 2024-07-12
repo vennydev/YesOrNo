@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { DefaultProfile, DimmedProfile, PostBg1, PostBg2 } from '../public/images';
+import { DefaultProfile, DimmedProfile, PostBg1, PostBg2, iconDog, iconShining } from '../public/images';
 import Image from 'next/image';
 import styled from 'styled-components';
 import ColorCircle from './ColorCircle';
@@ -16,7 +16,6 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { isCheckDeletionModalVisible } from '@/recoil/post/atom';
 import { toastState } from '@/recoil/toast/atom';
 import LikeCommentContainer from './LikeCommentContainer';
-import firebase from 'firebase/compat/app';
 
 const VOTE_STATUS = ["no response", "yes", "no"];
 const imageArr = ['no image', PostBg1, PostBg2];
@@ -125,15 +124,20 @@ export default function PostCard ({
   };
 
   const selectBgImage = (e: any, img: any) => {
-    // e && e.stopPropagation();
-    // setImageUrl?.(img);
-    // setFile?.(img);
+    e && e.stopPropagation();
+    if(!img){
+      return
+    }else{
+      setImageUrl?.(img);
+      setFile?.(img);
+    }
   };
 
   const divideText = () => {
     const topText = text.substring(0,10)
     const bottomText = text.substring(10);
     return (
+      
       <DividedText onClick={handleEditing} $image={imageUrl.src}>
         {editing ? (
             <PostQuestionInput autoFocus name="textarea" maxLength={68} onChange={(e) => handleText?.(e.target.value)}/>
@@ -148,7 +152,7 @@ export default function PostCard ({
   };
 
   const postDefaultImageforPost = () => {
-    if(imageUrl === undefined) return;
+    if(imageUrl === undefined || '') return;
     if(imageUrl.src){
       if(imageUrl.src.includes("bg1")){
         return (
@@ -159,6 +163,7 @@ export default function PostCard ({
           <StyledDefaultImageBg2 src={imageUrl}  alt="default-image" width={0} height={0}/>
         )    
       }
+    }else{
     }
   };
 
@@ -300,7 +305,7 @@ export default function PostCard ({
   };
 
   useEffect(() => {
-    getCreatedDate();
+    hours !== 0 && getCreatedDate();
     typeof expiredAt === 'number' && getRemainingTime(expiredAt);
   }, [expiredAt]);
 
@@ -314,6 +319,7 @@ export default function PostCard ({
         setEndTime(`${newYear}년 ${month}월 ${day}일`)
       };
   }, [expiredAt]);
+
   return (
       <PostContainer $votingBtn={votingBtn}>
         {!votingBtn && postDefaultImageforPost()}
@@ -337,10 +343,13 @@ export default function PostCard ({
                         </>
                       ) : (
                         <>
-                          {createdDate} 
-                            <Dot/>
-                          {addZero(hours)}시간 {addZero(min)}분 남음
+                        
+                        {createdDate} 
+                          <Dot/>
+                        {addZero(hours)}시간 {addZero(min)}분 남음
                         </>
+                          // {hours === 0 ? '00년 00월 00일 등록 / 00시 00분 남음': (
+                          // )}
                       )}
                     </DeadLine>
                 </PostMetadataRight>  

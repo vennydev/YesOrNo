@@ -63,7 +63,6 @@ export default function Mypage() {
       const userid = localStorage.getItem("userID");
       const docRef = doc(firestore, "users", String(userid));
       const docSnap = await getDoc(docRef);
-
        Promise.all(
         docSnap?.data()?.myPosts.map(async (id: string) => {
           const postRef = doc(firestore, "posts", id);
@@ -181,7 +180,7 @@ export default function Mypage() {
             )
           }
         </MyPostWrapper>
-          <SignOutBtnWrapper>
+          {/* <SignOutBtnWrapper>
             <SignOutBtn onClick={() => {
               signOut({ callbackUrl: '/' });
               localStorage.removeItem("user");
@@ -191,7 +190,7 @@ export default function Mypage() {
             <SignOutBtn onClick={()=> {
               alert("곧 됩니다..!")
             }}>탈퇴</SignOutBtn>
-          </SignOutBtnWrapper>
+          </SignOutBtnWrapper> */}
       </MyPostsContainer>
       {toast.isShown && <Toast position='bottom'/>}
     </MyPageSection>
@@ -246,7 +245,7 @@ const TabButton = styled.button<{$focused: boolean}>`
 const MyPostsContainer = styled.div<{$myPostsArrlength: number}>`
   padding: 25px 20px;
   width: 100%;
-  height: ${(props) => props.$myPostsArrlength > 0 ? 'auto' : '100%'};
+  height: ${(props) => props.$myPostsArrlength > 0 ? '100%' : '100%'};
   display: flex;
   flex-direction: column;
   align-items: center;

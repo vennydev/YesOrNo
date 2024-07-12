@@ -25,6 +25,10 @@ import IconX from './ic_X.png';
 import ProfileDim from './Profile-dim.png';
 import ShareIcon from './Share-icon.png';
 import iconX2 from './ic_X2.png';
+import iconDog from './ic_dog.png';
+import iconShining from './ic_shining.png';
+import disabledNicknameChanger from './ic_change_disable.png';
+import enabledNicknameChanger from './ic_change_enable.png';
 
 export { 
   cellular, 
@@ -54,4 +58,8 @@ export {
   iconX2,
   ProfileDim,
   ShareIcon,
+  iconDog,
+  iconShining,
+  disabledNicknameChanger,
+  enabledNicknameChanger,
 }

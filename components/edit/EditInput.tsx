@@ -1,7 +1,7 @@
 "use client"
 
 import styled from "styled-components";
-import { TextRemover } from "@/public/images";
+import { TextRemover, disabledNicknameChanger, enabledNicknameChanger } from "@/public/images";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -9,7 +9,6 @@ import { doc, updateDoc } from "firebase/firestore";
 import firestore from "@/firebase/firestore";
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react';
-import useRandomNameGenerator from "@/hooks/useRandomNameGenerator";
 
 interface EditInputPropsType {
   text: string;
@@ -54,6 +53,10 @@ export default function EditInput({text, randomname}: EditInputPropsType) {
       <InputContainer>
         <NameLabel htmlFor="username" $currentPath={currentPath}>{text}</NameLabel>  
         <InputWrapper>
+        {/* username이 ""가 아닐 때 활성화, username이 ""일 때 비활성화 */}
+          {/* <Image src={disabledNicknameChanger} alt="nickname-changer" width={24} height={24}/>
+          <Image src={enabledNicknameChanger} alt="nickname-changer" width={24} height={24}/> */}
+
           <NameInput type="text" id='username' value={username || ''} onChange={(e) => handleNameChange(e)} placeholder={'프로필 이름을 변경해주세요'}/>
             {currentPath === 'edit-name' ? (
             <DeleteText onClick={() => setUsername('')}>
